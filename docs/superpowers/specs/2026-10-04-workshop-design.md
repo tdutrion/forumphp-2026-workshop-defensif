@@ -409,7 +409,8 @@ déjà en place (sécurité) ou n'est pas exécutable sur PHP 8.5.
 | `#[\NoDiscard]` | 8.5 | `$programme->withShowtime($s);` résultat ignoré | `#[\NoDiscard]` sur withers et Result | 5 |
 | `clone with` | 8.5 | withers écrits à la main | `clone($this, ['showtimes' => …])` | 8 |
 | Opérateur pipe `\|>` | 8.5 | tableaux imbriqués dans le mapping Pathé | pipeline lisible | 15 |
-| Extension URI | 8.5 | `preg_match` sur `refCmd` | `Uri\Rfc3986\Uri` | 15 |
+| Extension URI : construction des appels aux webservices | 8.5 | `PatheClient` assemble ses chemins par concaténation et `rawurlencode()`, la base `https://www.pathe.fr/api/` vit en chaîne dans la config du client HTTP, l'URL GitHub `/user/emails` et celles du provider local sont des chaînes | un objet `PatheEndpoints` construit sur `Uri\Rfc3986\Uri` (`resolve()`, `withQuery()`), URL de configuration validées dès le démarrage, `ext-uri` déclarée dans `composer.json` | 15 |
+| Extension URI : lecture d'une URL reçue | 8.5 | `preg_match` sur le lien de réservation `refCmd` | `Uri\Rfc3986\Uri::parse()` puis lecture de l'hôte et du chemin | 15 |
 | `array_first`/`array_last` | 8.5 | `reset()`/`end()` sur les séances | fonctions natives | 12 |
 | Promotion de propriétés `final` | 8.5 | — | `final` sur les propriétés promues | 8 |
 | `clamp()` | 8.6 (polyfill) | `max(1, min(50, $radius))` | `clamp()` dans `Radius` | 4 |
@@ -459,11 +460,11 @@ quel ordre.
 | 12 | Collections : listes typées, `array_find`, génériques PHPStan | 30 min |
 | 13 | Système de types : `strict_types`, retours, `never`, constantes typées | 30 min |
 | 14 | Entrées cachées : horloge, configuration typée, Null Object, assertions | 30 min |
-| 15 | Transformations : pipe `\|>`, extension URI | 20 min |
+| 15 | URL et transformations : appels aux webservices avec l'extension URI, pipe `\|>` | 35 min |
 | 16 | Sortie : DTO d'API, ObjectMapper, `SortDirection`, Twig strict | 40 min |
 | 17 | Outillage : PHPStan max, Infection | 30 min |
 
-Total ≈ 7 h 50. Le guide formateur (`docs/exercices.md`) décrit pour
+Total ≈ 8 h 05. Le guide formateur (`docs/exercices.md`) décrit pour
 chaque exercice : le point de départ, l'objectif, les pièges, la version de
 PHP concernée et le lien avec le deck.
 
