@@ -29,7 +29,7 @@ l'outillage.
 
 ### Critères de succès
 
-1. `make up` puis `make fixtures` donnent une application utilisable en
+1. `make up` puis `make db-load` donnent une application utilisable en
    local, sans appel à Pathé, avec une connexion via le fournisseur OIDC
    local.
 2. Les 3 programmes respectent les règles de la section 5.
@@ -118,7 +118,7 @@ Symfony UX Map, co-planification à plusieurs, branche de solution.
 
 | Module     | Responsabilité                                                                 | Dépend de                  |
 |------------|--------------------------------------------------------------------------------|----------------------------|
-| `Pathe`    | Client HTTP Pathé, mapping des réponses, commande de synchro, enregistrement des fixtures | `Catalog`                  |
+| `Pathe`    | Client HTTP Pathé, mapping des réponses, commande de synchro | `Catalog`                  |
 | `Catalog`  | Entités `City`, `Cinema`, `Film`, `Showtime` et leurs repositories                     | —                          |
 | `Planner`  | Calcul des programmes à partir du catalogue                                    | `Catalog`, `Account`       |
 | `Account`  | `User`, connexions liées, films déjà vus, jetons d'API                         | `Catalog`                  |
@@ -137,11 +137,10 @@ résultat pour une même requête.
 ```
 Pathé (/api/*) ──► PatheClient ──► CatalogSynchronizer ──► MySQL ──► PlannerService ──► Web (Twig)
                        ▲                                                          └────► Api (JSON)
-     fixtures enregistrées (make fixtures)
+     dump SQL du catalogue (make db-dump / make db-load)
 ```
 
-Seuls la commande de synchro et la commande d'enregistrement des fixtures
-appellent Pathé. Le site lit uniquement la base.
+Seule la commande de synchro appelle Pathé. Le site lit uniquement la base.
 
 ## 5. Domaine
 
@@ -277,18 +276,29 @@ vérifiés le 4 octobre 2026).
 - Les heures Pathé (`time`, `endTime`) n'ont pas de fuseau. Elles sont
   interprétées en Europe/Paris.
 
-### Jeu de données figé
+### Jeu de données figé (dump SQL)
 
-- `bin/console pathe:fixtures:record` enregistre les réponses brutes des
-  villes configurées (Paris, Lyon, Dijon) dans `fixtures/pathe/`, avec
-  leur date de capture. Trois profils : une grande ville où les trajets
+- **Préparation, la veille (mercredi 7 octobre)** : tu lances `make sync`
+  sur Paris, Lyon et Dijon (18 cinémas : 13 à Paris, 3 à Lyon, 2 à Dijon),
+  puis `make db-dump`. La commande écrit `data/catalog.sql.gz` : les
+  **données** des tables du catalogue (villes, cinémas, films, séances,
+  versions), sans le schéma et sans aucune donnée utilisateur. Le mercredi
+  tombe bien : c'est le premier jour de la semaine de programmation Pathé,
+  donc le dump couvre toute la semaine du jeudi de l'atelier.
+- Le fichier est commité dans le dépôt avant le tag `v1.0.0` : un
+  `git clone` suffit, aucun téléchargement n'est nécessaire le jour J.
+- **Côté participant** : `make db-load` joue les migrations Doctrine (le
+  schéma vient toujours des migrations), vide les tables du catalogue,
+  puis importe le dump. L'application est utilisable sans réseau.
+- **Réutilisation après l'atelier** : `bin/console catalog:shift-dates`
+  décale toutes les séances pour que le premier jour du dump devienne
+  aujourd'hui.
+- Les trois villes donnent trois profils : une grande ville où les trajets
   comptent, une ville moyenne, une petite ville où les programmes sont
   rares (cas « moins de 3 programmes »).
-- `make fixtures` les rejoue avec un `MockHttpClient` à travers la même
-  synchro. Les dates sont décalées pour que le premier jour capturé
-  devienne aujourd'hui. L'application est ainsi utilisable n'importe quel
-  jour, sans réseau.
-- Le jeu de données est enregistré juste avant l'atelier et commité.
+- Les tests n'utilisent pas ce dump. Ils s'appuient sur quelques réponses
+  Pathé brutes enregistrées en JSON dans `tests/Fixtures/pathe/`, rejouées
+  avec un `MockHttpClient`.
 
 ## 7. Sécurité (en place dès la v1)
 
@@ -478,14 +488,14 @@ PHP concernée et le lien avec le deck.
   de l'atelier.
 - **PHP-CS-Fixer** : règles `@Symfony`.
 - **Makefile** : `up`, `down`, `sh`, `console`, `composer`, `test`,
-  `phpstan`, `cs`, `sync`, `fixtures`, `logs`.
+  `phpstan`, `cs`, `sync`, `db-dump`, `db-load`, `logs`.
 
 ## 13. Livrables du 8 octobre
 
 1. Le dépôt `workshop` : application, Dockerfile, compose, Makefile, tests.
    Les participants reçoivent cette v1 complète et fonctionnelle (tag
    `v1.0.0`) comme point de départ ; les exercices la font évoluer.
-2. Le jeu de données Pathé figé, enregistré juste avant l'atelier.
+2. `data/catalog.sql.gz`, préparé et commité le mercredi 7 octobre.
 3. `README.md` (anglais) : démarrage, comptes OAuth facultatifs, fournisseur
    local.
 4. `docs/exercices.md` (français) : le guide formateur des sections 9 et 10.
