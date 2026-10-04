@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -21,11 +22,18 @@ class PlanType extends AbstractType
 {
     public const VERSIONS = ['VF' => 'vf', 'VOST' => 'vost', 'VO' => 'vo', 'VFST' => 'vfst'];
 
+    public function __construct(private RequestStack $requestStack)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Day names in the language of the page ("Thursday, January 10, 2030", "jeudi 10 janvier 2030").
+        $locale = $this->requestStack->getCurrentRequest()?->getLocale() ?? 'en';
+        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE, 'UTC');
         $dates = [];
         foreach ($options['dates'] as $date) {
-            $dates[date('d/m/Y', strtotime($date))] = $date;
+            $dates[$formatter->format(new \DateTimeImmutable($date, new \DateTimeZone('UTC')))] = $date;
         }
 
         $cities = [];
@@ -37,6 +45,7 @@ class PlanType extends AbstractType
             ->add('date', ChoiceType::class, [
                 'label' => 'Date',
                 'choices' => $dates,
+                'choice_translation_domain' => false,
                 'constraints' => [new NotBlank(message: 'Choose a date.')],
             ])
             ->add('city', ChoiceType::class, [

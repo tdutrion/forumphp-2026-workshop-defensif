@@ -97,6 +97,21 @@ final class PlannerPageTest extends WebTestCase
         self::assertStringContainsString('Unknown place', $unknownPlace);
     }
 
+    public function testDatesFollowTheLanguageOfTheBrowser(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $english = $client->request('GET', '/')->filter('#plan_date option[value="2030-01-10"]')->text();
+        $client->setServerParameter('HTTP_ACCEPT_LANGUAGE', 'fr-FR,fr;q=0.9');
+        $french = $client->request('GET', '/')->filter('#plan_date option[value="2030-01-10"]')->text();
+
+        // Assert
+        self::assertSame('Thursday, January 10, 2030', $english);
+        self::assertSame('jeudi 10 janvier 2030', $french);
+    }
+
     public function testInvalidCriteriaAreExplained(): void
     {
         // Arrange

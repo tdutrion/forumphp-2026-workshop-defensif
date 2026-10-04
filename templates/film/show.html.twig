@@ -9,7 +9,7 @@
             <h1 class="text-3xl font-bold">{{ film.title }}</h1>
             <ul class="space-y-1 text-sm text-ink-muted">
                 {% if film.duration %}<li>{{ 'Running time: %minutes% min'|trans({'%minutes%': film.duration}) }}</li>{% endif %}
-                {% if film.releaseDate %}<li>{{ 'Release: %date%'|trans({'%date%': film.releaseDate|date('d/m/Y')}) }}</li>{% endif %}
+                {% if film.releaseDate %}<li>{{ 'Release: %date%'|trans({'%date%': film.releaseDate|format_date('long', locale=app.request.locale)}) }}</li>{% endif %}
                 {% if film.genres %}<li>{{ 'Genres: %genres%'|trans({'%genres%': film.genres|join(', ')}) }}</li>{% endif %}
                 {% if film.contentRating %}<li>{{ 'Rating: %rating%'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
             </ul>
