@@ -1,0 +1,176 @@
+<?php
+
+namespace App\Catalog\Sync;
+
+use App\Catalog\Entity\Cinema;
+use App\Catalog\Entity\City;
+use App\Catalog\Entity\Film;
+use App\Catalog\Entity\Showtime;
+use App\Catalog\Repository\ShowtimeRepository;
+use App\Sdk\Pathe\PatheClient;
+use App\Sdk\Pathe\PatheMapper;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
+/**
+ * Copies the cities, cinemas, films and showtimes of the Pathé chain into the catalog.
+ */
+class CatalogSynchronizer
+{
+    private const CHAIN = 'pathe';
+
+    public function __construct(
+        private PatheClient $client,
+        private PatheMapper $mapper,
+        private EntityManagerInterface $em,
+        private ShowtimeRepository $showtimeRepository,
+        private LoggerInterface $logger,
+        #[Autowire('%app.chains%')]
+        private array $chains,
+    ) {
+    }
+
+    /**
+     * @param array       $citySlugs cities to synchronize, e.g. ['paris', 'lyon', 'dijon']
+     * @param string|null $today     first local day synchronized ('Y-m-d'); null = today in the chain's time zone
+     * @param int         $days      number of days synchronized
+     *
+     * @return array|false ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors'],
+     *                     or false if the Pathé reference data is unreachable
+     */
+    public function synchronize(array $citySlugs, ?string $today = null, int $days = 7): array|false
+    {
+        $chain = $this->chains[self::CHAIN];
+        $today ??= (new \DateTimeImmutable('now', new \DateTimeZone($chain['timezone'])))->format('Y-m-d');
+        $stats = ['cities' => 0, 'cinemas' => 0, 'films' => 0, 'showtimes' => 0, 'deleted' => 0, 'errors' => 0];
+
+        $rawCities = $this->client->getCities();
+        $rawCinemas = $this->client->getCinemas();
+        $rawShows = $this->client->getShows();
+        if (false === $rawCities || false === $rawCinemas || false === $rawShows) {
+            return false;
+        }
+
+        $cities = [];
+        foreach ($rawCities as $raw) {
+            if (!in_array($raw['slug'], $citySlugs, true)) {
+                continue;
+            }
+            $data = $this->mapper->mapCity($raw);
+            $city = $this->em->find(City::class, $data['slug']) ?? (new City())->setSlug($data['slug']);
+            $city->setName($data['name'])->setChain(self::CHAIN)->setCountry($chain['country']);
+            $this->em->persist($city);
+            $cities[$data['slug']] = $city;
+            ++$stats['cities'];
+        }
+
+        $cinemas = [];
+        foreach ($rawCinemas as $raw) {
+            $data = $this->mapper->mapCinema($raw);
+            if (!isset($cities[$data['citySlug']])) {
+                continue;
+            }
+            $cinema = $this->em->find(Cinema::class, $data['slug']) ?? (new Cinema())->setSlug($data['slug']);
+            $cinema
+                ->setName($data['name'])
+                ->setChain(self::CHAIN)
+                ->setCountry($chain['country'])
+                ->setTimezone($chain['timezone'])
+                ->setCity($cities[$data['citySlug']])
+                ->setAddress($data['address'])
+                ->setPostalCode($data['postalCode'])
+                ->setTown($data['town'])
+                ->setLatitude($data['latitude'])
+                ->setLongitude($data['longitude'])
+                ->setHallCount($data['hallCount'])
+                ->setOpen($data['open']);
+            $this->em->persist($cinema);
+            $cinemas[$data['slug']] = $cinema;
+            ++$stats['cinemas'];
+        }
+
+        $films = [];
+        foreach ($rawShows as $raw) {
+            $data = $this->mapper->mapFilm($raw);
+            if (false === $data) {
+                continue;
+            }
+            $film = $this->em->find(Film::class, $data['slug']) ?? (new Film())->setSlug($data['slug']);
+            $film
+                ->setTitle($data['title'])
+                ->setChain(self::CHAIN)
+                ->setDuration($data['duration'])
+                ->setReleaseDate(null !== $data['releaseDate'] ? new \DateTimeImmutable($data['releaseDate']) : null)
+                ->setGenres($data['genres'])
+                ->setPosterUrl($data['posterUrl'])
+                ->setContentRating($data['contentRating']);
+            $this->em->persist($film);
+            $films[$data['slug']] = $film;
+            ++$stats['films'];
+        }
+        $this->em->flush();
+
+        $lastDay = date('Y-m-d', strtotime($today.' +'.($days - 1).' days'));
+
+        foreach ($cinemas as $cinemaSlug => $cinema) {
+            if (!$cinema->isOpen()) {
+                $stats['deleted'] += $this->showtimeRepository->deleteForCinemasBetween([$cinemaSlug], $today, $lastDay, []);
+                continue;
+            }
+
+            $programme = $this->client->getCinemaProgramme($cinemaSlug);
+            if (false === $programme) {
+                ++$stats['errors'];
+                continue;
+            }
+
+            $keptIds = [];
+            $complete = true;
+            foreach ($this->mapper->showSlugsPlayingBetween($programme, $today, $lastDay) as $showSlug) {
+                if (!isset($films[$showSlug])) {
+                    continue;
+                }
+
+                $rawShowtimes = $this->client->getShowtimes($showSlug, $cinemaSlug);
+                if (false === $rawShowtimes) {
+                    ++$stats['errors'];
+                    $complete = false;
+                    continue;
+                }
+
+                foreach ($this->mapper->mapShowtimes($rawShowtimes, $chain['timezone']) as $data) {
+                    if ($data['localDate'] < $today || $data['localDate'] > $lastDay) {
+                        continue;
+                    }
+                    $showtime = $this->em->find(Showtime::class, $data['id']) ?? (new Showtime())->setId($data['id']);
+                    $showtime
+                        ->setFilm($films[$showSlug])
+                        ->setCinema($cinema)
+                        ->setStartsAt(new \DateTimeImmutable($data['startsAt']))
+                        ->setEndsAt(new \DateTimeImmutable($data['endsAt']))
+                        ->setLocalDate(new \DateTimeImmutable($data['localDate']))
+                        ->setVersion($data['version'])
+                        ->setStatus($data['status'])
+                        ->setBookingUrl($data['bookingUrl'])
+                        ->setReservableUntil(null !== $data['reservableUntil'] ? new \DateTimeImmutable($data['reservableUntil']) : null)
+                        ->setAuditorium($data['auditorium'])
+                        ->setCapacity($data['capacity']);
+                    $this->em->persist($showtime);
+                    $keptIds[] = $data['id'];
+                    ++$stats['showtimes'];
+                }
+            }
+            $this->em->flush();
+
+            // Vanished showtimes are deleted only when the whole schedule of the cinema could be read.
+            if ($complete) {
+                $stats['deleted'] += $this->showtimeRepository->deleteForCinemasBetween([$cinemaSlug], $today, $lastDay, $keptIds);
+            } else {
+                $this->logger->warning('Incomplete schedule, no showtime deleted', ['cinema' => $cinemaSlug]);
+            }
+        }
+
+        return $stats;
+    }
+}

@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Catalog\Command;
+
+use App\Catalog\Sync\CatalogSynchronizer;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
+#[AsCommand(name: 'catalog:sync', description: 'Synchronizes cities, cinemas, films and showtimes from Pathé')]
+class SyncCommand extends Command
+{
+    public function __construct(
+        private CatalogSynchronizer $synchronizer,
+        #[Autowire('%env(PATHE_CITIES)%')]
+        private string $defaultCities,
+    ) {
+        parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption('city', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'City to synchronize (repeatable). Defaults to PATHE_CITIES.');
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        $cities = $input->getOption('city');
+        if ([] === $cities) {
+            $cities = array_map('trim', explode(',', $this->defaultCities));
+        }
+
+        try {
+            $stats = $this->synchronizer->synchronize($cities);
+        } catch (\RuntimeException $e) {
+            $io->error($e->getMessage());
+
+            return Command::FAILURE;
+        }
+
+        if (false === $stats) {
+            $io->error('Cannot read the Pathé reference data (cities, cinemas or films).');
+
+            return Command::FAILURE;
+        }
+
+        $io->writeln(sprintf(
+            '%d cities, %d cinemas, %d films, %d showtimes saved, %d deleted, %d errors.',
+            $stats['cities'], $stats['cinemas'], $stats['films'], $stats['showtimes'], $stats['deleted'], $stats['errors'],
+        ));
+
+        if ($stats['errors'] > 0) {
+            $io->warning('Partial synchronization: see the logs.');
+
+            return Command::FAILURE;
+        }
+
+        $io->success('Synchronization complete.');
+
+        return Command::SUCCESS;
+    }
+}

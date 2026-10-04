@@ -15,3 +15,7 @@ parameters:
         -
             identifier: method.unused
             path: src/Kernel.php
+        -
+            # Test doubles are services of the test environment only; PHPStan reads the dev container.
+            identifier: symfonyContainer.serviceNotFound
+            path: tests/*

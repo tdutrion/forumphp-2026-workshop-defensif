@@ -23,5 +23,26 @@ services:
             - '../src/*/Entity/'
             - '../src/Kernel.php'
 
+    # PSR-18 adapter over the scoped client: the SDK only knows PSR interfaces.
+    app.pathe_http_client:
+        class: Symfony\Component\HttpClient\Psr18Client
+        arguments: ['@pathe.http_client']
+
+    # The PSR-17 request factory (nyholm/psr7) and the PSR-3 logger (monolog) are autowired.
+    App\Sdk\Pathe\PatheClient:
+        arguments:
+            $httpClient: '@app.pathe_http_client'
+            $cache: '@cache.pathe'
+            $delayMs: '%env(int:PATHE_DELAY_MS)%'
+            $cacheTtl: '%env(int:PATHE_CACHE_TTL)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+when@test:
+    services:
+        App\Tests\Fake\FakePatheApi:
+            public: true
+        # The SDK talks to the fake Pathé API (a PSR-18 client) instead of pathe.fr.
+        app.pathe_http_client:
+            alias: App\Tests\Fake\FakePatheApi

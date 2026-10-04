@@ -1,0 +1,8 @@
+parameters:
+    # Supported cinema chains. Instants are stored in UTC; each chain's time zone converts
+    # its local times (input from its API, display) and gives the country of its cinemas.
+    app.chains:
+        pathe:
+            name: 'Pathé'
+            country: 'FR'
+            timezone: 'Europe/Paris'

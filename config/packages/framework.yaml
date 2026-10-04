@@ -8,6 +8,18 @@ framework:
     set_locale_from_accept_language: true
     set_content_language_from_locale: true
 
+    http_client:
+        scoped_clients:
+            # Transport settings only: the SDK builds its URLs and headers itself.
+            pathe.http_client:
+                scope: '^https://www\.pathe\.fr/'
+                timeout: 10
+    cache:
+        pools:
+            # Pathé reference data (cities, cinemas, films), kept PATHE_CACHE_TTL seconds.
+            cache.pathe:
+                adapter: cache.app
+
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
