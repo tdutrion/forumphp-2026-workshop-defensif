@@ -1,0 +1,21 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+
+    # English is the main language; French is served to browsers that ask for it.
+    default_locale: en
+    enabled_locales: ['en', 'fr']
+    set_locale_from_accept_language: true
+    set_content_language_from_locale: true
+
+    # Note that the session will be started ONLY if you read or write from it.
+    session: true
+
+    #esi: true
+    #fragments: true
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

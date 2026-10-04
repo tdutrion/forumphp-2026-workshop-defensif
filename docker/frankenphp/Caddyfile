@@ -1,0 +1,70 @@
+{
+	skip_install_trust
+
+	{$CADDY_GLOBAL_OPTIONS}
+
+	frankenphp {
+		{$FRANKENPHP_CONFIG}
+	}
+}
+
+{$CADDY_EXTRA_CONFIG}
+
+{$SERVER_NAME:localhost} {
+	log {
+		{$CADDY_SERVER_LOG_OPTIONS}
+		# Hides the authorization parameter that Mercure may use
+		format filter {
+			request>uri query {
+				replace authorization REDACTED
+			}
+		}
+	}
+
+	root /app/public
+	encode zstd br gzip
+
+	mercure {
+		# The site serves two addresses (localhost and php:80): one shared, named hub.
+		name workshop
+		# Mercure 1.0: tokens must carry this "iss" claim (set by config/packages/mercure.yaml).
+		issuer {$MERCURE_TRUSTED_ISSUERS:https://localhost} {
+			publisher {
+				jwt {env.MERCURE_PUBLISHER_JWT_KEY} {env.MERCURE_PUBLISHER_JWT_ALG}
+			}
+			subscriber {
+				jwt {env.MERCURE_SUBSCRIBER_JWT_KEY} {env.MERCURE_SUBSCRIBER_JWT_ALG}
+			}
+		}
+		# PHP publishes through http://php, browsers subscribe through https://localhost:
+		# one fixed audience ("aud" claim) for both.
+		resource_identifier {$MERCURE_RESOURCE_IDENTIFIER:https://localhost/.well-known/mercure}
+		# Only public updates are emitted ("programme updated")
+		anonymous
+		{$MERCURE_EXTRA_DIRECTIVES}
+	}
+
+	vulcain
+
+	{$CADDY_SERVER_EXTRA_DIRECTIVES}
+
+	@phpRoute {
+		not path /.well-known/mercure*
+		not file {path}
+	}
+	rewrite @phpRoute index.php
+
+	@frontController path index.php
+	php @frontController {
+		{$FRANKENPHP_SITE_CONFIG}
+
+		worker {
+			file ./public/index.php
+			{$FRANKENPHP_WORKER_CONFIG}
+		}
+	}
+
+	file_server {
+		hide *.php
+	}
+}
