@@ -9,7 +9,7 @@
         <twig:Card>
             <h2 class="mb-4 text-xl font-semibold">Colors</h2>
             <div class="grid grid-cols-5 gap-2 text-xs">
-                {% for token in ['brand-50', 'brand-600', 'brand-900', 'ink', 'ink-muted', 'canvas', 'surface-muted', 'line', 'success-600', 'danger-600'] %}
+                {% for token in ['brand-50', 'brand-600', 'brand-900', 'accent-50', 'accent-500', 'accent-700', 'ink', 'ink-muted', 'canvas', 'surface-muted', 'line', 'success-600', 'danger-600'] %}
                     <div><div class="h-10 rounded-control ring-1 ring-line bg-{{ token }}"></div>{{ token }}</div>
                 {% endfor %}
             </div>
@@ -22,6 +22,7 @@
                 <twig:Button type="button" variant="secondary">Secondary</twig:Button>
                 <twig:Button type="button" variant="danger">Danger</twig:Button>
                 <twig:Button type="button" variant="ghost">Ghost</twig:Button>
+                <twig:Button type="button" variant="accent">Accent</twig:Button>
                 <twig:Button type="button" size="sm">Small</twig:Button>
                 <twig:Button tag="a" href="#" variant="secondary">Link styled as a button</twig:Button>
             </div>

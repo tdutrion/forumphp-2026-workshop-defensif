@@ -10,7 +10,8 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 
 | Token | Utilities | Use |
 |---|---|---|
-| `brand-50` … `brand-900` | `bg-brand-600`, `text-brand-700`… | actions, links, focus |
+| `brand-50` … `brand-900` | `bg-brand-600`, `text-brand-700`… | blue `#2980b9` (600): actions, links, focus |
+| `accent-50` … `accent-700` | `bg-accent-500`, `text-accent-700`… | orange `#e67e22` (500): highlights, late-arrival badges |
 | `ink`, `ink-muted` | `text-ink`, `text-ink-muted` | text |
 | `canvas`, `surface`, `surface-muted`, `line` | `bg-canvas`, `bg-surface`, `ring-line`… | page, cards, borders |
 | `success-*`, `danger-*`, `info-*` | `bg-danger-50`, `text-danger-700`… | feedback |
@@ -21,10 +22,10 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 
 | Component | Props | Notes |
 |---|---|---|
-| `<twig:Button>` | `variant`: primary, secondary, danger, ghost; `size`: sm, md; `tag`: button, a | pass `type`, `href`, `class` as attributes |
+| `<twig:Button>` | `variant`: primary, secondary, danger, ghost, accent; `size`: sm, md; `tag`: button, a | pass `type`, `href`, `class` as attributes |
 | `<twig:Card>` | | a `<section>` |
 | `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
-| `<twig:Badge>` | `tone`: neutral, brand, warning | |
+| `<twig:Badge>` | `tone`: neutral, brand, warning (accent orange) | |
 
 Every form gets the theme `templates/form/theme.html.twig` automatically.
 

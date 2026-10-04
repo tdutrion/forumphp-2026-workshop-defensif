@@ -2,7 +2,7 @@
 
 @source "../../templates";
 /* Class names built dynamically by the style guide (Tailwind only sees names written in full). */
-@source inline("bg-{brand-50,brand-600,brand-900,ink,ink-muted,canvas,surface-muted,line,success-600,danger-600}");
+@source inline("bg-{brand-50,brand-600,brand-900,accent-50,accent-500,accent-700,ink,ink-muted,canvas,surface-muted,line,success-600,danger-600}");
 
 /*
  * Design tokens: the only place where colors, fonts, radii and shadows are chosen.
@@ -15,16 +15,27 @@
     --color-white: oklch(100% 0 0);
     --color-black: oklch(0% 0 0);
 
-    --color-brand-50: oklch(97.1% 0.013 17);
-    --color-brand-100: oklch(93.6% 0.032 17);
-    --color-brand-200: oklch(88.5% 0.062 18);
-    --color-brand-300: oklch(80.8% 0.114 19);
-    --color-brand-400: oklch(70.4% 0.191 22);
-    --color-brand-500: oklch(63.7% 0.237 25);
-    --color-brand-600: oklch(57.7% 0.245 27);
-    --color-brand-700: oklch(50.5% 0.213 27);
-    --color-brand-800: oklch(44.4% 0.177 27);
-    --color-brand-900: oklch(39.6% 0.141 26);
+    /* Brand: blue #2980b9 (600). White text on it reaches 4.3:1; prefer 700 behind small text. */
+    --color-brand-50: #eef6fb;
+    --color-brand-100: #d8eaf6;
+    --color-brand-200: #b3d6ed;
+    --color-brand-300: #86bde0;
+    --color-brand-400: #5ba5d4;
+    --color-brand-500: #3a91c8;
+    --color-brand-600: #2980b9;
+    --color-brand-700: #216897;
+    --color-brand-800: #1b5279;
+    --color-brand-900: #163f5d;
+
+    /* Accent: orange #e67e22 (500), for highlights; text on light backgrounds uses 700. */
+    --color-accent-50: #fdf3ea;
+    --color-accent-100: #fbe3cc;
+    --color-accent-200: #f6c393;
+    --color-accent-300: #f0a35c;
+    --color-accent-400: #eb8f3c;
+    --color-accent-500: #e67e22;
+    --color-accent-600: #c96a15;
+    --color-accent-700: #a35512;
 
     --color-ink: oklch(21% 0.034 265);
     --color-ink-muted: oklch(44.6% 0.03 257);
