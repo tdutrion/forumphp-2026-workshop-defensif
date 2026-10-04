@@ -156,6 +156,8 @@ Seule la commande de synchro appelle Pathé. Le site lit uniquement la base.
 | Pubs     | case « J'accepte d'arriver pendant les pubs (15 minutes) »                                                |
 
 Le centre du rayon est la position GPS de la ville ou celle du navigateur.
+La position du navigateur arrive dans un champ caché, au format JSON
+(`{"lat": …, "lng": …}`).
 
 ### Séances candidates
 
@@ -368,7 +370,7 @@ déjà en place (sécurité) ou n'est pas exécutable sur PHP 8.5.
 | Types nullables, `void`, `iterable` | 7.1 | `findBySlug(): ?array` | `find(): ?Film` / `get(): Film` | 6 |
 | Visibilité des constantes de classe | 7.1 | `public const` partout dans `Planner` | `private const` | 13 |
 | Multi-catch | 7.1 | blocs `catch` répétés | `catch (A \| B)` | 11 |
-| `JSON_THROW_ON_ERROR` | 7.3 | `json_decode()` + test de `null` dans les fixtures | flag + exception | 11 |
+| `JSON_THROW_ON_ERROR` | 7.3 | position du navigateur reçue en JSON dans un champ caché, décodée avec `json_decode()` + test de `null` | flag + exception | 11 |
 | Propriétés typées | 7.4 | `/** @var string|null */` sur des propriétés | propriétés typées | 13 |
 | Covariance et contravariance | 7.4 | interface de repository trop large | retours plus précis | 13 |
 | Types union | 8.0 | `int|string $filmId` | `FilmSlug` | 1 |
@@ -390,7 +392,7 @@ déjà en place (sécurité) ou n'est pas exécutable sur PHP 8.5.
 | `#[\SensitiveParameter]` | 8.2 | secrets OAuth, jetons | — | montré |
 | Constantes de classe typées | 8.3 | `const DEFAULT_RADIUS = 10` | `const int DEFAULT_RADIUS = 10` | 13 |
 | `#[\Override]` | 8.3 | implémentations de providers OAuth | `#[\Override]` | 9 |
-| `json_validate()` | 8.3 | décodage pour tester la validité des fixtures | `json_validate()` | 11 |
+| `json_validate()` | 8.3 | même champ : décodage complet juste pour savoir s'il est valide | `json_validate()` | 11 |
 | Clonage profond de `readonly` | 8.3 | programme cloné qui partage ses séances | `__clone` avec réaffectation | 8 |
 | Exceptions de date précises | 8.3 | `DateTimeImmutable::createFromFormat()` + test de `false` | `DateMalformedStringException` | 3 |
 | Property hooks | 8.4 | capacité `"244"` (chaîne Pathé) convertie partout | hook `set` ou value object | 7 |
