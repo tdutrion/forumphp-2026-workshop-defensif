@@ -47,6 +47,11 @@ when@test:
         App\Account\ApiTokenService: { autowire: true, public: true }
         App\Tests\Fake\FakePatheApi:
             public: true
+        App\Tests\Fake\FakeOAuthServer:
+            public: true
+        app.fake_oauth_http_client:
+            class: GuzzleHttp\Client
+            factory: ['@App\Tests\Fake\FakeOAuthServer', 'httpClient']
         # The SDK talks to the fake Pathé API (a PSR-18 client) instead of pathe.fr.
         app.pathe_http_client:
             alias: App\Tests\Fake\FakePatheApi

@@ -1,0 +1,47 @@
+knpu_oauth2_client:
+    clients:
+        # OpenID Connect provider: URLs taken from https://accounts.google.com/.well-known/openid-configuration
+        google:
+            type: generic
+            provider_class: League\OAuth2\Client\Provider\GenericProvider
+            client_class: KnpU\OAuth2ClientBundle\Client\OAuth2PKCEClient
+            client_id: '%env(OAUTH_GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(OAUTH_GOOGLE_CLIENT_SECRET)%'
+            redirect_route: app_connect_check
+            redirect_params: { provider: google }
+            provider_options:
+                urlAuthorize: 'https://accounts.google.com/o/oauth2/v2/auth'
+                urlAccessToken: 'https://oauth2.googleapis.com/token'
+                urlResourceOwnerDetails: 'https://openidconnect.googleapis.com/v1/userinfo'
+                scopeSeparator: ' '
+                responseResourceOwnerId: sub
+        # GitHub is not an OpenID Connect provider for user identity: dedicated provider.
+        github:
+            type: generic
+            provider_class: League\OAuth2\Client\Provider\Github
+            client_class: KnpU\OAuth2ClientBundle\Client\OAuth2PKCEClient
+            client_id: '%env(OAUTH_GITHUB_CLIENT_ID)%'
+            client_secret: '%env(OAUTH_GITHUB_CLIENT_SECRET)%'
+            redirect_route: app_connect_check
+            redirect_params: { provider: github }
+        # Local OIDC provider (navikt/mock-oauth2-server): sign-in without Internet.
+        # Adding an OIDC provider (LinkedIn, Keycloak...) = copy this block with its URLs and add it to OAUTH_PROVIDERS.
+        local:
+            type: generic
+            provider_class: League\OAuth2\Client\Provider\GenericProvider
+            client_class: KnpU\OAuth2ClientBundle\Client\OAuth2PKCEClient
+            client_id: '%env(OAUTH_LOCAL_CLIENT_ID)%'
+            client_secret: '%env(OAUTH_LOCAL_CLIENT_SECRET)%'
+            redirect_route: app_connect_check
+            redirect_params: { provider: local }
+            provider_options:
+                urlAuthorize: '%env(OAUTH_LOCAL_URL_AUTHORIZE)%'
+                urlAccessToken: '%env(OAUTH_LOCAL_URL_TOKEN)%'
+                urlResourceOwnerDetails: '%env(OAUTH_LOCAL_URL_USERINFO)%'
+                scopeSeparator: ' '
+                responseResourceOwnerId: sub
+
+when@test:
+    knpu_oauth2_client:
+        # Every provider talks to the fake server of the tests (Guzzle client built by FakeOAuthServer).
+        http_client: app.fake_oauth_http_client

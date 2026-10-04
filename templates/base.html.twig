@@ -1,24 +1,32 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
-
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-
-        {% set frankenphp_hot_reload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphp_hot_reload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphp_hot_reload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
-    </head>
-    <body>
+<html lang="{{ app.request.locale }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Movie Marathon{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}{% block importmap %}{{ importmap('app') }}{% endblock %}{% endblock %}
+</head>
+<body class="min-h-screen">
+    <header class="site-header border-b border-line bg-surface">
+        <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
+            <a href="{{ path('app_home') }}" class="text-lg font-bold text-brand-700">Movie Marathon</a>
+            {% if app.user %}
+                <nav class="flex items-center gap-4">
+                    <form method="post" action="{{ path('app_logout') }}">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <twig:Button type="submit" variant="secondary" size="sm">{{ 'Log out'|trans }}</twig:Button>
+                    </form>
+                </nav>
+            {% endif %}
+        </div>
+    </header>
+    <main class="mx-auto max-w-5xl space-y-6 px-6 py-8">
+        {# Flash messages are translated by the code that adds them. #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}<twig:Alert :type="type">{{ message }}</twig:Alert>{% endfor %}
+        {% endfor %}
         {% block body %}{% endblock %}
-    </body>
+    </main>
+</body>
 </html>

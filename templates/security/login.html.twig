@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Sign in'|trans }} · Movie Marathon{% endblock %}
+
+{% block body %}
+    <twig:Card class="mx-auto max-w-md">
+        <h1 class="mb-6 text-2xl font-bold">{{ 'Sign in'|trans }}</h1>
+        {% set labels = {google: 'Google', github: 'GitHub', local: 'Local provider (offline)'|trans} %}
+        <ul class="providers grid gap-3">
+            {% for provider in providers %}
+                <li>
+                    <twig:Button tag="a" variant="secondary" class="w-full" href="{{ path('app_connect_start', {provider: provider}) }}">
+                        {{ 'Sign in with %provider%'|trans({'%provider%': labels[provider] ?? provider}) }}
+                    </twig:Button>
+                </li>
+            {% endfor %}
+        </ul>
+    </twig:Card>
+{% endblock %}
