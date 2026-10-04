@@ -141,6 +141,22 @@ final class SignInTest extends WebTestCase
         self::assertNull($signedIn->getEmail());
     }
 
+    public function testAProviderAnsweringGarbageSendsBackToTheSignInPage(): void
+    {
+        // Arrange
+        $client = $this->browserFacing(OAuthServerBuilder::anOAuthServer()
+            ->withGithubUser(42, 'ada')
+            ->withGithubEmailsAnswering(500, '<html>Internal Server Error</html>'));
+
+        // Act
+        $this->signIn($client, 'github');
+
+        // Assert
+        self::assertResponseRedirects('/login');
+        $client->followRedirect();
+        self::assertSelectorTextContains('.flash-error', 'The sign-in provider is not responding. Please try again.');
+    }
+
     public function testASignedInUserLinksAnotherProviderInsteadOfSwitchingAccount(): void
     {
         // Arrange

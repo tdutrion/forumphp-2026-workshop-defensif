@@ -16,7 +16,7 @@ use Psr\Http\Message\RequestInterface;
  */
 final class FakeOAuthServer
 {
-    /** @var array<string, array{0: int, 1: array}> path => [HTTP status, JSON body] */
+    /** @var array<string, array{0: int, 1: array|string}> path => [HTTP status, JSON body or raw body] */
     private array $responses = [];
 
     public function serve(OAuthServerBuilder $server): void
@@ -33,6 +33,9 @@ final class FakeOAuthServer
     {
         [$status, $body] = $this->responses[$request->getUri()->getPath()] ?? [404, ['error' => 'not_found']];
 
-        return Create::promiseFor(new Response($status, ['Content-Type' => 'application/json'], json_encode($body)));
+        // A string body is sent as is (e.g. an HTML error page instead of JSON).
+        return Create::promiseFor(is_string($body)
+            ? new Response($status, ['Content-Type' => 'text/html'], $body)
+            : new Response($status, ['Content-Type' => 'application/json'], json_encode($body)));
     }
 }

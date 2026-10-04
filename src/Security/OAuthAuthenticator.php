@@ -66,11 +66,14 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
         } catch (\LogicException) {
             // No PKCE verifier in the session: this browser did not start the sign-in (reloaded or shared URL).
             throw new CustomUserMessageAuthenticationException('Sign-in failed. Please try again.');
+        } catch (ClientExceptionInterface|\UnexpectedValueException) {
+            // Network failure or unreadable answer during the token exchange.
+            throw new CustomUserMessageAuthenticationException('The sign-in provider is not responding. Please try again.');
         }
 
         try {
             $userInfo = $this->extractor->extract($provider, $client, $accessToken);
-        } catch (IdentityProviderException|ClientExceptionInterface) {
+        } catch (IdentityProviderException|ClientExceptionInterface|\UnexpectedValueException) {
             throw new CustomUserMessageAuthenticationException('The sign-in provider is not responding. Please try again.');
         }
 

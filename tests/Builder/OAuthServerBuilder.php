@@ -9,7 +9,7 @@ namespace App\Tests\Builder;
  */
 final class OAuthServerBuilder
 {
-    /** @var array<string, array{0: int, 1: array}> */
+    /** @var array<string, array{0: int, 1: array|string}> */
     private array $responses = [];
 
     public static function anOAuthServer(): self
@@ -54,7 +54,18 @@ final class OAuthServerBuilder
     }
 
     /**
-     * @return array<string, array{0: int, 1: array}> URL path => [HTTP status, JSON body]
+     * GitHub answers /user/emails with something that is not JSON (outage page, proxy error...).
+     */
+    public function withGithubEmailsAnswering(int $status, string $rawBody): self
+    {
+        $clone = clone $this;
+        $clone->responses['/user/emails'] = [$status, $rawBody];
+
+        return $clone;
+    }
+
+    /**
+     * @return array<string, array{0: int, 1: array|string}> URL path => [HTTP status, JSON body or raw body]
      */
     public function build(): array
     {
