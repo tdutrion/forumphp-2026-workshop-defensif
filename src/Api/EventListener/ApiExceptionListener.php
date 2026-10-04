@@ -31,6 +31,8 @@ class ApiExceptionListener
             $problem['detail'] = $exception->getMessage();
         }
 
-        $event->setResponse(new JsonResponse($problem, $status, ['Content-Type' => 'application/problem+json']));
+        // Keep the headers the error carries (Allow on a 405, WWW-Authenticate on a 401...).
+        $headers = $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : [];
+        $event->setResponse(new JsonResponse($problem, $status, ['Content-Type' => 'application/problem+json'] + $headers));
     }
 }

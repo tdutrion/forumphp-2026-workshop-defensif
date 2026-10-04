@@ -85,6 +85,26 @@ final class PlanApiTest extends WebTestCase
         self::assertContains(['field' => 'city', 'message' => 'Choose a city or use your position.'], $body['errors']);
     }
 
+    public function testErrorsAreProblemsWithTheirHttpHeaders(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $this->client->request('GET', '/api/cities', [], [], ['HTTP_AUTHORIZATION' => 'Bearer mm_fake']);
+        $rejectedToken = $this->client->getResponse();
+        $this->api('POST', '/api/cities');
+        $wrongMethod = $this->client->getResponse();
+
+        // Assert
+        self::assertSame(401, $rejectedToken->getStatusCode());
+        self::assertSame('application/problem+json', $rejectedToken->headers->get('Content-Type'));
+        self::assertSame(401, json_decode((string) $rejectedToken->getContent(), true)['status'] ?? null);
+        self::assertSame(405, $wrongMethod->getStatusCode());
+        self::assertSame('application/problem+json', $wrongMethod->headers->get('Content-Type'));
+        self::assertSame('GET', $wrongMethod->headers->get('Allow'));
+    }
+
     public function testTheDocumentationIsPublic(): void
     {
         // Arrange
