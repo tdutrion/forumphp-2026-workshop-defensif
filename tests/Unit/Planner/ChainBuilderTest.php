@@ -131,6 +131,8 @@ final class ChainBuilderTest extends TestCase
         self::assertSame(18, $programme['wait']);
         self::assertEqualsWithDelta(2.99, $programme['distance'], 0.01);
         self::assertSame(0, $programme['showtimes'][1]['lateMinutes']);
+        self::assertSame(40, $programme['showtimes'][1]['breakMinutes'], 'from the end of the first film (16:00) to the next showtime (16:40)');
+        self::assertSame(12, $programme['showtimes'][1]['travelMinutes']);
     }
 
     public function testTheSearchBudgetIsSharedAcrossTheDay(): void

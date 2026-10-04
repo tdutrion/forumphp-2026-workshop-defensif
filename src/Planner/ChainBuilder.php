@@ -112,8 +112,15 @@ class ChainBuilder
         $wait = 0;
         $distance = 0.0;
         $path[0]['lateMinutes'] = 0;
+        $path[0]['breakMinutes'] = 0;
+        $path[0]['travelMinutes'] = 0;
         for ($i = 1, $n = \count($path); $i < $n; ++$i) {
             $arrival = $this->arrival($path[$i - 1], $path[$i], $travelMode);
+            // Shown between two showtimes: time from the end of the previous film to the next start, and its travel.
+            $path[$i]['breakMinutes'] = intdiv(max(0, $path[$i]['start'] - $path[$i - 1]['end']), 60);
+            $path[$i]['travelMinutes'] = $path[$i - 1]['cinemaSlug'] === $path[$i]['cinemaSlug']
+                ? 0
+                : $this->travelMinutes($path[$i - 1], $path[$i], $travelMode);
             $wait += max(0, $path[$i]['start'] - $arrival);
             $path[$i]['lateMinutes'] = intdiv(max(0, $arrival - $path[$i]['start']), 60);
             if ($path[$i - 1]['cinemaSlug'] !== $path[$i]['cinemaSlug']) {

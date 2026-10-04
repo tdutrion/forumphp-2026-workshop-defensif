@@ -69,3 +69,6 @@
 'No programme: no sequence of showtimes chains together, even with two films. Try a larger radius, another way of getting around or the ads option.': "Aucun programme : aucune suite de séances ne s'enchaîne, même avec deux films. Essayez un rayon plus grand, un autre moyen de déplacement ou l'option « pubs »."
 'No marathon of %requested% films is possible: here are programmes of %count% films.': "Aucun marathon de %requested% films n'est possible : voici des programmes de %count% films."
 'Film actions': 'Actions du film'
+'Between the two showtimes': 'Entre les deux séances'
+'%minutes% min break': '%minutes% min de pause'
+'including %minutes% min of travel': 'dont %minutes% min de trajet'

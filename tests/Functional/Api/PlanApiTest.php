@@ -47,6 +47,8 @@ final class PlanApiTest extends WebTestCase
         self::assertSame(['slug' => 'cinema-pathe-dijon', 'name' => 'Pathé Dijon'], $first['showtimes'][0]['cinema']);
         self::assertSame('2030-01-10T16:40:00+01:00', $first['showtimes'][0]['startsAt']);
         self::assertSame('2030-01-10T18:40:00+01:00', $first['showtimes'][0]['endsAt']);
+        self::assertSame(20, $first['showtimes'][1]['breakMinutes']);
+        self::assertSame(0, $first['showtimes'][1]['travelMinutes']);
     }
 
     public function testAcceptAdsSetToZeroOrFalseMeansNo(): void

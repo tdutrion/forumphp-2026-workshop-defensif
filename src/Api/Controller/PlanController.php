@@ -84,6 +84,9 @@ class PlanController extends AbstractController
                     'endsAt' => $this->localIso($showtime['endsAt'], $showtime['timezone']),
                     'version' => $showtime['version'],
                     'lateMinutes' => $showtime['lateMinutes'],
+                    // Minutes from the end of the previous film to this showtime, and the travel among them.
+                    'breakMinutes' => $showtime['breakMinutes'],
+                    'travelMinutes' => $showtime['travelMinutes'],
                     'bookingUrl' => $showtime['bookingUrl'],
                 ];
             }

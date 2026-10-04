@@ -169,6 +169,12 @@ parameters:
 			path: src/Api/Controller/PlanController.php
 
 		-
+			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Api/Controller/PlanController.php
+
+		-
 			message: '#^Cannot access offset ''cinemaName'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -238,6 +244,12 @@ parameters:
 			message: '#^Cannot access offset ''timezone'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
+			path: src/Api/Controller/PlanController.php
+
+		-
+			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
 			path: src/Api/Controller/PlanController.php
 
 		-
@@ -823,9 +835,27 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
+			message: '#^Binary operation "\-" between mixed and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Cannot access offset ''end'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
 			path: src/Planner/ChainBuilder.php
 
 		-
@@ -854,6 +884,12 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''start'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: src/Planner/ChainBuilder.php
@@ -937,6 +973,12 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
+			message: '#^Parameter \#1 \$from of method App\\Planner\\ChainBuilder\:\:travelMinutes\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
 			message: '#^Parameter \#1 \$lat1 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
 			identifier: argument.type
 			count: 2
@@ -945,7 +987,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$num1 of function intdiv expects int, float\|int\<0, max\> given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: src/Planner/ChainBuilder.php
 
 		-
@@ -980,6 +1022,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$next of method App\\Planner\\ChainBuilder\:\:canChain\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$to of method App\\Planner\\ChainBuilder\:\:travelMinutes\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/ChainBuilder.php
@@ -1789,6 +1837,12 @@ parameters:
 			path: tests/Fake/FakeOAuthServer.php
 
 		-
+			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
 			message: '#^Cannot access offset ''cinema'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1815,7 +1869,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
+			count: 6
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
@@ -1831,6 +1885,12 @@ parameters:
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
+			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
 			message: '#^Cannot access offset ''wait'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1840,6 +1900,12 @@ parameters:
 			message: '#^Cannot access offset 0 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 6
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
+			message: '#^Cannot access offset 1 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
@@ -2287,6 +2353,12 @@ parameters:
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
+			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Planner/ChainBuilderTest.php
+
+		-
 			message: '#^Cannot access offset ''distance'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -2301,7 +2373,13 @@ parameters:
 		-
 			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 4
+			path: tests/Unit/Planner/ChainBuilderTest.php
+
+		-
+			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
 			path: tests/Unit/Planner/ChainBuilderTest.php
 
 		-
@@ -2313,7 +2391,7 @@ parameters:
 		-
 			message: '#^Cannot access offset 1 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 4
 			path: tests/Unit/Planner/ChainBuilderTest.php
 
 		-

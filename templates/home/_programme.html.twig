@@ -8,6 +8,15 @@
     </header>
     <ol class="space-y-4">
         {% for showtime in programme.showtimes %}
+            {% if not loop.first %}
+                <li class="programme-break flex items-center gap-2 pl-3 text-xs text-ink-muted" aria-label="{{ 'Between the two showtimes'|trans }}">
+                    <span aria-hidden="true">⏱</span>
+                    <span>
+                        {{ '%minutes% min break'|trans({'%minutes%': showtime.breakMinutes}) }}
+                        {% if showtime.travelMinutes > 0 %} · {{ 'including %minutes% min of travel'|trans({'%minutes%': showtime.travelMinutes}) }}{% endif %}
+                    </span>
+                </li>
+            {% endif %}
             <li class="border-l-2 border-brand-600 pl-3">
                 <p class="text-sm font-semibold text-brand-700">{{ showtime.startTime }} – {{ showtime.endTime }}</p>
                 <a href="{{ path('app_film_show', {slug: showtime.filmSlug}) }}" class="font-medium hover:underline">{{ showtime.filmTitle }}</a>
