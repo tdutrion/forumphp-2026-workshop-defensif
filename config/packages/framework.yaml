@@ -19,6 +19,9 @@ framework:
             # Pathé reference data (cities, cinemas, films), kept PATHE_CACHE_TTL seconds.
             cache.pathe:
                 adapter: cache.app
+            # Last bookable time of each day, computed by the import (CatalogCalendar).
+            cache.catalog:
+                adapter: cache.app
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true
@@ -29,5 +32,10 @@ framework:
 when@test:
     framework:
         test: true
+        cache:
+            pools:
+                # One empty calendar per test kernel.
+                cache.catalog:
+                    adapter: cache.adapter.array
         session:
             storage_factory_id: session.storage.factory.mock_file

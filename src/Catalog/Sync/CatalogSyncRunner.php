@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Sync;
 
+use App\Catalog\CatalogCalendar;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Lock\LockFactory;
 
@@ -14,6 +15,7 @@ class CatalogSyncRunner
         private CatalogSynchronizer $synchronizer,
         private CatalogUpdatePublisher $publisher,
         private LockFactory $lockFactory,
+        private CatalogCalendar $calendar,
         #[Autowire('%env(PATHE_CITIES)%')]
         private string $defaultCities,
     ) {
@@ -39,6 +41,8 @@ class CatalogSyncRunner
         try {
             $stats = $this->synchronizer->synchronize($citySlugs);
             if (false !== $stats) {
+                // The pages read the days to offer from this cache: compute it now, not on the next visit.
+                $this->calendar->refresh();
                 $this->publisher->publish($stats);
             }
 

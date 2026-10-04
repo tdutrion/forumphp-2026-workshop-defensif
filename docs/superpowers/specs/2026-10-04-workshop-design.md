@@ -177,12 +177,16 @@ Only the sync command calls Pathé. The site only reads the database.
 
 | Field    | Rule                                                                                                      |
 |----------|-----------------------------------------------------------------------------------------------------------|
-| Date     | a day for which showtimes are synchronized (Pathé publishes the current week, from Wednesday to Tuesday)  |
+| Date     | a day that still has a bookable showtime (Pathé publishes the current week, from Wednesday to Tuesday); once today's last showtime has passed, the form opens on tomorrow |
 | Place    | a Pathé city (autocomplete on the synchronized cities) or the browser position                            |
 | Radius   | 1 to 50 km, 10 km by default                                                                              |
 | Films    | 2 to 5                                                                                                    |
 | Version  | optional: VF, VOST, VO, VFST                                                                              |
 | Ads      | checkbox "I accept arriving during the ads (15 minutes)"                                                  |
+
+The last bookable time of each day is computed by the import (`catalog:sync`,
+`catalog:shift-dates`) and kept in the `cache.catalog` pool (`CatalogCalendar`); a missing
+cache (cleared, or after `make db-load`) is computed again on the next request.
 
 The center of the radius is either the barycenter of the cinemas of the
 chosen city, or the browser position. The GPS position that Pathé gives for a

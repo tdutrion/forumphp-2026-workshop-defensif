@@ -139,13 +139,14 @@ order.
 ## 14. Hidden inputs (30 min)
 
 - **Starting point**: `new \DateTimeImmutable('now', …)` in `PlannerService::plan()`,
-  `CatalogSynchronizer` and `ShiftDatesCommand`, `earliestLocalToday()` copied
-  in `Web\Controller\HomeController` and `Api\Controller\PlanController`,
+  `CatalogSynchronizer` and `ShiftDatesCommand`, the current instant built in
+  `Web\Controller\HomeController` and `Api\Controller\PlanController` for
+  `CatalogCalendar::availableDates()`,
   `PATHE_CITIES` split with `explode()`, `CatalogUpdatePublisher` with
   `?HubInterface $hub = null`, `PatheClient` falling back to psr-discovery
   when a collaborator is missing.
-- **Goal**: `ClockInterface` (and `MockClock` in the tests), one place that
-  answers "what day is it for this chain", `%env(csv:PATHE_CITIES)%`, Null Object
+- **Goal**: `ClockInterface` (and `MockClock` in the tests, which also makes
+  "the form opens on tomorrow after the last showtime" testable at any hour), `%env(csv:PATHE_CITIES)%`, Null Object
   (`NullCatalogPublisher` via `new` in the initializer), `assert()` on the
   planner's internal invariants.
 

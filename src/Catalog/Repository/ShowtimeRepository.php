@@ -18,17 +18,6 @@ class ShowtimeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Local days (format 'Y-m-d', in each cinema's time zone) that have at least one showtime, from $from inclusive.
-     */
-    public function findAvailableDates(string $from): array
-    {
-        return $this->getEntityManager()->getConnection()->fetchFirstColumn(
-            'SELECT DISTINCT local_date FROM showtime WHERE local_date >= :from ORDER BY local_date',
-            ['from' => $from],
-        );
-    }
-
-    /**
      * Showtimes of one day in the given cinemas, bookable at instant $now, excluding the excluded films.
      *
      * @param string      $date              local day of the cinemas, format 'Y-m-d'
@@ -111,6 +100,20 @@ class ShowtimeRepository extends ServiceEntityRepository
         return (int) $this->getEntityManager()->getConnection()->executeStatement(
             'DELETE FROM showtime WHERE local_date < :date',
             ['date' => $localDate],
+        );
+    }
+
+    /**
+     * Last moment each local day can still be booked (UTC), for the showtimes on sale.
+     *
+     * @return array ['Y-m-d' (local day) => 'Y-m-d H:i:s' (UTC)], sorted by day
+     */
+    public function findLastBookableByDay(): array
+    {
+        return $this->getEntityManager()->getConnection()->fetchAllKeyValue(
+            'SELECT local_date, MAX(COALESCE(reservable_until, starts_at)) FROM showtime
+             WHERE status = :status GROUP BY local_date ORDER BY local_date',
+            ['status' => 'available'],
         );
     }
 }

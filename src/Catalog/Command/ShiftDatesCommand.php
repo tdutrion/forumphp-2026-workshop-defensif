@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Command;
 
+use App\Catalog\CatalogCalendar;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -15,6 +16,7 @@ class ShiftDatesCommand extends Command
 {
     public function __construct(
         private Connection $connection,
+        private CatalogCalendar $calendar,
         #[Autowire('%app.chains%')]
         private array $chains,
     ) {
@@ -50,6 +52,7 @@ class ShiftDatesCommand extends Command
             ['days' => $days],
         );
 
+        $this->calendar->refresh();
         $io->success(sprintf('Showtimes shifted by %d day(s).', $days));
 
         return Command::SUCCESS;

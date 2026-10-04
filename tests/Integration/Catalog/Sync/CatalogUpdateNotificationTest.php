@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Catalog\Sync;
 
+use App\Catalog\CatalogCalendar;
 use App\Catalog\Sync\CatalogSynchronizer;
 use App\Catalog\Sync\CatalogSyncRunner;
 use App\Catalog\Sync\CatalogUpdatePublisher;
@@ -25,7 +26,7 @@ final class CatalogUpdateNotificationTest extends KernelTestCase
             ->withFilm('digger-51293', 'Digger', 129));
         $publisher = new CatalogUpdatePublisher($container->get(Environment::class), new NullLogger(), ['en', 'fr'], $hub);
 
-        return new CatalogSyncRunner($container->get(CatalogSynchronizer::class), $publisher, $container->get(LockFactory::class), 'dijon');
+        return new CatalogSyncRunner($container->get(CatalogSynchronizer::class), $publisher, $container->get(LockFactory::class), $container->get(CatalogCalendar::class), 'dijon');
     }
 
     public function testASyncTellsOpenPagesInTheirLanguage(): void

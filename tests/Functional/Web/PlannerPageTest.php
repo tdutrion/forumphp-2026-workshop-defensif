@@ -112,6 +112,31 @@ final class PlannerPageTest extends WebTestCase
         self::assertSame('jeudi 10 janvier 2030', $french);
     }
 
+    public function testTheFormOpensOnTomorrowOnceTodaysLastShowtimeHasPassed(): void
+    {
+        // Arrange: today's only showtime can no longer be booked; tomorrow has one.
+        $client = self::createClient();
+        $paris = new \DateTimeZone('Europe/Paris');
+        $today = new \DateTimeImmutable('today', $paris);
+        $city = CityBuilder::aCity()->build();
+        $cinema = CinemaBuilder::aCinema()->in($city)->build();
+        $film = FilmBuilder::aFilm()->lasting(100)->build();
+        $user = UserBuilder::aUser()->build();
+        $this->store($city, $cinema, $film, $user,
+            ShowtimeBuilder::aShowtime()->withId('V1S1')->of($film)->at($cinema)->startingAt($today->format('Y-m-d').' 00:05:00')
+                ->bookableUntil((new \DateTimeImmutable('-1 minute', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'))->build(),
+            ShowtimeBuilder::aShowtime()->withId('V1S2')->of($film)->at($cinema)->startingAt($today->modify('+1 day')->format('Y-m-d').' 20:00:00')->build(),
+        );
+        $client->loginUser($user);
+
+        // Act
+        $crawler = $client->request('GET', '/');
+
+        // Assert
+        $dates = $crawler->filter('#plan_date option')->each(static fn ($option) => $option->attr('value'));
+        self::assertSame([$today->modify('+1 day')->format('Y-m-d')], $dates);
+    }
+
     public function testInvalidCriteriaAreExplained(): void
     {
         // Arrange

@@ -55,6 +55,7 @@ db-load: ## Resets the database (all data!) then imports data/catalog.sql.gz
 	$(CONSOLE) doctrine:database:drop --force --if-exists
 	$(CONSOLE) doctrine:database:create
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
+	$(CONSOLE) cache:pool:clear cache.catalog
 	gunzip -c data/catalog.sql.gz | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
 
 phpstan-max: ## PHPStan max level (workshop progress measure)
