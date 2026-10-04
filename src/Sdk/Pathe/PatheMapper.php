@@ -49,13 +49,19 @@ class PatheMapper
             $contentRating = $raw['contentRating']['description'];
         }
 
+        // Only HTTPS images: a poster link is shown as is in the pages.
+        $posterUrl = $raw['posterPath']['md'] ?? null;
+        if (!is_string($posterUrl) || !str_starts_with($posterUrl, 'https://')) {
+            $posterUrl = null;
+        }
+
         return [
             'slug' => $raw['slug'],
             'title' => $raw['title'],
             'duration' => $raw['duration'] ?? null,
             'releaseDate' => $raw['releaseAt']['FR_FR'] ?? null,
             'genres' => $raw['genres'] ?? [],
-            'posterUrl' => $raw['posterPath']['md'] ?? null,
+            'posterUrl' => $posterUrl,
             'contentRating' => $contentRating,
         ];
     }

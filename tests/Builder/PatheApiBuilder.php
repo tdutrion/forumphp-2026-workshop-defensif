@@ -63,7 +63,7 @@ final class PatheApiBuilder
         return $clone;
     }
 
-    public function withFilm(string $slug, string $title, int $duration): self
+    public function withFilm(string $slug, string $title, int $duration, ?string $posterUrl = null): self
     {
         $clone = clone $this;
         $clone->shows[$slug] = [
@@ -72,7 +72,7 @@ final class PatheApiBuilder
             'duration' => $duration,
             'releaseAt' => ['FR_FR' => '2026-09-30'],
             'genres' => ['Action'],
-            'posterPath' => null,
+            'posterPath' => null === $posterUrl ? null : ['md' => $posterUrl],
             // Pathé sends an empty array, not null, while a film has no rating yet.
             'contentRating' => [],
             'isMovie' => true,

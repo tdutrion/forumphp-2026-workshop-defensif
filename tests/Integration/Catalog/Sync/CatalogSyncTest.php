@@ -102,4 +102,22 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertSame(0, $stats['deleted']);
         self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85483'));
     }
+
+    public function testOnlySecurePosterLinksAreStored(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $api = $this->dijon()
+            ->withFilm('safe-1', 'Safe', 90, 'https://cdn.pathe.fr/posters/safe.jpg')
+            ->withFilm('plain-2', 'Plain', 90, 'http://cdn.pathe.fr/posters/plain.jpg')
+            ->withFilm('script-3', 'Script', 90, 'javascript:alert(1)');
+
+        // Act
+        $this->synchronize($api);
+
+        // Assert
+        self::assertSame('https://cdn.pathe.fr/posters/safe.jpg', $this->em()->find(Film::class, 'safe-1')->getPosterUrl());
+        self::assertNull($this->em()->find(Film::class, 'plain-2')->getPosterUrl());
+        self::assertNull($this->em()->find(Film::class, 'script-3')->getPosterUrl());
+    }
 }
