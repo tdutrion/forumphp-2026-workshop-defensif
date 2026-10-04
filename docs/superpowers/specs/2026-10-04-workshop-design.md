@@ -155,7 +155,10 @@ Seule la commande de synchro appelle Pathé. Le site lit uniquement la base.
 | Version  | optionnelle : VF, VOST, VO, VFST                                                                          |
 | Pubs     | case « J'accepte d'arriver pendant les pubs (15 minutes) »                                                |
 
-Le centre du rayon est la position GPS de la ville ou celle du navigateur.
+Le centre du rayon est soit le barycentre des cinémas de la ville choisie,
+soit la position du navigateur. La position GPS que Pathé donne pour une
+ville n'est pas fiable : Dijon y est placée à environ 45 km de son centre
+réel (47.449, 5.583 au lieu de 47.32, 5.04).
 La position du navigateur arrive dans un champ caché, au format JSON
 (`{"lat": …, "lng": …}`).
 
