@@ -55,10 +55,11 @@ l'outillage.
 - **Base de données** : MySQL 8.4 LTS. Les calculs de distance se font en
   PHP (formule de Haversine) : moins de 100 cinémas, inutile d'utiliser des
   index spatiaux.
-- **Extensions** : intl et pdo_mysql via `docker-php-ext-install` dans la
-  base. apcu via PIE dans la base. Xdebug via PIE et zip via
-  `docker-php-ext-install`, uniquement dans la cible `dev`. Les paquets PIE
-  sont épinglés dans `pie.json`.
+- **Extensions** : les extensions livrées avec PHP (intl, opcache,
+  pdo_mysql, et zip en dev) passent par `install-php-extensions`, fourni par
+  l'image FrankenPHP : PIE ne les installe qu'avec `--force`. Les extensions
+  PECL passent par PIE 1.5.1, versions épinglées dans le Dockerfile : apcu
+  5.1.28 dans la base, Xdebug 3.5.3 dans la cible `dev`.
 - **Réseau** : Internet disponible le jour J, avec des coupures possibles.
   L'application ne doit jamais appeler Pathé pendant l'atelier.
 - **Identifiants générés** : UUID v7 (composant Uid). Les données Pathé
@@ -99,20 +100,20 @@ Symfony UX Map, co-planification à plusieurs, branche de solution.
 | `php`    | Dockerfile, cible `dev`                     | FrankenPHP : HTTPS, worker mode, hub Mercure |
 | `worker` | même image                                  | `messenger:consume` (synchro planifiée)      |
 | `db`     | `mysql:8.4`                                 | base de l'application                        |
-| `oidc`   | `ghcr.io/navikt/mock-oauth2-server:6.0.4`   | fournisseur OIDC local, connexion interactive |
+| `oidc`   | `ghcr.io/navikt/mock-oauth2-server:6.0.4`   | fournisseur OIDC local, connexion interactive (dev uniquement) |
 
 ### Dockerfile multistage
 
-1. `base` : image FrankenPHP épinglée, `docker-php-ext-install intl
-   pdo_mysql`, PIE 1.5 copié depuis `ghcr.io/php/pie`, `pie install` pour
-   apcu (dépendances de build installées puis supprimées), réglages PHP
-   communs.
-2. `dev` : `FROM base`, Composer, zip, Xdebug via PIE (désactivé par
-   défaut, activable par variable d'environnement), `php.ini-development`,
-   mode watch de FrankenPHP.
-3. `prod` : `FROM base`, `composer install --no-dev --classmap-authoritative`
-   dans une étape de build, OPcache réglé pour la production, utilisateur
-   non-root, aucun outil de développement.
+1. `base` : image FrankenPHP épinglée par digest, `install-php-extensions
+   @composer intl opcache pdo_mysql`, apcu via PIE 1.5.1 (binaire monté
+   depuis `ghcr.io/php/pie:1.5.1-bin`, dépendances de build installées puis
+   supprimées), réglages PHP communs (`date.timezone = Europe/Paris`).
+2. `dev` : `FROM base`, zip, Xdebug via PIE (désactivé par défaut,
+   activable par variable d'environnement), `php.ini-development`, mode
+   watch de FrankenPHP.
+3. `prod` : `FROM base`, `composer install --no-dev`,
+   `dump-autoload --classmap-authoritative`, assets compilés, OPcache réglé
+   pour la production, Composer et git retirés, utilisateur `www-data`.
 
 ### Modules (namespaces sous `App\`)
 
@@ -276,8 +277,8 @@ vérifiés le 4 octobre 2026).
 - Politesse : User-Agent `PatheApiExplorer/1.0`, requêtes séquentielles,
   une par seconde au plus. Arrêt immédiat de la synchro sur un 403 ou un
   429.
-- Planifiée toutes les 6 heures via Symfony Scheduler et Messenger
-  (transport Doctrine), exécutée par le service `worker`.
+- Planifiée toutes les 6 heures via Symfony Scheduler (transport
+  `scheduler_catalog`), consommé par le service `worker`.
 - Les heures Pathé (`time`, `endTime`) n'ont pas de fuseau. Elles sont
   interprétées en Europe/Paris.
 
