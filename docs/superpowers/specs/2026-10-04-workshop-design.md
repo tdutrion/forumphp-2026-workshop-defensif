@@ -72,6 +72,18 @@ explicit and checked by the language and the tooling.
   section 15). The parameter `app.chains` (`config/packages/chains.yaml`)
   declares each chain: name, country, time zone. Cinemas, cities and films
   carry their chain; cinemas also carry the chain's country and time zone.
+- **Web interface**: Tailwind CSS v4, built by the standalone CLI (no
+  Node.js) through `symfonycasts/tailwind-bundle`. The CLI is pinned by checksum
+  in the Docker image, so nothing is downloaded at runtime and the CSS builds
+  offline. A design system frames every page:
+  - tokens in `@theme` (colors, radii, shadows, system fonts), with Tailwind's
+    default palette removed so that only the tokens exist;
+  - anonymous Twig components (`Button`, `Card`, `Alert`, `Badge`) and a form
+    theme;
+  - a living style guide at `/design-system` and the rules in
+    `docs/design-system.md`.
+  Semantic classes (`flash-error`, `programme`…) remain hooks for tests and
+  scripts, never styling.
 - **Third-party SDKs**: everything that talks to Pathé lives in
   `src/Sdk/Pathe`, written like an external library. It depends only on PSR
   interfaces: PSR-18 HTTP client, PSR-17 factories, PSR-6 cache, PSR-3 logger.
@@ -93,7 +105,8 @@ explicit and checked by the language and the tooling.
 - Google, GitHub and local OIDC sign-in. Linking several connections
   to a single account.
 - "Already seen" declared by the user.
-- Planner in Twig (Symfony UX Turbo + Autocomplete) and as a JSON API
+- Planner in Twig (Symfony UX Turbo + Autocomplete, styled with Tailwind CSS
+  and a small design system) and as a JSON API
   (personal token).
 - One Mercure notification: "programme updated" after a sync.
 - PHPUnit, PHPStan, PHP-CS-Fixer, Makefile, trainer guide.
@@ -140,7 +153,7 @@ cinema chains (section 15).
 | `Planner`  | Computation of the programmes from the catalog                                 | `Catalog`, `Account`       |
 | `Account`  | `User`, linked connections, films already seen, API tokens                     | `Catalog`                  |
 | `Security` | Generic OAuth authenticator, provider registry, token authenticator            | `Account`                  |
-| `Web`      | Twig controllers, forms, UX components                                         | `Planner`, `Account`, `Catalog` |
+| `Web`      | Twig controllers, forms, UX components, design system (Tailwind tokens, Twig components, form theme, style guide) | `Planner`, `Account`, `Catalog` |
 | `Api`      | JSON controllers, OpenAPI documentation (Nelmio)                               | `Planner`, `Account`, `Catalog` |
 
 The `Web` and `Api` controllers are thin. They call the **same** application
@@ -451,6 +464,7 @@ not executable on PHP 8.5.
 | Explicit boolean instead of an array | — | `AccountLinker::link(array $userInfo)` that reads `$userInfo['email_verified'] ?? false` | `UserInfo` with `VerifiedEmail` or `UnverifiedEmail` | 10 |
 | Extension by registry | — | `match ($provider)` | interface + tagged services | 9 |
 | Hidden inputs | — | `new \DateTimeImmutable('now', …)` in the services, "today" for a chain computed in two controllers | `ClockInterface` | 14 |
+| UI component contracts | 8.1 | anonymous Twig components with free-string props (`variant`, `type`), silently ignored when unknown | class components with enum props and typed `mount()` | 19 |
 | Chain configuration | 8.1 | `app.chains` read as a raw array, time zone and country stored as strings | `Chain` value object, `\DateTimeZone` mapped by Doctrine, `ChainRegistry` | 18 |
 | Typed configuration | — | `%env(PATHE_CITIES)%` split by hand | `%env(csv:…)%`, `%env(int:…)%` | 14 |
 | Validated input DTOs | — | `$request->query->all()` | `#[MapQueryString]` + Validator | 4 |
@@ -488,8 +502,9 @@ are extensions, to be done in any order.
 | 16 | Output: API DTOs, ObjectMapper, `SortDirection`, translatable messages, strict Twig | 40 min |
 | 17 | Tooling: PHPStan max, Infection | 30 min |
 | 18 | Chains and time zones: `Chain` value object, `\DateTimeZone` in Doctrine | 30 min |
+| 19 | UI component contracts: class components with enum props | 20 min |
 
-Total ≈ 8 h 35. The trainer guide (`docs/exercises.md`) describes for
+Total ≈ 8 h 55. The trainer guide (`docs/exercises.md`) describes for
 each exercise: the starting point, the goal, the pitfalls, the PHP version
 concerned and the link with the deck.
 
@@ -536,6 +551,7 @@ concerned and the link with the deck.
 3. `README.md`: getting started, optional OAuth accounts, local
    provider.
 4. `docs/exercises.md`: the trainer guide for sections 9 and 10.
+5. `docs/design-system.md` and the `/design-system` style guide.
 
 ## 14. Risks and open questions
 
