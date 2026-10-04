@@ -1837,6 +1837,12 @@ parameters:
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
+			message: '#^Parameter \#1 \$cinema of method App\\Tests\\Builder\\ShowtimeBuilder\:\:at\(\) expects App\\Catalog\\Entity\\Cinema, App\\Catalog\\Entity\\Cinema\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
 			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertContains\(\) expects iterable, mixed given\.$#'
 			identifier: argument.type
 			count: 2

@@ -43,5 +43,21 @@ knpu_oauth2_client:
 
 when@test:
     knpu_oauth2_client:
+        clients:
+            # An OIDC provider declared by configuration alone (no code): proves the generic path.
+            keycloak:
+                type: generic
+                provider_class: League\OAuth2\Client\Provider\GenericProvider
+                client_class: KnpU\OAuth2ClientBundle\Client\OAuth2PKCEClient
+                client_id: 'workshop'
+                client_secret: 'test-only'
+                redirect_route: app_connect_check
+                redirect_params: { provider: keycloak }
+                provider_options:
+                    urlAuthorize: 'https://keycloak.example.org/keycloak/authorize'
+                    urlAccessToken: 'https://keycloak.example.org/keycloak/token'
+                    urlResourceOwnerDetails: 'https://keycloak.example.org/keycloak/userinfo'
+                    scopeSeparator: ' '
+                    responseResourceOwnerId: sub
         # Every provider talks to the fake server of the tests (Guzzle client built by FakeOAuthServer).
         http_client: app.fake_oauth_http_client

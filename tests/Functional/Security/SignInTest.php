@@ -75,6 +75,19 @@ final class SignInTest extends WebTestCase
         self::assertSame('grace@example.org', $this->accountOf('local', 'grace@example.org')?->getDisplayName());
     }
 
+    public function testAnOpenIdConnectProviderAddedByConfigurationAloneSignsIn(): void
+    {
+        // Arrange: "keycloak" only exists in knpu_oauth2_client.yaml (test environment) and OAUTH_PROVIDERS.
+        $client = $this->browserFacing(OAuthServerBuilder::anOAuthServer()->withOidcUser('keycloak', 'k-1', 'katherine@example.org'));
+
+        // Act
+        $this->signIn($client, 'keycloak');
+
+        // Assert
+        self::assertResponseRedirects('/');
+        self::assertSame('katherine@example.org', $this->accountOf('keycloak', 'k-1')?->getEmail());
+    }
+
     public function testTheLocalProviderNeverOpensAnExistingAccount(): void
     {
         // Arrange: anyone can type any name on the offline provider, so its emails prove nothing.

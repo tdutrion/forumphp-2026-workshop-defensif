@@ -19,12 +19,13 @@ class OAuthUserInfoExtractor
         $owner = $client->fetchUserFromToken($accessToken);
 
         // All OpenID Connect providers share the same reading of the standard claims; GitHub is apart.
+        // The callers only pass enabled providers: any provider declared in knpu_oauth2_client.yaml
+        // (Google, Keycloak, LinkedIn...) is read as OpenID Connect, without new code.
         return match ($provider) {
-            'google' => $this->fromOpenIdConnect($owner),
             // The offline provider accepts any name typed by anyone: its emails are never proof of ownership.
             'local' => ['emailVerified' => false] + $this->fromOpenIdConnect($owner),
             'github' => $this->fromGithub($owner, $client, $accessToken),
-            default => throw new \InvalidArgumentException('Unknown provider: '.$provider),
+            default => $this->fromOpenIdConnect($owner),
         };
     }
 

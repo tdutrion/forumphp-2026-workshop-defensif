@@ -19,9 +19,17 @@ final class OAuthServerBuilder
 
     public function withLocalUser(string $subject, ?string $email, bool $emailVerified = true): self
     {
+        return $this->withOidcUser('local', $subject, $email, $emailVerified);
+    }
+
+    /**
+     * Any OpenID Connect provider whose endpoints are /{provider}/token and /{provider}/userinfo.
+     */
+    public function withOidcUser(string $provider, string $subject, ?string $email, bool $emailVerified = true): self
+    {
         $clone = clone $this;
-        $clone->responses['/local/token'] = [200, self::accessToken()];
-        $clone->responses['/local/userinfo'] = [200, ['sub' => $subject, 'email' => $email, 'email_verified' => $emailVerified, 'name' => $subject]];
+        $clone->responses['/'.$provider.'/token'] = [200, self::accessToken()];
+        $clone->responses['/'.$provider.'/userinfo'] = [200, ['sub' => $subject, 'email' => $email, 'email_verified' => $emailVerified, 'name' => $subject]];
 
         return $clone;
     }
