@@ -73,4 +73,23 @@ final class SeenFilmTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
         self::assertSame([], $this->seenFilms());
     }
+
+    public function testAProgrammeIsMarkedAsSeenInOneGoEvenWhenSubmittedTwice(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDigger();
+        $this->store(FilmBuilder::aFilm()->withSlug('verity-50815')->titled('Verity')->lasting(117)->build());
+        $token = $client->request('GET', '/films/digger-51293')->filter('[data-seen-film="digger-51293"] input[name=_token]')->attr('value');
+        $programme = ['_token' => $token, 'films' => ['digger-51293', 'verity-50815']];
+
+        // Act
+        $client->request('POST', '/programmes/seen', $programme);
+        $client->request('POST', '/programmes/seen', $programme);
+
+        // Assert
+        self::assertResponseRedirects('/profile');
+        $seen = $this->seenFilms();
+        sort($seen);
+        self::assertSame(['digger-51293', 'verity-50815'], $seen);
+    }
 }

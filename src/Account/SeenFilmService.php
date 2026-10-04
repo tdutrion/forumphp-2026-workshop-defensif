@@ -2,7 +2,6 @@
 
 namespace App\Account;
 
-use App\Account\Entity\SeenFilm;
 use App\Account\Entity\User;
 use App\Account\Repository\SeenFilmRepository;
 use App\Catalog\Entity\Film;
@@ -32,13 +31,16 @@ class SeenFilmService
             return false;
         }
 
-        if (null === $this->seenFilmRepository->findOneByUserAndFilm($userId, $filmSlug)) {
-            $seenFilm = (new SeenFilm())
-                ->setUser($this->em->getReference(User::class, Uuid::fromString($userId)))
-                ->setFilm($film);
-            $this->em->persist($seenFilm);
-            $this->em->flush();
-        }
+        // INSERT IGNORE: two clicks at the same time must not hit the (user, film) unique key.
+        $this->em->getConnection()->executeStatement(
+            'INSERT IGNORE INTO seen_film (id, user_id, film_slug, seen_at) VALUES (:id, :user, :film, :seenAt)',
+            [
+                'id' => Uuid::v7()->toBinary(),
+                'user' => Uuid::fromString($userId)->toBinary(),
+                'film' => $film->getSlug(),
+                'seenAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
+            ],
+        );
 
         return true;
     }
