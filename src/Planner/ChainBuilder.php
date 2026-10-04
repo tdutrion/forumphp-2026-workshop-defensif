@@ -31,8 +31,12 @@ class ChainBuilder
 
         $programmes = [];
         $nodes = 0;
+        $roots = \count($showtimes);
         foreach (array_keys($showtimes) as $index) {
-            $this->explore([$showtimes[$index]], $index, $showtimes, $count, $acceptAds, $programmes, $nodes);
+            // Each starting showtime gets its share of the remaining budget: the first showtimes
+            // of the day must not use it all. What a short subtree leaves goes to the next ones.
+            $limit = $nodes + intdiv($this->maxNodes - $nodes, $roots - $index);
+            $this->explore([$showtimes[$index]], $index, $showtimes, $count, $acceptAds, $programmes, $nodes, $limit);
             if ($nodes >= $this->maxNodes) {
                 break;
             }
@@ -41,7 +45,7 @@ class ChainBuilder
         return $programmes;
     }
 
-    private function explore(array $path, int $lastIndex, array $showtimes, int $count, bool $acceptAds, array &$programmes, int &$nodes): void
+    private function explore(array $path, int $lastIndex, array $showtimes, int $count, bool $acceptAds, array &$programmes, int &$nodes, int $limit): void
     {
         ++$nodes;
         if (\count($path) === $count) {
@@ -54,14 +58,14 @@ class ChainBuilder
         $films = array_column($path, 'filmSlug');
         $total = \count($showtimes);
         for ($next = $lastIndex + 1; $next < $total; ++$next) {
-            if ($nodes >= $this->maxNodes) {
+            if ($nodes >= $limit) {
                 return;
             }
             $candidate = $showtimes[$next];
             if (in_array($candidate['filmSlug'], $films, true) || !$this->canChain($last, $candidate, $acceptAds)) {
                 continue;
             }
-            $this->explore([...$path, $candidate], $next, $showtimes, $count, $acceptAds, $programmes, $nodes);
+            $this->explore([...$path, $candidate], $next, $showtimes, $count, $acceptAds, $programmes, $nodes, $limit);
         }
     }
 

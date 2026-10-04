@@ -111,6 +111,26 @@ final class ChainBuilderTest extends TestCase
         self::assertSame(0, $programme['showtimes'][1]['lateMinutes']);
     }
 
+    public function testTheSearchBudgetIsSharedAcrossTheDay(): void
+    {
+        // Arrange: a morning full of short films (thousands of chains) and a perfect evening chain.
+        $showtimes = [$this->inCinemaA('early')->ofFilm('film-early')->startingAt('09:00')->lasting(10)->build()];
+        for ($i = 0; $i < 20; ++$i) {
+            $minutes = 600 + 25 * $i;
+            $showtimes[] = $this->inCinemaA('morning-'.$i)->ofFilm('film-morning-'.$i)
+                ->startingAt(sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60))->lasting(10)->build();
+        }
+        $showtimes[] = $this->inCinemaA('evening-1')->ofFilm('film-evening-1')->startingAt('20:00')->lasting(10)->build();
+        $showtimes[] = $this->inCinemaA('evening-2')->ofFilm('film-evening-2')->startingAt('20:40')->lasting(10)->build();
+        $showtimes[] = $this->inCinemaA('evening-3')->ofFilm('film-evening-3')->startingAt('21:20')->lasting(10)->build();
+
+        // Act
+        $programmes = (new ChainBuilder(120))->build($showtimes, 3, false);
+
+        // Assert: the cap must not be spent on the first showtime of the day alone.
+        self::assertContains('evening-1>evening-2>evening-3', $this->ids($programmes));
+    }
+
     public function testABusyDayDoesNotMakeTheSearchEndless(): void
     {
         // Arrange: 30 short films one after the other, thousands of possible chains.
