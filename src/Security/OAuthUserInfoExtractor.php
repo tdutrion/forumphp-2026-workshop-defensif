@@ -20,7 +20,9 @@ class OAuthUserInfoExtractor
 
         // All OpenID Connect providers share the same reading of the standard claims; GitHub is apart.
         return match ($provider) {
-            'google', 'local' => $this->fromOpenIdConnect($owner),
+            'google' => $this->fromOpenIdConnect($owner),
+            // The offline provider accepts any name typed by anyone: its emails are never proof of ownership.
+            'local' => ['emailVerified' => false] + $this->fromOpenIdConnect($owner),
             'github' => $this->fromGithub($owner, $client, $accessToken),
             default => throw new \InvalidArgumentException('Unknown provider: '.$provider),
         };

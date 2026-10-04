@@ -72,7 +72,23 @@ final class SignInTest extends WebTestCase
         self::assertResponseRedirects('/');
         $client->followRedirect();
         self::assertSelectorExists('form[action="/logout"]');
-        self::assertSame('grace@example.org', $this->accountOf('local', 'grace@example.org')?->getEmail());
+        self::assertSame('grace@example.org', $this->accountOf('local', 'grace@example.org')?->getDisplayName());
+    }
+
+    public function testTheLocalProviderNeverOpensAnExistingAccount(): void
+    {
+        // Arrange: anyone can type any name on the offline provider, so its emails prove nothing.
+        $client = $this->browserFacing(OAuthServerBuilder::anOAuthServer()->withLocalUser('ada@example.org', 'ada@example.org'));
+        $ada = UserBuilder::aUser()->withEmail('ada@example.org')->linkedTo('github', '42')->build();
+        $this->store($ada);
+
+        // Act
+        $this->signIn($client, 'local');
+
+        // Assert
+        $signedIn = $this->accountOf('local', 'ada@example.org');
+        self::assertNotNull($signedIn);
+        self::assertNotSame($ada->getUserIdentifier(), $signedIn->getUserIdentifier());
     }
 
     public function testGithubSignInOpensTheAccountOfThePrimaryVerifiedEmail(): void
