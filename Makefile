@@ -57,4 +57,10 @@ db-load: ## Resets the database (all data!) then imports data/catalog.sql.gz
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 	gunzip -c data/catalog.sql.gz | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
 
-.PHONY: help up css css-watch down logs sh composer console test phpstan cs sync db-dump db-load
+phpstan-max: ## PHPStan max level (workshop progress measure)
+	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G
+
+phpstan-baseline: ## Regenerates the max-level baseline
+	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G --generate-baseline phpstan-baseline.neon
+
+.PHONY: help up css css-watch down logs sh composer console test phpstan cs sync db-dump db-load phpstan-max phpstan-baseline
