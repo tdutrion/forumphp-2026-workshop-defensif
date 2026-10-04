@@ -218,12 +218,17 @@ Une séance est candidate si elle remplit toutes ces conditions :
 - Depuis le profil, l'utilisateur connecté peut lier un autre provider ou
   retirer une connexion, mais pas la dernière.
 - Providers en v1 :
-  - `google` : `league/oauth2-google`, scopes `openid email profile`.
-  - `github` : `league/oauth2-github`, scope `user:email`, email vérifié lu
-    via `/user/emails`.
-  - `local` : `GenericProvider` de league sur le fournisseur OIDC local.
-    Il sert de secours sans Internet et montre l'ajout d'un provider par
+  - `google` et `local` : deux providers OpenID Connect déclarés de la même
+    façon (`GenericProvider` de league + leurs URL), scopes
+    `openid email profile`, lecture des claims standard `sub`, `email`,
+    `email_verified`, `name`. `local` vise le fournisseur OIDC local : il
+    sert de secours sans Internet et montre l'ajout d'un provider par
     configuration.
+  - `github` : `league/oauth2-github`, scopes `read:user user:email`.
+    GitHub n'est pas un provider OpenID Connect pour l'identité : son
+    document de découverte n'a ni endpoint `userinfo` ni claim `email`.
+    L'email vérifié est lu dans `/user/emails` (principal et vérifié
+    uniquement).
 - Ajouter un provider = un bloc de configuration KnpU + les variables
   d'environnement, sans code nouveau, sauf si le provider renvoie ses
   informations utilisateur dans un format inédit.
