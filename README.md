@@ -52,6 +52,10 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make db-dump` | Write `data/catalog.sql.gz` from the current catalog |
 | `make sh` / `make console c="…"` | Shell / Symfony console in the PHP container |
 
+The catalog is never synchronized on its own: set `CATALOG_SCHEDULE_ENABLED=1` in
+`.env.local` to let the `worker` service sync it every 6 hours. A manual and a scheduled
+sync never run together (lock in MySQL).
+
 The API is documented at https://localhost/api/doc; create a personal token
 from your profile page.
 

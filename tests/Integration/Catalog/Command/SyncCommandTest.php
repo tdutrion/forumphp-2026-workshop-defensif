@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Lock\LockFactory;
 
 final class SyncCommandTest extends KernelTestCase
 {
@@ -42,5 +43,22 @@ final class SyncCommandTest extends KernelTestCase
         // Assert
         self::assertSame(Command::FAILURE, $tester->getStatusCode());
         self::assertStringContainsString('Pathé refused the request', $tester->getDisplay());
+    }
+
+    public function testASecondSynchronizationWaitsForTheFirstOneToFinish(): void
+    {
+        // Arrange: another synchronization (scheduled task or command) holds the lock.
+        $kernel = self::bootKernel();
+        $running = self::getContainer()->get(LockFactory::class)->createLock('catalog-sync');
+        $running->acquire();
+        $tester = new CommandTester((new Application($kernel))->find('catalog:sync'));
+
+        // Act
+        $tester->execute(['--city' => ['dijon']]);
+
+        // Assert
+        $running->release();
+        self::assertSame(Command::FAILURE, $tester->getStatusCode());
+        self::assertStringContainsString('A synchronization is already running.', $tester->getDisplay());
     }
 }

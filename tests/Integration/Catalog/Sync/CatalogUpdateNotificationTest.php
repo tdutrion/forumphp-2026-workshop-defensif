@@ -10,6 +10,7 @@ use App\Tests\Builder\PatheApiBuilder;
 use App\Tests\Fake\FakePatheApi;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Mercure\HubInterface;
 use Twig\Environment;
 
@@ -24,7 +25,7 @@ final class CatalogUpdateNotificationTest extends KernelTestCase
             ->withFilm('digger-51293', 'Digger', 129));
         $publisher = new CatalogUpdatePublisher($container->get(Environment::class), new NullLogger(), ['en', 'fr'], $hub);
 
-        return new CatalogSyncRunner($container->get(CatalogSynchronizer::class), $publisher, 'dijon');
+        return new CatalogSyncRunner($container->get(CatalogSynchronizer::class), $publisher, $container->get(LockFactory::class), 'dijon');
     }
 
     public function testASyncTellsOpenPagesInTheirLanguage(): void
