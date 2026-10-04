@@ -2,6 +2,10 @@
 
 namespace App\Tests\Functional\Api;
 
+use App\Catalog\Entity\Cinema;
+use App\Tests\Builder\FilmBuilder;
+use App\Tests\Builder\ShowtimeBuilder;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class PlanApiTest extends WebTestCase
@@ -42,6 +46,27 @@ final class PlanApiTest extends WebTestCase
         self::assertSame(['slug' => 'cinema-pathe-dijon', 'name' => 'Pathé Dijon'], $first['showtimes'][0]['cinema']);
         self::assertSame('2030-01-10T16:40:00+01:00', $first['showtimes'][0]['startsAt']);
         self::assertSame('2030-01-10T18:40:00+01:00', $first['showtimes'][0]['endsAt']);
+    }
+
+    public function testAcceptAdsSetToZeroOrFalseMeansNo(): void
+    {
+        // Arrange: f5 starts at 18:30, when f2 ends; it only chains when arriving during the ads is accepted.
+        $this->arrangeDijonCatalogWithToken();
+        $film = FilmBuilder::aFilm()->withSlug('f5')->titled('Film f5')->lasting(100)->build();
+        $cinema = self::getContainer()->get(EntityManagerInterface::class)->find(Cinema::class, 'cinema-pathe-dijon');
+        $this->store($film, ShowtimeBuilder::aShowtime()->of($film)->at($cinema)->startingAt('2030-01-10 18:30:00')->build());
+        $criteria = ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2];
+
+        // Act
+        $withAds = $this->api('GET', '/api/plans', $criteria + ['acceptAds' => '1']);
+        $withZero = $this->api('GET', '/api/plans', $criteria + ['acceptAds' => '0']);
+        $withFalse = $this->api('GET', '/api/plans', $criteria + ['acceptAds' => 'false']);
+        $without = $this->api('GET', '/api/plans', $criteria);
+
+        // Assert
+        self::assertNotSame($without, $withAds, 'the ads option changes the programmes');
+        self::assertSame($without, $withZero);
+        self::assertSame($without, $withFalse);
     }
 
     public function testInvalidParametersGiveAProblem(): void

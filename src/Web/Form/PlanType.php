@@ -69,6 +69,8 @@ class PlanType extends AbstractType
             ->add('acceptAds', CheckboxType::class, [
                 'label' => 'I accept arriving during the ads (15 minutes)',
                 'required' => false,
+                // API clients send "0" or "false" to say no (a browser sends nothing).
+                'false_values' => [null, '', '0', 'false'],
             ]);
     }
 
