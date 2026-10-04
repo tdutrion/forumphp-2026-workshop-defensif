@@ -17,6 +17,7 @@ class PlannerService
         private SeenFilmService $seenFilmService,
         private ChainBuilder $chainBuilder,
         private ProgrammeSelector $programmeSelector,
+        private LocationResolver $locationResolver,
     ) {
     }
 
@@ -80,6 +81,37 @@ class PlannerService
     /**
      * Times are shown in the local time of each cinema (its chain's time zone).
      */
+    /**
+     * Plans from the PlanType form data (website or API).
+     *
+     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds'
+     *
+     * @return array|false like plan(), with the additional reason 'unknown_location'
+     */
+    public function planFromForm(array $data, string $userId): array|false
+    {
+        $location = false;
+        if (!empty($data['city'])) {
+            $location = $this->locationResolver->fromCity($data['city']);
+        } elseif (!empty($data['position'])) {
+            $location = $this->locationResolver->fromPosition($data['position']);
+        }
+
+        if (false === $location) {
+            return ['programmes' => [], 'reason' => 'unknown_location'];
+        }
+
+        return $this->plan([
+            'date' => $data['date'],
+            'latitude' => $location['latitude'],
+            'longitude' => $location['longitude'],
+            'radius' => $data['radius'] ?? null,
+            'films' => $data['films'] ?? null,
+            'version' => $data['version'] ?? null,
+            'acceptAds' => $data['acceptAds'] ?? false,
+        ], $userId);
+    }
+
     private function format(array $programme): array
     {
         foreach ($programme['showtimes'] as $i => $showtime) {

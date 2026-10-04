@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ film.title }} · Movie Marathon{% endblock %}
+
+{% block body %}
+    <twig:Card class="flex flex-col gap-6 sm:flex-row">
+        {% if film.posterUrl %}<img src="{{ film.posterUrl }}" alt="{{ 'Poster of %title%'|trans({'%title%': film.title}) }}" width="200" class="rounded-card">{% endif %}
+        <div class="space-y-4">
+            <h1 class="text-3xl font-bold">{{ film.title }}</h1>
+            <ul class="space-y-1 text-sm text-ink-muted">
+                {% if film.duration %}<li>{{ 'Running time: %minutes% min'|trans({'%minutes%': film.duration}) }}</li>{% endif %}
+                {% if film.releaseDate %}<li>{{ 'Release: %date%'|trans({'%date%': film.releaseDate|date('d/m/Y')}) }}</li>{% endif %}
+                {% if film.genres %}<li>{{ 'Genres: %genres%'|trans({'%genres%': film.genres|join(', ')}) }}</li>{% endif %}
+                {% if film.contentRating %}<li>{{ 'Rating: %rating%'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
+            </ul>
+            {{ include('seen/_button.html.twig', {slug: film.slug, seen: seen}) }}
+        </div>
+    </twig:Card>
+{% endblock %}

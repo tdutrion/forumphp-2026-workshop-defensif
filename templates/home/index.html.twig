@@ -1,5 +1,55 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1 class="text-3xl font-bold">Movie Marathon</h1>
+    <h1 class="text-3xl font-bold">{{ 'Plan a marathon'|trans }}</h1>
+
+    {# "Programme updated" notification published by the sync (Task 4), in the language of the page #}
+    {{ turbo_stream_from('catalog/' ~ app.request.locale) }}
+    <div id="catalog-status"></div>
+
+    <twig:Card>
+        {{ form_start(form, {attr: {
+            'class': 'grid gap-x-6 sm:grid-cols-2',
+            'data-controller': 'geolocation',
+            'data-geolocation-unavailable-value': 'Geolocation is not available in this browser.'|trans,
+            'data-geolocation-locating-value': 'Locating…'|trans,
+            'data-geolocation-saved-value': 'Position saved.'|trans,
+            'data-geolocation-denied-value': 'Position denied or unavailable: choose a city.'|trans,
+        }}) }}
+            {{ form_row(form.date) }}
+            <div>
+                {{ form_row(form.city) }}
+                <p class="-mt-2 mb-4 flex items-center gap-2 text-sm text-ink-muted">
+                    {{ 'or'|trans }}
+                    <twig:Button type="button" variant="ghost" size="sm" data-action="geolocation#locate">{{ 'use my position'|trans }}</twig:Button>
+                    <span data-geolocation-target="status"></span>
+                </p>
+            </div>
+            {{ form_row(form.radius) }}
+            {{ form_row(form.films) }}
+            {{ form_row(form.version) }}
+            <div class="self-center">{{ form_row(form.acceptAds) }}</div>
+            <div class="sm:col-span-2">
+                <twig:Button type="submit">{{ 'Find my programmes'|trans }}</twig:Button>
+            </div>
+        {{ form_end(form) }}
+    </twig:Card>
+
+    {% if result is same as(false) %}
+        <twig:Alert type="info" class="plan-message">{{ 'No showtime matches this place and date (or you have already seen every film on offer).'|trans }}</twig:Alert>
+    {% elseif result %}
+        {% if result.reason == 'unknown_location' %}
+            <twig:Alert type="error" class="plan-message">{{ 'Unknown place: choose a city from the list or allow geolocation.'|trans }}</twig:Alert>
+        {% elseif result.reason == 'no_programme' %}
+            <twig:Alert type="info" class="plan-message">{{ 'No programme: no sequence of showtimes chains together. Try fewer films, a larger radius or the ads option.'|trans }}</twig:Alert>
+        {% elseif result.reason == 'not_enough_programmes' %}
+            <twig:Alert type="info" class="plan-message">{{ 'Only %count% programme(s) possible with these criteria.'|trans({'%count%': result.programmes|length}) }}</twig:Alert>
+        {% endif %}
+
+        <div class="grid gap-6 lg:grid-cols-3">
+            {% for programme in result.programmes %}
+                {{ include('home/_programme.html.twig', {programme: programme, number: loop.index}) }}
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

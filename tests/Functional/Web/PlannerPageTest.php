@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Tests\Functional\Web;
+
+use App\Tests\Builder\CinemaBuilder;
+use App\Tests\Builder\CityBuilder;
+use App\Tests\Builder\FilmBuilder;
+use App\Tests\Builder\ShowtimeBuilder;
+use App\Tests\Builder\UserBuilder;
+use App\Tests\StoresEntities;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+final class PlannerPageTest extends WebTestCase
+{
+    use StoresEntities;
+
+    /**
+     * Pathé Dijon with four films of 100 minutes on January 10, 2030, and a signed-in user.
+     */
+    private function signedInWithDijonCatalog(): KernelBrowser
+    {
+        $client = self::createClient();
+        $dijon = CityBuilder::aCity()->build();
+        $cinema = CinemaBuilder::aCinema()->withSlug('cinema-pathe-dijon')->in($dijon)->at(47.318031, 5.029935)->build();
+        $entities = [$dijon, $cinema];
+        foreach (['14:00' => 'f1', '16:30' => 'f2', '16:40' => 'f3', '19:00' => 'f4'] as $time => $slug) {
+            $film = FilmBuilder::aFilm()->withSlug($slug)->titled('Film '.$slug)->lasting(100)->build();
+            $entities[] = $film;
+            $entities[] = ShowtimeBuilder::aShowtime()->of($film)->at($cinema)->startingAt('2030-01-10 '.$time.':00')->build();
+        }
+        $user = UserBuilder::aUser()->build();
+        $this->store($user, ...$entities);
+        $client->loginUser($user);
+
+        return $client;
+    }
+
+    private function search(array $criteria): array
+    {
+        return ['plan' => $criteria + ['date' => '2030-01-10', 'radius' => 10, 'films' => 2]];
+    }
+
+    public function testAnonymousVisitorsAreSentToTheSignInPage(): void
+    {
+        // Arrange
+        $client = self::createClient();
+
+        // Act
+        $client->request('GET', '/');
+
+        // Assert
+        self::assertResponseRedirects('/login');
+    }
+
+    public function testPlansAroundACityWithTheTimesOfTheCinema(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'dijon']));
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertCount(3, $crawler->filter('.programme'));
+        self::assertSelectorTextContains('.programme', 'Film f3');
+        self::assertSelectorTextContains('.programme', '16:40');
+    }
+
+    public function testPlansAroundTheBrowserPosition(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $crawler = $client->request('GET', '/', $this->search(['position' => '{"lat": 47.32, "lng": 5.03}']));
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertCount(3, $crawler->filter('.programme'));
+    }
+
+    public function testExplainsWhyNothingCanBePlanned(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $client->request('GET', '/', $this->search(['city' => 'dijon', 'films' => 5]));
+        $tooManyFilms = $client->getCrawler()->filter('.plan-message')->text();
+        $client->request('GET', '/', $this->search(['position' => 'nonsense']));
+        $unknownPlace = $client->getCrawler()->filter('.plan-message')->text();
+
+        // Assert
+        self::assertStringContainsString('No programme', $tooManyFilms);
+        self::assertStringContainsString('Unknown place', $unknownPlace);
+    }
+
+    public function testInvalidCriteriaAreExplained(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $client->request('GET', '/', $this->search(['radius' => 80]));
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('form[name=plan]', 'Choose a city or use your position.');
+        self::assertSelectorTextContains('form[name=plan]', 'The radius must be between 1 and 50 km.');
+    }
+
+    public function testThePageIsInFrenchForAFrenchBrowser(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+        $client->setServerParameter('HTTP_ACCEPT_LANGUAGE', 'fr-FR,fr;q=0.9,en;q=0.5');
+
+        // Act
+        $client->request('GET', '/', $this->search(['city' => 'dijon', 'radius' => 80]));
+
+        // Assert
+        self::assertSelectorTextContains('html', 'Planifier un marathon');
+        self::assertSelectorTextContains('label[for=plan_acceptAds]', "J'accepte d'arriver pendant les pubs (15 minutes)");
+        self::assertSelectorTextContains('form[name=plan]', 'Le rayon doit être compris entre 1 et 50 km.');
+        self::assertSelectorTextContains('header', 'Se déconnecter');
+    }
+}

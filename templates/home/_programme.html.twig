@@ -1,0 +1,31 @@
+<twig:Card class="programme flex flex-col gap-4">
+    <header>
+        <h2 class="text-xl font-semibold">{{ 'Programme %number%'|trans({'%number%': number}) }}</h2>
+        <p class="text-sm text-ink-muted">
+            {{ 'Total wait: %minutes% min'|trans({'%minutes%': programme.wait}) }}
+            {% if programme.distance > 0 %} · {{ 'travel: %km% km'|trans({'%km%': programme.distance|format_number({fraction_digit: 1}, locale=app.request.locale)}) }}{% endif %}
+        </p>
+    </header>
+    <ol class="space-y-4">
+        {% for showtime in programme.showtimes %}
+            <li class="border-l-2 border-brand-600 pl-3">
+                <p class="text-sm font-semibold text-brand-700">{{ showtime.startTime }} – {{ showtime.endTime }}</p>
+                <a href="{{ path('app_film_show', {slug: showtime.filmSlug}) }}" class="font-medium hover:underline">{{ showtime.filmTitle }}</a>
+                <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+                    <twig:Badge>{{ showtime.version|upper }}</twig:Badge>
+                    {{ showtime.cinemaName }}
+                    {% if showtime.lateMinutes > 0 %}<twig:Badge tone="warning">{{ 'arriving during the ads (%minutes% min)'|trans({'%minutes%': showtime.lateMinutes}) }}</twig:Badge>{% endif %}
+                </p>
+                <p class="mt-2 flex items-center gap-2">
+                    <twig:Button tag="a" variant="secondary" size="sm" href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer">{{ 'Book'|trans }}</twig:Button>
+                    {{ include('seen/_button.html.twig', {slug: showtime.filmSlug, seen: false}) }}
+                </p>
+            </li>
+        {% endfor %}
+    </ol>
+    <form method="post" action="{{ path('app_programme_seen') }}" class="mt-auto">
+        <input type="hidden" name="_token" value="{{ csrf_token('seen-film') }}">
+        {% for slug in programme.filmSlugs %}<input type="hidden" name="films[]" value="{{ slug }}">{% endfor %}
+        <twig:Button type="submit" variant="ghost" size="sm">{{ 'Mark this programme as seen'|trans }}</twig:Button>
+    </form>
+</twig:Card>
