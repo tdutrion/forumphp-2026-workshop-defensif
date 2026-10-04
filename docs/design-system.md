@@ -23,6 +23,7 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 | Component | Props | Notes |
 |---|---|---|
 | `<twig:Button>` | `variant`: primary, secondary, danger, ghost, accent; `size`: sm, md; `tag`: button, a | pass `type`, `href`, `class` as attributes |
+| `<twig:ButtonGroup>` | | joined buttons, primary action first (Book, then Already seen, I don't want to see it); toggle wrappers are transparent |
 | `<twig:Card>` | | a `<section>` |
 | `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
 | `<twig:Badge>` | `tone`: neutral, brand, warning (accent orange) | |

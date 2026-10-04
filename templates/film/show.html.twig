@@ -13,10 +13,10 @@
                 {% if film.genres %}<li>{{ 'Genres: %genres%'|trans({'%genres%': film.genres|join(', ')}) }}</li>{% endif %}
                 {% if film.contentRating %}<li>{{ 'Rating: %rating%'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
             </ul>
-            <div class="flex flex-wrap items-center gap-2">
+            <twig:ButtonGroup aria-label="{{ 'Film actions'|trans }}">
                 {{ include('seen/_button.html.twig', {slug: film.slug, seen: seen}) }}
                 {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: unwanted}) }}
-            </div>
+            </twig:ButtonGroup>
         </div>
     </twig:Card>
 {% endblock %}

@@ -68,3 +68,37 @@
         @apply bg-canvas font-sans text-ink antialiased;
     }
 }
+
+@layer components {
+    /*
+     * <twig:ButtonGroup>: the wrappers of the buttons (the span of a toggle, its form) are
+     * transparent, so every button is an item of the group whatever its markup.
+     */
+    .button-group {
+        @apply inline-flex isolate rounded-control shadow-sm;
+    }
+
+    .button-group > span,
+    .button-group form {
+        display: contents;
+    }
+
+    .button-group :is(a, button) {
+        @apply rounded-none shadow-none focus-visible:z-10;
+    }
+
+    .button-group > :not(:first-child):is(a, button),
+    .button-group > :not(:first-child) :is(a, button) {
+        @apply -ml-px;
+    }
+
+    .button-group > :first-child:is(a, button),
+    .button-group > :first-child :is(a, button) {
+        @apply rounded-l-control;
+    }
+
+    .button-group > :last-child:is(a, button),
+    .button-group > :last-child :is(a, button) {
+        @apply rounded-r-control;
+    }
+}
