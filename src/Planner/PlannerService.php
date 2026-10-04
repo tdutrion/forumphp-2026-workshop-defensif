@@ -3,6 +3,7 @@
 namespace App\Planner;
 
 use App\Account\SeenFilmService;
+use App\Account\UnwantedFilmService;
 use App\Catalog\Repository\CinemaRepository;
 use App\Catalog\Repository\ShowtimeRepository;
 
@@ -15,6 +16,7 @@ class PlannerService
         private CinemaRepository $cinemaRepository,
         private ShowtimeRepository $showtimeRepository,
         private SeenFilmService $seenFilmService,
+        private UnwantedFilmService $unwantedFilmService,
         private ChainBuilder $chainBuilder,
         private ProgrammeSelector $programmeSelector,
         private LocationResolver $locationResolver,
@@ -46,7 +48,8 @@ class PlannerService
         $rows = $this->showtimeRepository->findCandidates(
             $criteria['date'],
             $cinemaSlugs,
-            $this->seenFilmService->getSeenFilmSlugs($userId),
+            // Films already seen and films the user does not want to see are never offered.
+            array_merge($this->seenFilmService->getSeenFilmSlugs($userId), $this->unwantedFilmService->getUnwantedFilmSlugs($userId)),
             $criteria['version'] ?? null,
             $now->format('Y-m-d H:i:s'),
         );

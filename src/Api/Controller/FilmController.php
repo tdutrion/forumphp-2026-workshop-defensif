@@ -4,6 +4,7 @@ namespace App\Api\Controller;
 
 use App\Account\Entity\User;
 use App\Account\SeenFilmService;
+use App\Account\UnwantedFilmService;
 use App\Catalog\Repository\FilmRepository;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,7 @@ class FilmController extends AbstractController
     #[Route('/api/films/{slug}', name: 'api_film', methods: ['GET'])]
     #[OA\Response(response: 200, description: 'Film details, with seen = already seen by the user')]
     #[OA\Response(response: 404, description: 'Unknown film')]
-    public function show(string $slug, FilmRepository $filmRepository, SeenFilmService $seenFilmService, #[CurrentUser] User $user): JsonResponse
+    public function show(string $slug, FilmRepository $filmRepository, SeenFilmService $seenFilmService, UnwantedFilmService $unwantedFilmService, #[CurrentUser] User $user): JsonResponse
     {
         $film = $filmRepository->findBySlug($slug);
         if (null === $film) {
@@ -34,6 +35,7 @@ class FilmController extends AbstractController
             'posterUrl' => $film['posterUrl'],
             'contentRating' => $film['contentRating'],
             'seen' => in_array($slug, $seenFilmService->getSeenFilmSlugs($user->getUserIdentifier()), true),
+            'unwanted' => in_array($slug, $unwantedFilmService->getUnwantedFilmSlugs($user->getUserIdentifier()), true),
         ]);
     }
 }

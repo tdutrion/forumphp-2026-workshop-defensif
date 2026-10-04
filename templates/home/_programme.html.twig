@@ -16,10 +16,11 @@
                     {{ showtime.cinemaName }}
                     {% if showtime.lateMinutes > 0 %}<twig:Badge tone="warning">{{ 'arriving during the ads (%minutes% min)'|trans({'%minutes%': showtime.lateMinutes}) }}</twig:Badge>{% endif %}
                 </p>
-                <p class="mt-2 flex items-center gap-2">
+                <div class="mt-2 flex flex-wrap items-center gap-2">
                     <twig:Button tag="a" variant="secondary" size="sm" href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer">{{ 'Book'|trans }}</twig:Button>
                     {{ include('seen/_button.html.twig', {slug: showtime.filmSlug, seen: false}) }}
-                </p>
+                    {{ include('unwanted/_button.html.twig', {slug: showtime.filmSlug, unwanted: false}) }}
+                </div>
             </li>
         {% endfor %}
     </ol>

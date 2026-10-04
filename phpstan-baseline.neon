@@ -97,6 +97,18 @@ parameters:
 			path: src/Account/Repository/SeenFilmRepository.php
 
 		-
+			message: '#^Method App\\Account\\Repository\\UnwantedFilmRepository\:\:findFilmSlugsByUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/Repository/UnwantedFilmRepository.php
+
+		-
+			message: '#^Method App\\Account\\Repository\\UnwantedFilmRepository\:\:findOneByUserAndFilm\(\) should return App\\Account\\Entity\\UnwantedFilm\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Account/Repository/UnwantedFilmRepository.php
+
+		-
 			message: '#^Method App\\Account\\SeenFilmService\:\:getSeenFilmSlugs\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -125,6 +137,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Account/SeenFilmService.php
+
+		-
+			message: '#^Method App\\Account\\UnwantedFilmService\:\:getUnwantedFilmSlugs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/UnwantedFilmService.php
+
+		-
+			message: '#^Method App\\Account\\UnwantedFilmService\:\:listUnwantedFilms\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/UnwantedFilmService.php
 
 		-
 			message: '#^Cannot call method format\(\) on mixed\.$#'
@@ -257,6 +281,18 @@ parameters:
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Api/Controller/SeenFilmController.php
+
+		-
+			message: '#^Cannot access offset ''slug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Api/Controller/UnwantedFilmController.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Api/Controller/UnwantedFilmController.php
 
 		-
 			message: '#^Method App\\Catalog\\CatalogCalendar\:\:availableDates\(\) return type has no value type specified in iterable type array\.$#'
@@ -1845,13 +1881,13 @@ parameters:
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
-			count: 1
+			count: 2
 			path: tests/Functional/Api/SeenFilmApiTest.php
 
 		-
 			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Functional/Api/SeenFilmApiTest.php
 
 		-
@@ -1875,7 +1911,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: tests/Functional/Api/SeenFilmApiTest.php
 
 		-
@@ -1907,6 +1943,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Functional/Web/SeenFilmTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Web\\UnwantedFilmTest\:\:plannedFilms\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Web/UnwantedFilmTest.php
 
 		-
 			message: '#^Method App\\Tests\\Functional\\WebApiParityTest\:\:api\(\) has parameter \$query with no value type specified in iterable type array\.$#'
@@ -2211,13 +2253,13 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$result of method App\\Tests\\Integration\\Planner\\PlannerServiceTest\:\:filmSets\(\) expects array, array\|false given\.$#'
 			identifier: argument.type
-			count: 4
+			count: 5
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-

@@ -11,10 +11,22 @@
     <twig:Card id="seen-films">
         <h2 class="mb-4 text-xl font-semibold">{{ 'Films already seen'|trans }}</h2>
         {% for film in seenFilms %}
-            <p class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
+            <div class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
                 <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
                 {{ include('seen/_button.html.twig', {slug: film.slug, seen: true}) }}
-            </p>
+            </div>
+        {% else %}
+            <p class="text-ink-muted">{{ 'No film yet.'|trans }}</p>
+        {% endfor %}
+    </twig:Card>
+
+    <twig:Card id="unwanted-films">
+        <h2 class="mb-4 text-xl font-semibold">{{ "Films I don't want to see"|trans }}</h2>
+        {% for film in unwantedFilms %}
+            <div class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
+                <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
+                {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: true}) }}
+            </div>
         {% else %}
             <p class="text-ink-muted">{{ 'No film yet.'|trans }}</p>
         {% endfor %}

@@ -44,6 +44,7 @@ when@test:
         # Use cases called directly by the integration tests (also kept when no controller uses them yet).
         App\Account\AccountService: { autowire: true, public: true }
         App\Account\SeenFilmService: { autowire: true, public: true }
+        App\Account\UnwantedFilmService: { autowire: true, public: true }
         App\Account\ApiTokenService: { autowire: true, public: true }
         App\Planner\PlannerService: { autowire: true, public: true }
         App\Planner\LocationResolver: { autowire: true, public: true }

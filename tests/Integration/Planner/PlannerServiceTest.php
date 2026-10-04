@@ -3,6 +3,7 @@
 namespace App\Tests\Integration\Planner;
 
 use App\Account\SeenFilmService;
+use App\Account\UnwantedFilmService;
 use App\Catalog\Entity\Cinema;
 use App\Planner\PlannerService;
 use App\Tests\Builder\CinemaBuilder;
@@ -123,6 +124,20 @@ final class PlannerServiceTest extends KernelTestCase
 
         // Assert
         self::assertNotContains('f3', array_merge(...$this->filmSets($result)));
+    }
+
+    public function testExcludesFilmsTheUserDoesNotWantToSee(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        self::getContainer()->get(UnwantedFilmService::class)->markUnwanted($userId, 'f4');
+
+        // Act
+        $result = $this->planner()->plan($this->criteria(), $userId);
+
+        // Assert
+        self::assertNotContains('f4', array_merge(...$this->filmSets($result)));
     }
 
     public function testKeepsOnlyCinemasWithinTheRadiusAndTheChosenVersion(): void

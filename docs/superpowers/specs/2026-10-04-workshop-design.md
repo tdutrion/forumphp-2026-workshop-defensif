@@ -242,6 +242,13 @@ A showtime is a candidate if it meets all these conditions:
 - List managed from the profile.
 - "Mark this programme as seen" button that adds all its films.
 
+### "I don't want to see it"
+
+- "I don't want to see it" button next to "Already seen", in the results and
+  on the film page. Can be undone.
+- Those films are never offered by the planner, like the films already seen.
+- List managed from the profile ("Films I don't want to see").
+
 ### Accounts and sign-in
 
 - A `User` (UUID v7) has one or more linked connections (`provider`,
@@ -278,6 +285,9 @@ A showtime is a candidate if it meets all these conditions:
 | GET     | `/api/me/seen-films`   | list the films already seen    |
 | PUT     | `/api/me/seen-films/{slug}` | mark a film as seen       |
 | DELETE  | `/api/me/seen-films/{slug}` | remove a film already seen |
+| GET     | `/api/me/unwanted-films`   | list the films the user does not want to see |
+| PUT     | `/api/me/unwanted-films/{slug}` | never offer this film again |
+| DELETE  | `/api/me/unwanted-films/{slug}` | offer this film again |
 
 - Authentication: a personal token, generated from the profile, shown only
   once. Stored as a SHA-256 hash, revocable, with an expiration
