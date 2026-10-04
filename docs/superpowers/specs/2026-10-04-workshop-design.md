@@ -258,7 +258,9 @@ vérifiés le 4 octobre 2026).
 
 ### Synchronisation
 
-- Périmètre configurable : liste de villes (par défaut une seule).
+- Périmètre configurable : liste de villes. Par défaut : `paris`, `lyon`
+  et `dijon` (18 cinémas : 13 à Paris, 3 à Lyon, 2 à Dijon), soit environ
+  700 requêtes et une douzaine de minutes à une requête par seconde.
 - Ordre : villes → cinémas → films → programme de chaque cinéma → séances
   de chaque couple film × cinéma (un appel par couple couvre toute la
   semaine publiée).
@@ -277,8 +279,11 @@ vérifiés le 4 octobre 2026).
 
 ### Jeu de données figé
 
-- `bin/console pathe:fixtures:record --city=<slug>` enregistre les réponses
-  brutes dans `fixtures/pathe/`, avec leur date de capture.
+- `bin/console pathe:fixtures:record` enregistre les réponses brutes des
+  villes configurées (Paris, Lyon, Dijon) dans `fixtures/pathe/`, avec
+  leur date de capture. Trois profils : une grande ville où les trajets
+  comptent, une ville moyenne, une petite ville où les programmes sont
+  rares (cas « moins de 3 programmes »).
 - `make fixtures` les rejoue avec un `MockHttpClient` à travers la même
   synchro. Les dates sont décalées pour que le premier jour capturé
   devienne aujourd'hui. L'application est ainsi utilisable n'importe quel
@@ -478,6 +483,8 @@ PHP concernée et le lien avec le deck.
 ## 13. Livrables du 8 octobre
 
 1. Le dépôt `workshop` : application, Dockerfile, compose, Makefile, tests.
+   Les participants reçoivent cette v1 complète et fonctionnelle (tag
+   `v1.0.0`) comme point de départ ; les exercices la font évoluer.
 2. Le jeu de données Pathé figé, enregistré juste avant l'atelier.
 3. `README.md` (anglais) : démarrage, comptes OAuth facultatifs, fournisseur
    local.
@@ -486,8 +493,9 @@ PHP concernée et le lien avec le deck.
 ## 14. Risques et questions ouvertes
 
 - **Délai** : 4 jours. Si le temps manque, on retire dans cet ordre la
-  notification Mercure, Autocomplete (remplacé par une liste déroulante),
-  puis la connexion Google (GitHub et le provider local restent).
+  notification Mercure, puis Autocomplete (remplacé par une liste
+  déroulante). Les trois connexions (Google, GitHub, local) restent dans
+  tous les cas.
 - **Comptes OAuth réels** : les participants ne peuvent pas tous créer des
   applications Google ou GitHub. Le provider local est le chemin par défaut.
   Les vrais providers fonctionnent si tu fournis des identifiants.
@@ -495,7 +503,3 @@ PHP concernée et le lien avec le deck.
   figé protège l'atelier.
 - **Alpine et musl** : performances moindres que Debian, sans impact pour
   un usage local.
-- **Ville du jeu de données** : à choisir. Proposition par défaut : Lyon
-  (3 cinémas Pathé, environ 120 requêtes, 2 min de synchro). Paris
-  (13 cinémas) est plus riche pour les trajets mais demande environ
-  10 min de synchro.
