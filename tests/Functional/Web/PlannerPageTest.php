@@ -87,13 +87,15 @@ final class PlannerPageTest extends WebTestCase
         $client = $this->signedInWithDijonCatalog();
 
         // Act
-        $client->request('GET', '/', $this->search(['city' => 'dijon', 'films' => 5]));
-        $tooManyFilms = $client->getCrawler()->filter('.plan-message')->text();
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'dijon', 'films' => 5]));
+        $tooManyFilms = $crawler->filter('.plan-message')->text();
+        $fallbackProgrammes = $crawler->filter('.programme')->count();
         $client->request('GET', '/', $this->search(['position' => 'nonsense']));
         $unknownPlace = $client->getCrawler()->filter('.plan-message')->text();
 
         // Assert
-        self::assertStringContainsString('No programme', $tooManyFilms);
+        self::assertStringContainsString('No marathon of 5 films is possible: here are programmes of 3 films.', $tooManyFilms);
+        self::assertSame(2, $fallbackProgrammes);
         self::assertStringContainsString('Unknown place', $unknownPlace);
     }
 

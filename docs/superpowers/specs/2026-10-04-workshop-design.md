@@ -231,9 +231,13 @@ A showtime is a candidate if it meets all these conditions:
    between arrival and `time`), then total distance traveled.
 3. The 3 best programmes that are pairwise different are kept: each
    must have at least one film that the other does not have.
-4. If fewer than 3 exist, the ones found are returned, with a message that
-   explains why (no candidate showtime, radius too small, too many films
-   requested…).
+4. If no programme of N films exists, the search starts again with one film
+   fewer, down to two films; the result says how many films it kept and the
+   page explains it ("No marathon of 4 films is possible: here are programmes
+   of 3 films.").
+5. If fewer than 3 exist, the ones found are returned, with a message that
+   explains why (no candidate showtime, radius too small, nothing chains even
+   with two films…).
 
 ### "Already seen"
 

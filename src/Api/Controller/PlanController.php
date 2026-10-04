@@ -33,7 +33,7 @@ class PlanController extends AbstractController
     #[OA\Parameter(name: 'version', in: 'query', required: false, description: 'vf, vost, vo or vfst', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'travelMode', in: 'query', required: false, description: 'walking, cycling, transit (default) or car: sets the travel time between two cinemas', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'acceptAds', in: 'query', required: false, description: '1 to accept arriving during the ads (15 minutes)', schema: new OA\Schema(type: 'string'))]
-    #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), and the reason if there are fewer')]
+    #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), and the reason if there are fewer')]
     #[OA\Response(response: 422, description: 'Invalid parameters')]
     public function plan(Request $request, #[CurrentUser] User $user): JsonResponse
     {
@@ -90,7 +90,7 @@ class PlanController extends AbstractController
             $programmes[] = ['wait' => $programme['wait'], 'distance' => $programme['distance'], 'showtimes' => $showtimes];
         }
 
-        return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason']]);
+        return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason'], 'films' => $result['films']]);
     }
 
     private function localIso(string $utc, string $timezone): string

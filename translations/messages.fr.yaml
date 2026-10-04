@@ -28,7 +28,6 @@
 'Geolocation is not available in this browser.': "La géolocalisation n'est pas disponible dans ce navigateur."
 'No showtime matches this place and date (or you have already seen every film on offer).': 'Aucune séance ne correspond à ce lieu et à cette date (ou vous avez déjà vu tous les films proposés).'
 'Unknown place: choose a city from the list or allow geolocation.': 'Lieu introuvable : choisissez une ville de la liste ou autorisez la géolocalisation.'
-'No programme: no sequence of showtimes chains together. Try fewer films, a larger radius or the ads option.': "Aucun programme : aucune suite de séances ne s'enchaîne. Essayez moins de films, un rayon plus grand ou l'option « pubs »."
 'Only %count% programme(s) possible with these criteria.': 'Seulement %count% programme(s) possible(s) avec ces critères.'
 'Programme %number%': 'Programme %number%'
 'Total wait: %minutes% min': 'Attente totale : %minutes% min'
@@ -67,3 +66,5 @@
 "I don't want to see it": 'Je ne veux pas le voir'
 'Hidden ✓ (undo)': 'Masqué ✓ (annuler)'
 "Films I don't want to see": 'Films que je ne veux pas voir'
+'No programme: no sequence of showtimes chains together, even with two films. Try a larger radius, another way of getting around or the ads option.': "Aucun programme : aucune suite de séances ne s'enchaîne, même avec deux films. Essayez un rayon plus grand, un autre moyen de déplacement ou l'option « pubs »."
+'No marathon of %requested% films is possible: here are programmes of %count% films.': "Aucun marathon de %requested% films n'est possible : voici des programmes de %count% films."

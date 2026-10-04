@@ -185,8 +185,24 @@ final class PlannerServiceTest extends KernelTestCase
         // Assert
         self::assertSame('not_enough_programmes', $threeFilms['reason']);
         self::assertSame([['f1', 'f2', 'f4'], ['f1', 'f3', 'f4']], $this->filmSets($threeFilms));
-        self::assertSame('no_programme', $fourFilms['reason']);
-        self::assertSame([], $fourFilms['programmes']);
+        self::assertSame('fewer_films', $fourFilms['reason'], 'no 4-film marathon: 3-film programmes are offered');
+        self::assertSame(3, $fourFilms['films']);
+        self::assertSame([['f1', 'f2', 'f4'], ['f1', 'f3', 'f4']], $this->filmSets($fourFilms));
         self::assertFalse($anotherDay, 'no showtime at all on that day');
+    }
+
+    public function testFallsBackToTwoFilmsAtLeast(): void
+    {
+        // Arrange: only f4 remains in Dijon, so not even two films can chain.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        self::getContainer()->get(SeenFilmService::class)->markAllSeen($userId, ['f1', 'f2', 'f3']);
+
+        // Act
+        $result = $this->planner()->plan($this->criteria(['films' => 3]), $userId);
+
+        // Assert
+        self::assertSame('no_programme', $result['reason']);
+        self::assertSame([], $result['programmes']);
     }
 }

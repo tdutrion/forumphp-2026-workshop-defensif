@@ -66,7 +66,8 @@ order.
 ## 5. Planner output (20 min) — PHP 8.2, 8.5
 
 - **Starting point**: `plan(): array|false` + `'reason'` as a string
-  (`'no_programme'`, `'not_enough_programmes'`, `'unknown_location'`).
+  (`'no_programme'`, `'not_enough_programmes'`, `'fewer_films'`, `'unknown_location'`),
+  with the number of films kept in a loose `'films'` key.
 - **Goal**: `PlanResult` (success with a `ProgrammeList`, failure with a
   `PlanFailure` enum), `#[\NoDiscard]` on the result and on the withers.
 - **Deck**: Part 8 (Result, `#[NoDiscard]`).

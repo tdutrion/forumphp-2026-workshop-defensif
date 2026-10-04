@@ -29,7 +29,8 @@ class PlannerService
      *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default)
      * @param string $userId   user identifier (the films they have already seen are excluded)
      *
-     * @return array|false ['programmes' => [...], 'reason' => null|'not_enough_programmes'|'no_programme'],
+     * @return array|false ['programmes' => [...], 'reason' => null|'not_enough_programmes'|'fewer_films'|'no_programme',
+     *                     'films' => number of films per programme (fewer than asked with 'fewer_films')],
      *                     or false if no showtime matches the place and date
      */
     public function plan(array $criteria, string $userId): array|false
@@ -65,13 +66,20 @@ class PlannerService
             $showtimes[] = $row;
         }
 
-        $programmes = $this->programmeSelector->select(
-            $this->chainBuilder->build($showtimes, $films, $criteria['acceptAds'] ?? false, $criteria['travelMode'] ?? 'transit'),
-        );
+        // No marathon with that many films: offer programmes with fewer films, down to two.
+        $requestedFilms = $films;
+        do {
+            $programmes = $this->programmeSelector->select(
+                $this->chainBuilder->build($showtimes, $films, $criteria['acceptAds'] ?? false, $criteria['travelMode'] ?? 'transit'),
+            );
+        } while ([] === $programmes && --$films >= 2);
+        $films = max($films, 2);
 
         $reason = null;
         if ([] === $programmes) {
             $reason = 'no_programme';
+        } elseif ($films < $requestedFilms) {
+            $reason = 'fewer_films';
         } elseif (\count($programmes) < 3) {
             $reason = 'not_enough_programmes';
         }
@@ -79,6 +87,7 @@ class PlannerService
         return [
             'programmes' => array_map([$this, 'format'], $programmes),
             'reason' => $reason,
+            'films' => $films,
         ];
     }
 

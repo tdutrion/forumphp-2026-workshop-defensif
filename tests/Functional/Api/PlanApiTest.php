@@ -39,6 +39,7 @@ final class PlanApiTest extends WebTestCase
         // Assert
         self::assertResponseIsSuccessful();
         self::assertNull($body['reason']);
+        self::assertSame(2, $body['films']);
         self::assertCount(3, $body['programmes']);
         $first = $body['programmes'][0];
         self::assertSame(10, $first['wait']);
