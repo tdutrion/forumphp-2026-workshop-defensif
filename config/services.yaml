@@ -45,6 +45,8 @@ when@test:
         App\Account\AccountService: { autowire: true, public: true }
         App\Account\SeenFilmService: { autowire: true, public: true }
         App\Account\ApiTokenService: { autowire: true, public: true }
+        App\Planner\PlannerService: { autowire: true, public: true }
+        App\Planner\LocationResolver: { autowire: true, public: true }
         App\Tests\Fake\FakePatheApi:
             public: true
         App\Tests\Fake\FakeOAuthServer:
