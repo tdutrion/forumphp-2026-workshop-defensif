@@ -70,6 +70,6 @@ class SeenFilmController extends AbstractController
             return $this->redirectToRoute('app_film_show', ['slug' => $slugs[0]]);
         }
 
-        return $this->redirectToRoute('app_home');
+        return $this->redirectToRoute('app_profile');
     }
 }

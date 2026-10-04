@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'My profile'|trans }} · Movie Marathon{% endblock %}
+
+{% block body %}
+    <header>
+        <h1 class="text-3xl font-bold">{{ 'My profile'|trans }}</h1>
+        <p class="text-ink-muted">{{ user.displayName }}{% if user.email %} · {{ user.email }}{% endif %}</p>
+    </header>
+
+    <twig:Card id="seen-films">
+        <h2 class="mb-4 text-xl font-semibold">{{ 'Films already seen'|trans }}</h2>
+        {% for film in seenFilms %}
+            <p class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
+                <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
+                {{ include('seen/_button.html.twig', {slug: film.slug, seen: true}) }}
+            </p>
+        {% else %}
+            <p class="text-ink-muted">{{ 'No film yet.'|trans }}</p>
+        {% endfor %}
+    </twig:Card>
+
+    <twig:Card id="connections">
+        <h2 class="mb-4 text-xl font-semibold">{{ 'Connections'|trans }}</h2>
+        <ul class="mb-4">
+            {% for linkedAccount in user.linkedAccounts %}
+                <li class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
+                    <span>{{ linkedAccount.provider }}{% if linkedAccount.email %} <span class="text-ink-muted">({{ linkedAccount.email }})</span>{% endif %}</span>
+                    <form method="post" action="{{ path('app_profile_connection_remove', {id: linkedAccount.id.toRfc4122}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('profile-connection') }}">
+                        <twig:Button type="submit" variant="secondary" size="sm">{{ 'Remove'|trans }}</twig:Button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="flex flex-wrap gap-2">
+            {% for provider in providersToLink %}
+                <twig:Button tag="a" variant="ghost" size="sm" href="{{ path('app_connect_start', {provider: provider, link: 1}) }}">{{ 'Link my %provider% account'|trans({'%provider%': provider}) }}</twig:Button>
+            {% endfor %}
+        </div>
+    </twig:Card>
+
+    <twig:Card id="tokens">
+        <h2 class="mb-4 text-xl font-semibold">{{ 'API tokens'|trans }}</h2>
+        {% if newToken %}
+            <div id="new-token" class="mb-4 space-y-2">
+                <twig:Alert type="success">{{ 'Here is your token. Copy it now: it will not be shown again.'|trans }}</twig:Alert>
+                <code class="block overflow-x-auto rounded-control bg-surface-muted px-3 py-2 text-sm">{{ newToken }}</code>
+            </div>
+        {% endif %}
+        <ul class="mb-4">
+            {% for token in tokens %}
+                <li class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
+                    <span>
+                        {{ token.name }}
+                        <span class="text-sm text-ink-muted">
+                            · {{ 'created on %date%'|trans({'%date%': token.createdAt ~ ' UTC'}) }}
+                            · {{ 'expires on %date%'|trans({'%date%': token.expiresAt ~ ' UTC'}) }}
+                        </span>
+                    </span>
+                    <form method="post" action="{{ path('app_profile_token_revoke', {id: token.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('api-token') }}">
+                        <twig:Button type="submit" variant="danger" size="sm">{{ 'Revoke'|trans }}</twig:Button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <form method="post" action="{{ path('app_profile_token_create') }}" class="flex flex-wrap items-end gap-3">
+            <input type="hidden" name="_token" value="{{ csrf_token('api-token') }}">
+            <div class="grid gap-1">
+                <label for="token-name" class="text-sm font-medium">{{ 'Token name'|trans }}</label>
+                <input type="text" id="token-name" name="name" maxlength="100" required class="rounded-control border border-line bg-surface px-3 py-2 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30">
+            </div>
+            <twig:Button type="submit">{{ 'Create a token'|trans }}</twig:Button>
+        </form>
+    </twig:Card>
+{% endblock %}

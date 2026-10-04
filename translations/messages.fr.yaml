@@ -43,3 +43,19 @@
 'Release: %date%': 'Sortie : %date%'
 'Genres: %genres%': 'Genres : %genres%'
 'Rating: %rating%': 'Classification : %rating%'
+'My profile': 'Mon profil'
+'Films already seen': 'Films déjà vus'
+'No film yet.': "Aucun film pour l'instant."
+'Connections': 'Connexions'
+'Remove': 'Retirer'
+'Link my %provider% account': 'Lier mon compte %provider%'
+'API tokens': "Jetons d'API"
+'Here is your token. Copy it now: it will not be shown again.': 'Voici votre jeton. Copiez-le maintenant : il ne sera plus affiché.'
+'created on %date%': 'créé le %date%'
+'expires on %date%': 'expire le %date%'
+'Revoke': 'Révoquer'
+'Token name': 'Nom du jeton'
+'Create a token': 'Créer un jeton'
+'Cannot remove this connection: it is your last connection, or it does not exist.': "Impossible de retirer cette connexion : c'est votre dernière connexion, ou elle n'existe pas."
+'Give the token a name (100 characters at most).': 'Donnez un nom au jeton (100 caractères au plus).'
+'Token not found.': 'Jeton introuvable.'

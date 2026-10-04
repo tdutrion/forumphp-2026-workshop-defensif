@@ -62,7 +62,7 @@ class ConnectController extends AbstractController
         } catch (\RuntimeException|\LogicException|IdentityProviderException|ClientExceptionInterface) {
             $this->addFlash('error', $this->translator->trans('Linking failed. Please try again.'));
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_profile');
         }
 
         if ($this->accountService->linkProvider($user, $provider, $userInfo)) {
@@ -71,6 +71,6 @@ class ConnectController extends AbstractController
             $this->addFlash('error', $this->translator->trans('This %provider% account is already linked to another user.', ['%provider%' => $provider]));
         }
 
-        return $this->redirectToRoute('app_home');
+        return $this->redirectToRoute('app_profile');
     }
 }
