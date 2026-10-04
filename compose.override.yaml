@@ -32,8 +32,8 @@ services:
     volumes:
       - ./docker/oidc/config.json:/config.json:ro
     ports:
-      - "8081:8080"
+      - "127.0.0.1:8081:8080"
 
   database:
     ports:
-      - "3306"
+      - "127.0.0.1::3306"

@@ -61,6 +61,7 @@ class ProfileController extends AbstractController
         }
 
         // No redirect: the plain token is shown only once and is never stored in the session.
+        // The price: reloading this page resubmits the form (the browser asks first) and creates another token.
         return $this->renderProfile($user, $this->apiTokenService->create($user, $name));
     }
 

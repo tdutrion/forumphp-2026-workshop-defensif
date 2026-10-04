@@ -17,6 +17,9 @@ make up        # build and start FrankenPHP, MySQL, the worker and the local OID
 make db-load   # reset the database and import the Pathé catalog (data/catalog.sql.gz)
 ```
 
+The ports are published on 127.0.0.1 only: the development secrets are public. Set
+`HOST_IP=0.0.0.0` to reach the application from another device.
+
 Open https://localhost (accept the local certificate) and sign in with
 **Local provider**: any username works, no Internet connection needed.
 
