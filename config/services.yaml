@@ -41,6 +41,10 @@ services:
 
 when@test:
     services:
+        # Use cases called directly by the integration tests (also kept when no controller uses them yet).
+        App\Account\AccountService: { autowire: true, public: true }
+        App\Account\SeenFilmService: { autowire: true, public: true }
+        App\Account\ApiTokenService: { autowire: true, public: true }
         App\Tests\Fake\FakePatheApi:
             public: true
         # The SDK talks to the fake Pathé API (a PSR-18 client) instead of pathe.fr.
