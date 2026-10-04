@@ -105,6 +105,20 @@ final class PlanApiTest extends WebTestCase
         self::assertSame('GET', $wrongMethod->headers->get('Allow'));
     }
 
+    public function testAnUnreadablePositionIsInvalidInput(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'position' => 'nonsense']);
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertResponseHeaderSame('content-type', 'application/problem+json');
+        self::assertSame('position', $body['errors'][0]['field'] ?? null);
+    }
+
     public function testTheDocumentationIsPublic(): void
     {
         // Arrange

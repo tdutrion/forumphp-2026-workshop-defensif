@@ -59,7 +59,16 @@ class PlanController extends AbstractController
             );
         }
 
-        $result = $this->plannerService->planFromForm($form->getData(), $user->getUserIdentifier());
+        $data = $form->getData();
+        $result = $this->plannerService->planFromForm($data, $user->getUserIdentifier());
+        if (false !== $result && 'unknown_location' === $result['reason'] && empty($data['city'])) {
+            // The position could not be read: invalid input, like the other parameters.
+            return new JsonResponse(
+                ['type' => 'about:blank', 'title' => 'Invalid parameters', 'status' => 422, 'errors' => [['field' => 'position', 'message' => 'Unknown place: choose a city from the list or allow geolocation.']]],
+                422,
+                ['Content-Type' => 'application/problem+json'],
+            );
+        }
         if (false === $result) {
             return new JsonResponse(['programmes' => [], 'reason' => 'no_showtime']);
         }
