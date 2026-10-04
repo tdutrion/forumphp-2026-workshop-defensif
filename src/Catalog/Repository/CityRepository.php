@@ -27,19 +27,4 @@ class CityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
-
-    /**
-     * @return array|null ['slug' => ..., 'name' => ...] or null if the city is unknown
-     */
-    public function findBySlug(string $slug): ?array
-    {
-        $rows = $this->createQueryBuilder('c')
-            ->select('c.slug', 'c.name')
-            ->where('c.slug = :slug')
-            ->setParameter('slug', $slug)
-            ->getQuery()
-            ->getArrayResult();
-
-        return $rows[0] ?? null;
-    }
 }

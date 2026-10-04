@@ -30,7 +30,8 @@ order.
 ## 2. Enums (15 min) — PHP 8.1
 
 - **Starting point**: `Showtime::$version` (`'vf'`, `'vost'`…), `PlanType::VERSIONS`,
-  the `'available'` status in `ShowtimeRepository::findCandidates()` and `PatheMapper`.
+  the `'available'` status tested in `ShowtimeRepository::findCandidates()`, and the raw Pathé
+  status strings that `PatheMapper::mapShowtimes()` copies as they are.
 - **Goal**: `enum ShowtimeVersion: string` (with `label()`),
   `enum BookingStatus: string` with `isBookable()`, `tryFrom()` at the boundary,
   `enumType` in the Doctrine mapping, `EnumType` in the form, exhaustive `match`.
@@ -70,7 +71,7 @@ order.
 ## 6. Repositories (15 min) — PHP 7.1, 8.0
 
 - **Starting point**: `FilmRepository::findBySlug(string): ?array`,
-  `CityRepository::findBySlug(string): ?array`, the controllers that test `null`.
+  the controllers that test `null` (`Web\Controller\FilmController`, `Api\Controller\FilmController`).
 - **Goal**: `findFilm(FilmSlug): ?Film` / `getFilm(FilmSlug): Film` pair,
   `?? throw new FilmNotFound(...)`, domain exception translated into a 404 in the controller.
 - **Deck**: Part 6 (`find()` vs `get()`).

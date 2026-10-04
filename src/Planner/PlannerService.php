@@ -79,9 +79,6 @@ class PlannerService
     }
 
     /**
-     * Times are shown in the local time of each cinema (its chain's time zone).
-     */
-    /**
      * Plans from the PlanType form data (website or API).
      *
      * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds'
@@ -112,6 +109,9 @@ class PlannerService
         ], $userId);
     }
 
+    /**
+     * Times are shown in the local time of each cinema (its chain's time zone).
+     */
     private function format(array $programme): array
     {
         foreach ($programme['showtimes'] as $i => $showtime) {

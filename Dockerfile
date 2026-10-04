@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 
-# Versions (the digest is added in step 2 of this plan)
+# Versions: the FrankenPHP image is pinned by digest (refresh it with `docker buildx imagetools inspect`)
 FROM dunglas/frankenphp:1.13.0-php8.5-alpine@sha256:b64048cc72ee412fd7247f45d70011c385850c0bfd0b467cd26cdccc99e158ca AS frankenphp_upstream
 
 

@@ -29,7 +29,8 @@ $pathe = new PatheClient(
 );
 
 $cinemas = $pathe->getCinemas(); // array|false
-$showtimes = (new PatheMapper())->mapShowtimes($pathe->getShowtimes('digger-51293', 'cinema-pathe-dijon'), 'Europe/Paris');
+$raw = $pathe->getShowtimes('digger-51293', 'cinema-pathe-dijon'); // array|false
+$showtimes = false === $raw ? [] : (new PatheMapper())->mapShowtimes($raw, 'Europe/Paris');
 ```
 
 ## Rules
