@@ -1,0 +1,19 @@
+{% props variant = 'primary', size = 'md', tag = 'button' %}
+{% set button = html_cva(
+    base: 'inline-flex items-center justify-center gap-2 rounded-control font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-50',
+    variants: {
+        variant: {
+            primary: 'bg-brand-600 text-white hover:bg-brand-700',
+            secondary: 'bg-surface text-ink ring-1 ring-line hover:bg-surface-muted',
+            danger: 'bg-danger-600 text-white hover:bg-danger-700',
+            ghost: 'text-brand-700 hover:bg-brand-50',
+        },
+        size: {
+            sm: 'px-3 py-1.5 text-sm',
+            md: 'px-4 py-2 text-sm',
+        },
+    },
+) %}
+<{{ tag }} {{ attributes.defaults({class: button.apply({variant: variant, size: size})}) }}>
+    {%- block content %}{% endblock -%}
+</{{ tag }}>

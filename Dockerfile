@@ -27,6 +27,20 @@ RUN --mount=type=bind,from=ghcr.io/php/pie:1.5.1-bin,source=/pie,target=/usr/loc
 	rm -rf /config/pie
 EOF
 
+# Tailwind CSS standalone CLI (no Node.js), pinned and verified by checksum
+ARG TAILWIND_VERSION=v4.3.3
+ARG TARGETARCH
+RUN <<-EOF
+	case "$TARGETARCH" in
+		amd64) arch=x64; sum=a04d34ceacc8f52cbe8920ad846cdeb61d3d0021dba32db0d1f77c9d9fad7a6c ;;
+		arm64) arch=arm64; sum=71ea4be79c9de9827545682df3e040053fb535d37c71ed2cfdedf9385a0868e0 ;;
+		*) echo "Unsupported architecture: $TARGETARCH" >&2; exit 1 ;;
+	esac
+	wget -qO /usr/local/bin/tailwindcss "https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/tailwindcss-linux-${arch}-musl"
+	echo "$sum  /usr/local/bin/tailwindcss" | sha256sum -c -
+	chmod +x /usr/local/bin/tailwindcss
+EOF
+
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -88,7 +102,9 @@ RUN <<-EOF
 	composer dump-env prod
 	composer run-script --no-dev post-install-cmd
 	php bin/console importmap:install
+	php bin/console tailwind:build --minify
 	php bin/console asset-map:compile
+	rm -f /usr/local/bin/tailwindcss
 	chmod +x bin/console
 	rm -f /usr/local/bin/composer
 	apk add --no-cache libcap-setcap

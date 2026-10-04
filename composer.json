@@ -52,10 +52,13 @@
         "symfony/twig-bundle": "8.1.*",
         "symfony/uid": "8.1.*",
         "symfony/ux-turbo": "^3.5",
+        "symfony/ux-twig-component": "^3.5",
         "symfony/validator": "8.1.*",
         "symfony/web-link": "8.1.*",
         "symfony/yaml": "8.1.*",
-        "twig/extra-bundle": "^2.12|^3.0",
+        "symfonycasts/tailwind-bundle": "^1.0",
+        "twig/extra-bundle": "^3.29",
+        "twig/html-extra": "^3.29",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {

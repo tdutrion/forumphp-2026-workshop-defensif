@@ -8,8 +8,15 @@ c ?=
 help: ## Lists the commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}'
 
-up: ## Builds and starts the containers
+up: ## Builds and starts the containers, then builds the CSS
 	$(COMPOSE) up --build --wait
+	$(CONSOLE) tailwind:build
+
+css: ## Builds the CSS once (Tailwind)
+	$(CONSOLE) tailwind:build
+
+css-watch: ## Rebuilds the CSS on every template change
+	$(CONSOLE) tailwind:build --watch --poll
 
 down: ## Stops the containers
 	$(COMPOSE) down --remove-orphans
@@ -50,4 +57,4 @@ db-load: ## Resets the database (all data!) then imports data/catalog.sql.gz
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 	gunzip -c data/catalog.sql.gz | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
 
-.PHONY: help up down logs sh composer console test phpstan cs sync db-dump db-load
+.PHONY: help up css css-watch down logs sh composer console test phpstan cs sync db-dump db-load

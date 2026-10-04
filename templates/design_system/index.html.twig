@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Design system · Movie Marathon{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-4xl space-y-8 p-6">
+        <h1 class="text-3xl font-bold">Design system</h1>
+
+        <twig:Card>
+            <h2 class="mb-4 text-xl font-semibold">Colors</h2>
+            <div class="grid grid-cols-5 gap-2 text-xs">
+                {% for token in ['brand-50', 'brand-600', 'brand-900', 'ink', 'ink-muted', 'canvas', 'surface-muted', 'line', 'success-600', 'danger-600'] %}
+                    <div><div class="h-10 rounded-control ring-1 ring-line bg-{{ token }}"></div>{{ token }}</div>
+                {% endfor %}
+            </div>
+        </twig:Card>
+
+        <twig:Card>
+            <h2 class="mb-4 text-xl font-semibold">Buttons</h2>
+            <div class="flex flex-wrap gap-2">
+                <twig:Button type="button">Primary</twig:Button>
+                <twig:Button type="button" variant="secondary">Secondary</twig:Button>
+                <twig:Button type="button" variant="danger">Danger</twig:Button>
+                <twig:Button type="button" variant="ghost">Ghost</twig:Button>
+                <twig:Button type="button" size="sm">Small</twig:Button>
+                <twig:Button tag="a" href="#" variant="secondary">Link styled as a button</twig:Button>
+            </div>
+        </twig:Card>
+
+        <twig:Card>
+            <h2 class="mb-4 text-xl font-semibold">Alerts and badges</h2>
+            <div class="space-y-2">
+                <twig:Alert type="success">Success message.</twig:Alert>
+                <twig:Alert type="error">Error message.</twig:Alert>
+                <twig:Alert type="info">Information message.</twig:Alert>
+            </div>
+            <div class="mt-4 flex gap-2">
+                <twig:Badge>VF</twig:Badge>
+                <twig:Badge tone="brand">VOST</twig:Badge>
+                <twig:Badge tone="warning">Late: 5 min</twig:Badge>
+            </div>
+        </twig:Card>
+
+        <twig:Card>
+            <h2 class="mb-4 text-xl font-semibold">Form</h2>
+            {{ form(form) }}
+        </twig:Card>
+    </div>
+{% endblock %}

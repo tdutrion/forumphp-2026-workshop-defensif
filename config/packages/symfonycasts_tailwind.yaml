@@ -1,0 +1,9 @@
+symfonycasts_tailwind:
+    # Binary shipped in the image (Dockerfile): never downloaded at runtime.
+    binary: '/usr/local/bin/tailwindcss'
+    input_css: ['%kernel.project_dir%/assets/styles/app.css']
+
+when@test:
+    symfonycasts_tailwind:
+        # The tests render pages without building the CSS first.
+        strict_mode: false
