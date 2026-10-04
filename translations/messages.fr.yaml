@@ -59,3 +59,8 @@
 'Cannot remove this connection: it is your last connection, or it does not exist.': "Impossible de retirer cette connexion : c'est votre dernière connexion, ou elle n'existe pas."
 'Give the token a name (100 characters at most).': 'Donnez un nom au jeton (100 caractères au plus).'
 'Token not found.': 'Jeton introuvable.'
+'Getting around': 'Se déplacer'
+'On foot': 'À pied'
+'By bike': 'À vélo'
+'Public transport': 'En transports en commun'
+'By car': 'En voiture'

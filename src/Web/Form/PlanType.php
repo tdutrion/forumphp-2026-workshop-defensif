@@ -64,6 +64,11 @@ class PlanType extends AbstractType
                 'data' => 10,
                 'constraints' => [new Range(min: 1, max: 50, notInRangeMessage: 'The radius must be between {{ min }} and {{ max }} km.')],
             ])
+            ->add('travelMode', ChoiceType::class, [
+                'label' => 'Getting around',
+                'choices' => ['On foot' => 'walking', 'By bike' => 'cycling', 'Public transport' => 'transit', 'By car' => 'car'],
+                'data' => 'transit',
+            ])
             ->add('films', IntegerType::class, [
                 'label' => 'Number of films',
                 'data' => 3,

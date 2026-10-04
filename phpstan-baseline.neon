@@ -1165,6 +1165,12 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
+			message: '#^Parameter \#4 \$travelMode of method App\\Planner\\ChainBuilder\:\:build\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
 			message: '#^Parameter \#4 \$version of method App\\Catalog\\Repository\\ShowtimeRepository\:\:findCandidates\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1809,6 +1815,12 @@ parameters:
 		-
 			message: '#^Method App\\Tests\\Functional\\Api\\PlanApiTest\:\:api\(\) should return array but returns mixed\.$#'
 			identifier: return.type
+			count: 1
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/Functional/Api/PlanApiTest.php
 

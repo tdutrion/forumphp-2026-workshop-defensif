@@ -23,7 +23,8 @@ class PlannerService
 
     /**
      * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number),
-     *                         'version' (or null), 'acceptAds' (bool)
+     *                         'version' (or null), 'acceptAds' (bool),
+     *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default)
      * @param string $userId   user identifier (the films they have already seen are excluded)
      *
      * @return array|false ['programmes' => [...], 'reason' => null|'not_enough_programmes'|'no_programme'],
@@ -62,7 +63,7 @@ class PlannerService
         }
 
         $programmes = $this->programmeSelector->select(
-            $this->chainBuilder->build($showtimes, $films, $criteria['acceptAds'] ?? false),
+            $this->chainBuilder->build($showtimes, $films, $criteria['acceptAds'] ?? false, $criteria['travelMode'] ?? 'transit'),
         );
 
         $reason = null;
@@ -81,7 +82,7 @@ class PlannerService
     /**
      * Plans from the PlanType form data (website or API).
      *
-     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds'
+     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds', 'travelMode'
      *
      * @return array|false like plan(), with the additional reason 'unknown_location'
      */
@@ -106,6 +107,7 @@ class PlannerService
             'films' => $data['films'] ?? null,
             'version' => $data['version'] ?? null,
             'acceptAds' => $data['acceptAds'] ?? false,
+            'travelMode' => $data['travelMode'] ?? null,
         ], $userId);
     }
 

@@ -10,7 +10,16 @@ namespace App\Planner;
 class ChainBuilder
 {
     public const MARGIN_MINUTES = 10;
-    public const SPEED_KMH = 15;
+    /**
+     * Straight-line speed (km/h) and fixed minutes (waiting, parking) of each travel mode.
+     * No routing service: the workshop must work without a network.
+     */
+    public const TRAVEL_MODES = [
+        'walking' => [5, 0],
+        'cycling' => [15, 0],
+        'transit' => [20, 10],
+        'car' => [30, 15],
+    ];
     public const ADS_MINUTES = 15;
 
     public function __construct(private int $maxNodes = 20000)
@@ -18,14 +27,15 @@ class ChainBuilder
     }
 
     /**
-     * @param array $showtimes candidate showtimes: id, filmSlug, cinemaSlug, latitude, longitude,
-     *                         start and end (timestamps), plus any display keys
-     * @param int   $count     number of films per programme
-     * @param bool  $acceptAds accept arriving up to 15 minutes after the showtime starts
+     * @param array  $showtimes  candidate showtimes: id, filmSlug, cinemaSlug, latitude, longitude,
+     *                           start and end (timestamps), plus any display keys
+     * @param int    $count      number of films per programme
+     * @param bool   $acceptAds  accept arriving up to 15 minutes after the showtime starts
+     * @param string $travelMode 'walking', 'cycling', 'transit' or 'car' (see TRAVEL_MODES)
      *
      * @return array programmes: ['showtimes' => [...], 'wait' => minutes, 'distance' => km]
      */
-    public function build(array $showtimes, int $count, bool $acceptAds): array
+    public function build(array $showtimes, int $count, bool $acceptAds, string $travelMode = 'transit'): array
     {
         usort($showtimes, static fn (array $a, array $b) => $a['start'] <=> $b['start']);
 
@@ -36,7 +46,7 @@ class ChainBuilder
             // Each starting showtime gets its share of the remaining budget: the first showtimes
             // of the day must not use it all. What a short subtree leaves goes to the next ones.
             $limit = $nodes + intdiv($this->maxNodes - $nodes, $roots - $index);
-            $this->explore([$showtimes[$index]], $index, $showtimes, $count, $acceptAds, $programmes, $nodes, $limit);
+            $this->explore([$showtimes[$index]], $index, $showtimes, $count, $acceptAds, $travelMode, $programmes, $nodes, $limit);
             if ($nodes >= $this->maxNodes) {
                 break;
             }
@@ -45,11 +55,11 @@ class ChainBuilder
         return $programmes;
     }
 
-    private function explore(array $path, int $lastIndex, array $showtimes, int $count, bool $acceptAds, array &$programmes, int &$nodes, int $limit): void
+    private function explore(array $path, int $lastIndex, array $showtimes, int $count, bool $acceptAds, string $travelMode, array &$programmes, int &$nodes, int $limit): void
     {
         ++$nodes;
         if (\count($path) === $count) {
-            $programmes[] = $this->summarize($path);
+            $programmes[] = $this->summarize($path, $travelMode);
 
             return;
         }
@@ -62,47 +72,48 @@ class ChainBuilder
                 return;
             }
             $candidate = $showtimes[$next];
-            if (in_array($candidate['filmSlug'], $films, true) || !$this->canChain($last, $candidate, $acceptAds)) {
+            if (in_array($candidate['filmSlug'], $films, true) || !$this->canChain($last, $candidate, $acceptAds, $travelMode)) {
                 continue;
             }
-            $this->explore([...$path, $candidate], $next, $showtimes, $count, $acceptAds, $programmes, $nodes, $limit);
+            $this->explore([...$path, $candidate], $next, $showtimes, $count, $acceptAds, $travelMode, $programmes, $nodes, $limit);
         }
     }
 
-    private function canChain(array $previous, array $next, bool $acceptAds): bool
+    private function canChain(array $previous, array $next, bool $acceptAds, string $travelMode): bool
     {
         $latestArrival = $next['start'] + ($acceptAds ? self::ADS_MINUTES * 60 : 0);
 
-        return $this->arrival($previous, $next) <= $latestArrival;
+        return $this->arrival($previous, $next, $travelMode) <= $latestArrival;
     }
 
     /**
      * Earliest arrival time (timestamp) at the next showtime.
      */
-    private function arrival(array $previous, array $next): int
+    private function arrival(array $previous, array $next, string $travelMode): int
     {
         $arrival = $previous['end'] + self::MARGIN_MINUTES * 60;
         if ($previous['cinemaSlug'] !== $next['cinemaSlug']) {
-            $arrival += $this->travelMinutes($previous, $next) * 60;
+            $arrival += $this->travelMinutes($previous, $next, $travelMode) * 60;
         }
 
         return $arrival;
     }
 
-    private function travelMinutes(array $from, array $to): int
+    private function travelMinutes(array $from, array $to, string $travelMode): int
     {
         $distance = Geo::distanceKm($from['latitude'], $from['longitude'], $to['latitude'], $to['longitude']);
+        [$speedKmh, $fixedMinutes] = self::TRAVEL_MODES[$travelMode] ?? self::TRAVEL_MODES['transit'];
 
-        return (int) ceil($distance / self::SPEED_KMH * 60);
+        return (int) ceil($distance / $speedKmh * 60) + $fixedMinutes;
     }
 
-    private function summarize(array $path): array
+    private function summarize(array $path, string $travelMode): array
     {
         $wait = 0;
         $distance = 0.0;
         $path[0]['lateMinutes'] = 0;
         for ($i = 1, $n = \count($path); $i < $n; ++$i) {
-            $arrival = $this->arrival($path[$i - 1], $path[$i]);
+            $arrival = $this->arrival($path[$i - 1], $path[$i], $travelMode);
             $wait += max(0, $path[$i]['start'] - $arrival);
             $path[$i]['lateMinutes'] = intdiv(max(0, $arrival - $path[$i]['start']), 60);
             if ($path[$i - 1]['cinemaSlug'] !== $path[$i]['cinemaSlug']) {

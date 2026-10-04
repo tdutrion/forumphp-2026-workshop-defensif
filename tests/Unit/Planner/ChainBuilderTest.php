@@ -13,7 +13,7 @@ final class ChainBuilderTest extends TestCase
         return ScreeningBuilder::aScreening($id)->inCinema('A', 0.0, 0.0);
     }
 
-    // On the equator, 2.99 km away from cinema A: 12 minutes of travel at 15 km/h.
+    // On the equator, 2.99 km away from cinema A: 12 minutes of travel by bike (15 km/h).
     private function inCinemaB(string $id): ScreeningBuilder
     {
         return ScreeningBuilder::aScreening($id)->inCinema('B', 0.0, 0.0269);
@@ -36,10 +36,32 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false);
+        $programmes = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
 
         // Assert: 10 minutes of margin, plus the travel time when changing cinema.
         self::assertEqualsCanonicalizing(['first>same-cinema-ok', 'first>other-cinema-ok'], $this->ids($programmes));
+    }
+
+    public function testTheTravelModeSetsTheTimeNeededToChangeCinema(): void
+    {
+        // Arrange: the first film ends at 16:00 in cinema A; cinema B is 2.99 km away.
+        $showtimes = [
+            $this->inCinemaA('first')->ofFilm('film-1')->startingAt('14:00')->lasting(100)->build(),
+            $this->inCinemaB('at-16-25')->ofFilm('film-2')->startingAt('16:25')->lasting(90)->build(),
+            $this->inCinemaB('at-16-50')->ofFilm('film-3')->startingAt('16:50')->lasting(90)->build(),
+        ];
+        $reachable = [];
+
+        // Act
+        foreach (['walking', 'cycling', 'transit', 'car'] as $mode) {
+            $reachable[$mode] = $this->ids((new ChainBuilder())->build($showtimes, 2, false, $mode));
+        }
+
+        // Assert: 10 min of margin, then walking 36 min, cycling 12, transit 9 + 10 of waiting, car 6 + 15 of parking.
+        self::assertEqualsCanonicalizing(['first>at-16-50'], $reachable['walking']);
+        self::assertEqualsCanonicalizing(['first>at-16-25', 'first>at-16-50'], $reachable['cycling']);
+        self::assertEqualsCanonicalizing(['first>at-16-50'], $reachable['transit']);
+        self::assertEqualsCanonicalizing(['first>at-16-50'], $reachable['car']);
     }
 
     public function testAcceptingAdsAllowsArrivingUpToFifteenMinutesLate(): void
@@ -51,8 +73,8 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $withoutAds = (new ChainBuilder())->build($showtimes, 2, false);
-        $withAds = (new ChainBuilder())->build($showtimes, 2, true);
+        $withoutAds = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
+        $withAds = (new ChainBuilder())->build($showtimes, 2, true, 'cycling');
 
         // Assert
         self::assertSame([], $withoutAds);
@@ -70,7 +92,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false);
+        $programmes = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
 
         // Assert
         self::assertSame([], $programmes);
@@ -86,7 +108,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $twoFilms = (new ChainBuilder())->build($showtimes, 2, false);
+        $twoFilms = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
         $threeFilms = (new ChainBuilder())->build($showtimes, 3, false);
 
         // Assert
@@ -103,7 +125,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programme = (new ChainBuilder())->build($showtimes, 2, false)[0];
+        $programme = (new ChainBuilder())->build($showtimes, 2, false, 'cycling')[0];
 
         // Assert: earliest arrival 16:00 + 10 min of margin + 12 min of travel = 16:22; the showtime starts at 16:40.
         self::assertSame(18, $programme['wait']);

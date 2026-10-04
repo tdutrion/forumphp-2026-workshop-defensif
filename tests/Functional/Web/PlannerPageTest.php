@@ -137,6 +137,20 @@ final class PlannerPageTest extends WebTestCase
         self::assertSame([$today->modify('+1 day')->format('Y-m-d')], $dates);
     }
 
+    public function testTheTravelModeIsAskedWithPublicTransportByDefault(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $crawler = $client->request('GET', '/');
+
+        // Assert
+        self::assertSelectorTextContains('label[for=plan_travelMode]', 'Getting around');
+        self::assertSame('transit', $crawler->filter('#plan_travelMode option[selected]')->attr('value'));
+        self::assertSame(['walking', 'cycling', 'transit', 'car'], $crawler->filter('#plan_travelMode option')->each(static fn ($o) => $o->attr('value')));
+    }
+
     public function testInvalidCriteriaAreExplained(): void
     {
         // Arrange
@@ -165,5 +179,6 @@ final class PlannerPageTest extends WebTestCase
         self::assertSelectorTextContains('label[for=plan_acceptAds]', "J'accepte d'arriver pendant les pubs (15 minutes)");
         self::assertSelectorTextContains('form[name=plan]', 'Le rayon doit être compris entre 1 et 50 km.');
         self::assertSelectorTextContains('header', 'Se déconnecter');
+        self::assertSelectorTextContains('#plan_travelMode', 'En transports en commun');
     }
 }

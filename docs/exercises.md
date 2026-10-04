@@ -30,9 +30,12 @@ order.
 ## 2. Enums (15 min) — PHP 8.1
 
 - **Starting point**: `Showtime::$version` (`'vf'`, `'vost'`…), `PlanType::VERSIONS`,
+  the travel mode strings (`'walking'`, `'transit'`…) and `ChainBuilder::TRAVEL_MODES`,
+  whose `?? self::TRAVEL_MODES['transit']` silently hides an unknown mode,
   the `'available'` status tested in `ShowtimeRepository::findCandidates()`, and the raw Pathé
   status strings that `PatheMapper::mapShowtimes()` copies as they are.
-- **Goal**: `enum ShowtimeVersion: string` (with `label()`),
+- **Goal**: `enum ShowtimeVersion: string` (with `label()`), `enum TravelMode: string`
+  with `speedKmh()` and `fixedMinutes()`,
   `enum BookingStatus: string` with `isBookable()`, `tryFrom()` at the boundary,
   `enumType` in the Doctrine mapping, `EnumType` in the form, exhaustive `match`.
 - **Deck**: Part 5 (`BookingStatus`).

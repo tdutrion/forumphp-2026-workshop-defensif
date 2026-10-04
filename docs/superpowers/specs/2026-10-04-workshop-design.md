@@ -213,7 +213,10 @@ A showtime is a candidate if it meets all these conditions:
   - the end of the previous one + 10 min, if it is the same cinema;
   - the end of the previous one + 10 min + the travel, if it is another
     cinema. The travel is the straight-line distance between the two
-    cinemas, covered at 15 km/h.
+    cinemas, covered at the speed of the travel mode chosen in the form, plus
+    its fixed time: on foot 5 km/h, by bike 15 km/h, public transport 20 km/h
+    + 10 min of waiting (default), by car 30 km/h + 15 min of parking. No
+    routing service: the application must work without a network.
 - The next showtime is compatible if the earliest arrival is before or equal
   to its `time`. With the ads option, the arrival can be up to
   `time + 15 min`.

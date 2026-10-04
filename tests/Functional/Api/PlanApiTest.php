@@ -119,6 +119,19 @@ final class PlanApiTest extends WebTestCase
         self::assertSame('position', $body['errors'][0]['field'] ?? null);
     }
 
+    public function testAnUnknownTravelModeIsInvalid(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'travelMode' => 'teleport']);
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertContains('travelMode', array_column($body['errors'], 'field'));
+    }
+
     public function testTheDocumentationIsPublic(): void
     {
         // Arrange
