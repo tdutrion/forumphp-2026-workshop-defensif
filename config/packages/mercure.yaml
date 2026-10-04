@@ -1,0 +1,17 @@
+mercure:
+    hubs:
+        default:
+            url: '%env(MERCURE_URL)%'
+            public_url: '%env(MERCURE_PUBLIC_URL)%'
+            # The hub built into FrankenPHP 1.13 is Mercure 1.0 (OAuth 2.0 access tokens).
+            protocol_version: '1.0'
+            jwt:
+                secret: '%env(MERCURE_JWT_SECRET)%'
+                publish: ['*']
+                claims:
+                    # Must match the trusted issuer and the resource identifier of the Caddyfile.
+                    iss: 'https://localhost'
+                    aud: '%env(MERCURE_RESOURCE_IDENTIFIER)%'
+                    # Required by RFC 9068 access tokens: the application publishes on its own behalf.
+                    sub: 'movie-marathon'
+                    client_id: 'movie-marathon'

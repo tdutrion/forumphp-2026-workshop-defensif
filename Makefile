@@ -40,4 +40,14 @@ cs: ## Fixes the code style (@Symfony)
 sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
 	$(CONSOLE) catalog:sync $(c)
 
-.PHONY: help up down logs sh composer console test phpstan cs sync
+db-dump: ## Writes data/catalog.sql.gz: catalog data, without schema or users
+	@mkdir -p data
+	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema film showtime' | gzip -9 > data/catalog.sql.gz
+
+db-load: ## Resets the database (all data!) then imports data/catalog.sql.gz
+	$(CONSOLE) doctrine:database:drop --force --if-exists
+	$(CONSOLE) doctrine:database:create
+	$(CONSOLE) doctrine:migrations:migrate --no-interaction
+	gunzip -c data/catalog.sql.gz | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
+
+.PHONY: help up down logs sh composer console test phpstan cs sync db-dump db-load

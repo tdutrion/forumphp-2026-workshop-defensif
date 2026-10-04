@@ -19,6 +19,12 @@ services:
       - host.docker.internal:host-gateway
     tty: true
 
+  worker:
+    image: ${IMAGES_PREFIX:-}workshop-php-dev
+    volumes:
+      - ./:/app
+      - /app/var
+
   database:
     ports:
       - "3306"

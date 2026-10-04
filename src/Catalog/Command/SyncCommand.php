@@ -2,23 +2,19 @@
 
 namespace App\Catalog\Command;
 
-use App\Catalog\Sync\CatalogSynchronizer;
+use App\Catalog\Sync\CatalogSyncRunner;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsCommand(name: 'catalog:sync', description: 'Synchronizes cities, cinemas, films and showtimes from Pathé')]
 class SyncCommand extends Command
 {
-    public function __construct(
-        private CatalogSynchronizer $synchronizer,
-        #[Autowire('%env(PATHE_CITIES)%')]
-        private string $defaultCities,
-    ) {
+    public function __construct(private CatalogSyncRunner $runner)
+    {
         parent::__construct();
     }
 
@@ -30,13 +26,9 @@ class SyncCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $cities = $input->getOption('city');
-        if ([] === $cities) {
-            $cities = array_map('trim', explode(',', $this->defaultCities));
-        }
 
         try {
-            $stats = $this->synchronizer->synchronize($cities);
+            $stats = $this->runner->run($input->getOption('city'));
         } catch (\RuntimeException $e) {
             $io->error($e->getMessage());
 
