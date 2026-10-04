@@ -53,6 +53,9 @@
     "knpuniversity/oauth2-client-bundle": {
         "version": "v2.20.2"
     },
+    "nelmio/api-doc-bundle": {
+        "version": "v5.13.0"
+    },
     "nyholm/psr7": {
         "version": "1.8",
         "recipe": {

@@ -9,6 +9,14 @@ security:
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        api_doc:
+            pattern: ^/api/doc
+            security: false
+        api:
+            pattern: ^/api/
+            stateless: true
+            access_token:
+                token_handler: App\Security\ApiTokenHandler
         main:
             lazy: true
             provider: app_user_provider
@@ -21,6 +29,7 @@ security:
                 enable_csrf: true
 
     access_control:
+        - { path: ^/api/, roles: ROLE_USER }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/connect/, roles: PUBLIC_ACCESS }
         - { path: ^/design-system, roles: PUBLIC_ACCESS }
