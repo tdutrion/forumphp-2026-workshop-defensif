@@ -8,6 +8,7 @@ use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Showtime;
 use App\Catalog\Sync\CatalogSynchronizer;
 use App\Tests\Builder\PatheApiBuilder;
+use App\Tests\Builder\ShowtimeBuilder;
 use App\Tests\Fake\FakePatheApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -119,5 +120,26 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertSame('https://cdn.pathe.fr/posters/safe.jpg', $this->em()->find(Film::class, 'safe-1')->getPosterUrl());
         self::assertNull($this->em()->find(Film::class, 'plain-2')->getPosterUrl());
         self::assertNull($this->em()->find(Film::class, 'script-3')->getPosterUrl());
+    }
+
+    public function testPastShowtimesAreRemoved(): void
+    {
+        // Arrange: a showtime of September stayed in the catalog.
+        self::bootKernel();
+        $this->synchronize($this->dijon());
+        $cinema = $this->em()->find(Cinema::class, 'cinema-pathe-dijon');
+        $film = $this->em()->find(Film::class, 'digger-51293');
+        $old = ShowtimeBuilder::aShowtime()->withId('V1S999')->of($film)->at($cinema)->startingAt('2026-09-01 20:00:00')->build();
+        $this->em()->persist($old);
+        $this->em()->flush();
+
+        // Act
+        $stats = $this->synchronize($this->dijon());
+
+        // Assert
+        $this->em()->clear();
+        self::assertNull($this->em()->find(Showtime::class, 'V1S999'));
+        self::assertGreaterThanOrEqual(1, $stats['deleted']);
+        self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85501'), 'today\'s showtimes stay');
     }
 }

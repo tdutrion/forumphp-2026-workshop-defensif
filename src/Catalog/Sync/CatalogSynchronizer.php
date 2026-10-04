@@ -171,6 +171,9 @@ class CatalogSynchronizer
             }
         }
 
+        // Showtimes of past days are of no use to anyone: the catalog must not grow forever.
+        $stats['deleted'] += $this->showtimeRepository->deleteBefore($today);
+
         return $stats;
     }
 }

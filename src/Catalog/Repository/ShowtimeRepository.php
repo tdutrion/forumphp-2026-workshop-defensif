@@ -100,4 +100,17 @@ class ShowtimeRepository extends ServiceEntityRepository
 
         return (int) $this->getEntityManager()->getConnection()->executeStatement($sql, $params, $types);
     }
+
+    /**
+     * Deletes the showtimes whose local day is before $localDate (Y-m-d).
+     *
+     * @return int number of showtimes deleted
+     */
+    public function deleteBefore(string $localDate): int
+    {
+        return (int) $this->getEntityManager()->getConnection()->executeStatement(
+            'DELETE FROM showtime WHERE local_date < :date',
+            ['date' => $localDate],
+        );
+    }
 }
