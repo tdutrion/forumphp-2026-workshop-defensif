@@ -8,13 +8,13 @@ is clean, tested and secure, but its contracts are deliberately implicit
 
 ## Requirements
 
-Docker with Compose v2 and `make`. Nothing else runs on the host.
+Docker with Compose v2, `make` and `curl`. Nothing else runs on the host.
 
 ## Getting started
 
 ```bash
 make up        # build and start FrankenPHP, MySQL, the worker and the local OIDC provider
-make db-load   # reset the database and import the Pathé catalog (data/catalog.sql.gz)
+make db-load   # reset the database and import the Pathé catalog (data/catalog.sql.gz, downloaded once)
 ```
 
 The ports are published on 127.0.0.1 only: the development secrets are public. Set
@@ -57,6 +57,8 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make css` / `make css-watch` | Build the Tailwind CSS once / on every change |
 | `make sync` | Sync the catalog from pathe.fr (network; `c="--city=dijon"`) |
 | `make db-dump` | Write `data/catalog.sql.gz` from the current catalog |
+| `make db-download` | Download the latest `data/catalog.sql.gz` (public, Synology C2) |
+| `make db-upload` | Publish `data/catalog.sql.gz` on Synology C2 (`C2_ACCESS_KEY_ID` and `C2_SECRET_ACCESS_KEY` in `.env.local`, AWS CLI on the host) |
 | `make sh` / `make console c="…"` | Shell / Symfony console in the PHP container |
 
 The catalog is never synchronized on its own: set `CATALOG_SCHEDULE_ENABLED=1` in

@@ -24,3 +24,6 @@
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+
+# Catalog dump: hosted on Synology C2 (make db-download / make db-upload)
+/data/catalog.sql.gz

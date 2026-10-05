@@ -3,6 +3,12 @@ PHP     = $(COMPOSE) exec -T php
 CONSOLE = $(PHP) bin/console
 c ?=
 
+# Synology C2 Object Storage (S3-compatible) hosting the catalog dump, publicly readable.
+# The upload keys (C2_ACCESS_KEY_ID, C2_SECRET_ACCESS_KEY) only live in .env.local.
+C2_ENDPOINT      ?=
+C2_BUCKET        ?=
+CATALOG_DUMP_URL ?= $(C2_ENDPOINT)/$(C2_BUCKET)/catalog.sql.gz
+
 .DEFAULT_GOAL := help
 
 help: ## Lists the commands
@@ -53,7 +59,24 @@ db-dump: ## Writes data/catalog.sql.gz: catalog data, without schema or users
 	@mkdir -p data
 	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema film showtime' | gzip -9 > data/catalog.sql.gz
 
-db-load: ## Resets the database (all data!) then imports data/catalog.sql.gz
+data/catalog.sql.gz:
+	@test -n "$(C2_ENDPOINT)" -a -n "$(C2_BUCKET)" || { echo "C2_ENDPOINT and C2_BUCKET are not set in the Makefile"; exit 1; }
+	@mkdir -p data
+	curl -fSL --proto '=https' -o $@.part '$(CATALOG_DUMP_URL)'
+	@mv $@.part $@
+
+db-download: ## Downloads the latest data/catalog.sql.gz from Synology C2
+	rm -f data/catalog.sql.gz
+	$(MAKE) data/catalog.sql.gz
+
+db-upload: ## Uploads data/catalog.sql.gz to Synology C2, publicly readable (keys in .env.local)
+	@test -n "$(C2_ENDPOINT)" -a -n "$(C2_BUCKET)" || { echo "C2_ENDPOINT and C2_BUCKET are not set in the Makefile"; exit 1; }
+	@test -f .env.local || { echo ".env.local is missing (C2_ACCESS_KEY_ID, C2_SECRET_ACCESS_KEY)"; exit 1; }
+	@set -a; . ./.env.local; set +a; \
+	AWS_ACCESS_KEY_ID="$$C2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$$C2_SECRET_ACCESS_KEY" \
+	aws s3 cp data/catalog.sql.gz 's3://$(C2_BUCKET)/catalog.sql.gz' --endpoint-url '$(C2_ENDPOINT)' --acl public-read --content-type application/gzip
+
+db-load: data/catalog.sql.gz ## Resets the database (all data!) then imports data/catalog.sql.gz (downloaded if missing)
 	$(CONSOLE) doctrine:database:drop --force --if-exists
 	$(CONSOLE) doctrine:database:create
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
