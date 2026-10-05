@@ -53,6 +53,18 @@ final class PlannerPageTest extends WebTestCase
         self::assertResponseRedirects('/login');
     }
 
+    public function testThePageListensToCatalogUpdatesInTheLanguageOfTheVisitor(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $client->request('GET', '/', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr']);
+
+        // Assert
+        self::assertSelectorExists('turbo-mercure-stream-source[src$="match=catalog%2Ffr"]');
+    }
+
     public function testPlansAroundACityWithTheTimesOfTheCinema(): void
     {
         // Arrange
