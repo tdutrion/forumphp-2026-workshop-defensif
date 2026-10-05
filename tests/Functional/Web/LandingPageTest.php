@@ -62,7 +62,7 @@ final class LandingPageTest extends WebTestCase
         self::assertStringContainsString('Recommandations', $features->eq(0)->text());
         self::assertStringContainsString('Google Maps', $features->eq(1)->text());
         self::assertSelectorTextContains('#paid-features', 'Pas encore disponible');
-        self::assertStringNotContainsString('Aucune fonctionnalité payante', $crawler->filter('main')->text());
+        self::assertSelectorTextContains('#paid-features', 'infrastructure', 'what the price pays for');
     }
 
     public function testEveryPageCarriesTheNameAndTheLogoOfScreenRoute(): void
