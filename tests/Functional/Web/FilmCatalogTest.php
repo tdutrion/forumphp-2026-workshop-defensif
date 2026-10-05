@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Web;
 use App\Account\Entity\User;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
+use App\Catalog\Entity\Cinema;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -122,6 +123,37 @@ final class FilmCatalogTest extends WebTestCase
         // Assert
         self::assertSelectorExists('input[name=hide_seen][type=checkbox][role=switch].switch');
         self::assertSelectorExists('input[name=hide_unwanted][type=checkbox][role=switch].switch');
+    }
+
+    public function testFiltersByCinemaWeekFromWednesdayToTuesday(): void
+    {
+        // Arrange: the catalog plays in the week of Wednesday January 9, 2030; Later opens the next Wednesday.
+        $client = $this->signedInWithCatalog();
+        $later = FilmBuilder::aFilm()->withSlug('later')->titled('Later')->build();
+        $dijon = self::getContainer()->get('doctrine')->getManager()->find(Cinema::class, 'cinema-pathe-dijon');
+        $this->store($later, ShowtimeBuilder::aShowtime()->of($later)->at($dijon)->startingAt('2030-01-16 14:00:00')->build());
+
+        // Act
+        $weeks = $client->request('GET', '/films')->filter('select[name=week] option')->each(static fn ($option) => $option->attr('value'));
+        $firstWeek = $this->titles($client, '/films?week=2030-01-09');
+        $nextWeek = $this->titles($client, '/films?week=2030-01-16');
+
+        // Assert
+        self::assertSame(['', '2030-01-09', '2030-01-16'], $weeks);
+        self::assertSame(['Digger', 'Garance', 'Verity'], $firstWeek);
+        self::assertSame(['Later'], $nextWeek);
+    }
+
+    public function testAWeekThatIsNotADateIsRefused(): void
+    {
+        // Arrange
+        $client = $this->signedInWithCatalog();
+
+        // Act
+        $client->request('GET', '/films?week=next');
+
+        // Assert
+        self::assertResponseStatusCodeSame(400);
     }
 
     public function testAnUnknownSortIsRefused(): void

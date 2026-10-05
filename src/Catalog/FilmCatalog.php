@@ -23,7 +23,7 @@ class FilmCatalog
      * @param int $pageSize one of FilmPage::PAGE_SIZES
      *
      * @return array ['films' => FilmPage (rows of FilmRepository::findShowing, genres decoded, plus 'seen' and 'unwanted'),
-     *               'genres' => genres to choose from]
+     *               'genres' => genres to choose from, 'weeks' => cinema weeks to choose from (their Wednesday, Y-m-d)]
      */
     public function browse(FilmCatalogQuery $query, string $userId, int $pageSize): array
     {
@@ -44,6 +44,10 @@ class FilmCatalog
             ], $this->filmRepository->findShowing($query, $excluded, $now, $offset, $limit)),
         );
 
-        return ['films' => $films, 'genres' => $this->filmRepository->findShowingGenres($now)];
+        return [
+            'films' => $films,
+            'genres' => $this->filmRepository->findShowingGenres($now),
+            'weeks' => $this->filmRepository->findShowingWeeks($now),
+        ];
     }
 }

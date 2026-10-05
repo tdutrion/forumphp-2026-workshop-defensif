@@ -129,6 +129,23 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
+     * Cinema weeks (Wednesday to Tuesday, local days) holding showtimes that can still be booked.
+     *
+     * @return list<string> the Wednesday starting each week (Y-m-d), in order
+     */
+    public function findShowingWeeks(string $now): array
+    {
+        // WEEKDAY(): Monday = 0, so (WEEKDAY + 5) % 7 is the number of days since the last Wednesday.
+        return $this->getEntityManager()->getConnection()->fetchFirstColumn(
+            'SELECT DISTINCT DATE_FORMAT(DATE_SUB(s.local_date, INTERVAL (WEEKDAY(s.local_date) + 5) % 7 DAY), \'%Y-%m-%d\') AS week
+             FROM showtime s INNER JOIN cinema c ON c.slug = s.cinema_slug
+             WHERE c.open = 1 AND s.status = :status AND (s.reservable_until IS NULL OR s.reservable_until > :now)
+             ORDER BY week',
+            ['status' => 'available', 'now' => $now],
+        );
+    }
+
+    /**
      * @return array [SQL conditions, parameters, parameter types]
      */
     private function showingConditions(FilmCatalogQuery $query, array $excludedSlugs, string $now): array
@@ -155,6 +172,10 @@ class FilmRepository extends ServiceEntityRepository
         } elseif (null !== $query->version && '' !== $query->version) {
             $where[] = 's.version = :version';
             $params['version'] = $query->version;
+        }
+        if (null !== $query->week) {
+            $where[] = 's.local_date BETWEEN :weekStart AND DATE_ADD(:weekStart, INTERVAL 6 DAY)';
+            $params['weekStart'] = $query->week;
         }
         if ([] !== $excludedSlugs) {
             $where[] = 'f.slug NOT IN (:excluded)';

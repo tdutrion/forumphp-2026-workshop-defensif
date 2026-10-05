@@ -25,6 +25,13 @@
                 <option value="">{{ 'films.filter.all'|trans }}</option>
                 {% for genre in genres %}<option value="{{ genre }}"{% if query.genre == genre %} selected{% endif %}>{{ genre }}</option>{% endfor %}
             </select>
+            <label for="filter-week" class="{{ label }}">{{ 'films.filter.week'|trans }}</label>
+            <select id="filter-week" name="week" class="{{ field }}">
+                <option value="">{{ 'films.filter.all_weeks'|trans }}</option>
+                {% for week in weeks %}
+                    <option value="{{ week }}"{% if query.week == week %} selected{% endif %}>{{ 'films.filter.week_from_to'|trans({'%from%': week|format_date(pattern: 'd MMMM', locale=app.request.locale), '%to%': week|date_modify('+6 days')|format_date(pattern: 'd MMMM', locale=app.request.locale)}) }}</option>
+                {% endfor %}
+            </select>
             <label for="filter-city" class="{{ label }}">{{ 'planner.form.city'|trans }}</label>
             <select id="filter-city" name="city" class="{{ field }}">
                 <option value="">{{ 'films.filter.all'|trans }}</option>

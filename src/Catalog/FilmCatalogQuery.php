@@ -27,6 +27,10 @@ final readonly class FilmCatalogQuery
     #[Assert\Choice(choices: self::SORTS)]
     public string $sort;
 
+    /** Cinema week, from this Wednesday (Y-m-d) to the next Tuesday: the films with a showtime in it. */
+    #[Assert\Date]
+    public ?string $week;
+
     /** Leave out the films the user has already seen. */
     #[SerializedName('hide_seen')]
     public bool $hideSeen;
@@ -47,6 +51,7 @@ final readonly class FilmCatalogQuery
         ?string $city = null,
         ?string $version = null,
         ?string $sort = null,
+        ?string $week = null,
         bool $hideSeen = false,
         bool $hideUnwanted = false,
         int $page = 1,
@@ -56,6 +61,7 @@ final readonly class FilmCatalogQuery
         $this->city = self::nullIfBlank($city);
         $this->version = self::nullIfBlank($version);
         $this->sort = self::nullIfBlank($sort) ?? 'title';
+        $this->week = self::nullIfBlank($week);
         $this->hideSeen = $hideSeen;
         $this->hideUnwanted = $hideUnwanted;
         $this->page = $page;
@@ -72,6 +78,7 @@ final readonly class FilmCatalogQuery
             'city' => $this->city,
             'version' => $this->version,
             'sort' => 'title' === $this->sort ? null : $this->sort,
+            'week' => $this->week,
             'hide_seen' => $this->hideSeen ? 1 : null,
             'hide_unwanted' => $this->hideUnwanted ? 1 : null,
         ], static fn ($value) => null !== $value && '' !== $value);
