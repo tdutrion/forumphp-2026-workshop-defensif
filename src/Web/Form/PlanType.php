@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class PlanType extends AbstractType
 {
-    public const VERSIONS = ['VF' => 'vf', 'VOST' => 'vost', 'VO' => 'vo', 'VFST' => 'vfst'];
+    public const VERSIONS = ['planner.form.version.vf' => 'vf', 'planner.form.version.vost' => 'vost', 'planner.form.version.vo' => 'vo', 'planner.form.version.vfst' => 'vfst'];
 
     public function __construct(private RequestStack $requestStack)
     {
@@ -66,6 +66,8 @@ class PlanType extends AbstractType
             ->add('city', ChoiceType::class, [
                 'label' => 'planner.form.city',
                 'choices' => $cities,
+                // City names come from the catalog: they are not translated.
+                'choice_translation_domain' => false,
                 'required' => false,
                 'placeholder' => 'planner.form.city_placeholder',
                 'autocomplete' => true,

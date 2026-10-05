@@ -65,6 +65,19 @@ final class PlannerPageTest extends WebTestCase
         self::assertSelectorExists('turbo-mercure-stream-source[src$="match=catalog%2Ffr"]');
     }
 
+    public function testTheFormSpeaksTheLanguageOfTheVisitorButKeepsCityNames(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $client->request('GET', '/', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr']);
+
+        // Assert
+        self::assertSelectorTextSame('#plan_version option[value="vf"]', 'VF (version française)');
+        self::assertSelectorTextSame('#plan_city option[value="dijon"]', 'Dijon');
+    }
+
     public function testPlansAroundACityWithTheTimesOfTheCinema(): void
     {
         // Arrange
