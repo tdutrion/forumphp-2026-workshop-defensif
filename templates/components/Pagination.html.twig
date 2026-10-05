@@ -1,0 +1,19 @@
+{% props page, pages, route, query = {} %}
+{# Page links of a list: plain GET links, so the page stays in the URL. Nothing when there is one page. #}
+{% if pages > 1 %}
+    <nav aria-label="{{ 'pagination.label'|trans }}" {{ attributes.defaults({class: 'pagination flex flex-wrap items-center justify-center gap-1 text-sm'}) }}>
+        {% if page > 1 %}
+            <a href="{{ path(route, query|merge({page: page - 1})) }}" rel="prev" class="rounded-control px-3 py-1.5 text-brand-700 hover:bg-surface-muted">{{ 'pagination.previous'|trans }}</a>
+        {% endif %}
+        {% for number in 1..pages %}
+            {% if number == page %}
+                <span aria-current="page" class="rounded-control bg-brand-600 px-3 py-1.5 font-medium text-white">{{ number }}</span>
+            {% else %}
+                <a href="{{ path(route, query|merge({page: number})) }}" class="rounded-control px-3 py-1.5 text-brand-700 hover:bg-surface-muted">{{ number }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page < pages %}
+            <a href="{{ path(route, query|merge({page: page + 1})) }}" rel="next" class="rounded-control px-3 py-1.5 text-brand-700 hover:bg-surface-muted">{{ 'pagination.next'|trans }}</a>
+        {% endif %}
+    </nav>
+{% endif %}

@@ -45,7 +45,7 @@ final class UnwantedFilmTest extends WebTestCase
         ));
     }
 
-    public function testAFilmIDoNotWantToSeeLeavesThePlansAndComesBackFromMyProfile(): void
+    public function testAFilmIDoNotWantToSeeLeavesThePlansAndComesBackFromTheFilmsNotForMe(): void
     {
         // Arrange
         $client = $this->signedInWithDijonCatalog();
@@ -54,14 +54,14 @@ final class UnwantedFilmTest extends WebTestCase
         // Act
         $client->submit($crawler->filter('[data-unwanted-film="f3"] form')->form());
         $plannedWhileUnwanted = $this->plannedFilms($client);
-        $profile = $client->request('GET', '/profile');
-        $listedOnProfile = $profile->filter('#unwanted-films')->text();
-        $client->submit($profile->filter('#unwanted-films [data-unwanted-film="f3"] form')->form());
+        $list = $client->request('GET', '/not-for-me');
+        $listed = $list->filter('#unwanted-films')->text();
+        $client->submit($list->filter('#unwanted-films [data-unwanted-film="f3"] form')->form());
         $plannedAfterUndo = $this->plannedFilms($client);
 
         // Assert
         self::assertNotContains('f3', $plannedWhileUnwanted);
-        self::assertStringContainsString('Film f3', $listedOnProfile);
+        self::assertStringContainsString('Film f3', $listed);
         self::assertContains('f3', $plannedAfterUndo);
     }
 }

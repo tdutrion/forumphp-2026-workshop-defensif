@@ -4,6 +4,7 @@ namespace App\Web\Controller;
 
 use App\Account\Entity\User;
 use App\Account\ExcludedCinemaService;
+use App\Web\PostRedirectGet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,8 +13,10 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class ExcludedCinemaController extends AbstractController
 {
-    public function __construct(private ExcludedCinemaService $excludedCinemaService)
-    {
+    public function __construct(
+        private ExcludedCinemaService $excludedCinemaService,
+        private PostRedirectGet $postRedirectGet,
+    ) {
     }
 
     #[Route('/cinemas/{slug}/exclude', name: 'app_cinema_exclude', methods: ['POST'])]
@@ -44,19 +47,16 @@ class ExcludedCinemaController extends AbstractController
     }
 
     /**
-     * From a search (hidden "_return" field): Post/Redirect/Get back to the same search, now updated.
-     * Otherwise (profile): back to the profile.
+     * From a list or a search (hidden "_return_route" and "_return" fields): Post/Redirect/Get back to it, now updated.
+     * Otherwise: back to the settings.
      */
     private function respond(Request $request): Response
     {
-        $return = $request->request->getString('_return');
-        if ('' !== $return) {
-            // Only the query of the planner page is taken back: no redirect to a URL chosen by the client.
-            parse_str($return, $query);
-
-            return $this->redirectToRoute('app_home', $query, Response::HTTP_SEE_OTHER);
+        $back = $this->postRedirectGet->back($request);
+        if (null !== $back) {
+            return $back;
         }
 
-        return $this->redirectToRoute('app_profile', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_settings', [], Response::HTTP_SEE_OTHER);
     }
 }

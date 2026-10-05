@@ -68,4 +68,16 @@ class UnwantedFilmService
     {
         return $this->filmRepository->findBySlugs($this->getUnwantedFilmSlugs($userId));
     }
+
+    /**
+     * @param int $page from 1; a page after the last one gives the last one
+     */
+    public function pageOfUnwantedFilms(string $userId, int $page): FilmPage
+    {
+        return FilmPage::load(
+            $this->unwantedFilmRepository->countByUser($userId),
+            $page,
+            fn (int $offset, int $limit): array => $this->unwantedFilmRepository->findPageByUser($userId, $offset, $limit),
+        );
+    }
 }

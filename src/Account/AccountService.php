@@ -94,6 +94,12 @@ class AccountService
         return false;
     }
 
+    public function changeTheme(User $user, Theme $theme): void
+    {
+        $user->setTheme($theme);
+        $this->em->flush();
+    }
+
     private function newLinkedAccount(string $provider, array $userInfo): LinkedAccount
     {
         return (new LinkedAccount())

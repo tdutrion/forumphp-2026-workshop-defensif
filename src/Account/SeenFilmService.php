@@ -71,4 +71,16 @@ class SeenFilmService
     {
         return $this->filmRepository->findBySlugs($this->getSeenFilmSlugs($userId), strtoupper($order));
     }
+
+    /**
+     * @param int $page from 1; a page after the last one gives the last one
+     */
+    public function pageOfSeenFilms(string $userId, int $page): FilmPage
+    {
+        return FilmPage::load(
+            $this->seenFilmRepository->countByUser($userId),
+            $page,
+            fn (int $offset, int $limit): array => $this->seenFilmRepository->findPageByUser($userId, $offset, $limit),
+        );
+    }
 }

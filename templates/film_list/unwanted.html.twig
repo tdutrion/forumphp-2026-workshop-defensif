@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'layout.unwanted_films'|trans }} · Movie Marathon{% endblock %}
+
+{% block body %}
+    <header>
+        <h1 class="text-3xl font-bold">{{ 'layout.unwanted_films'|trans }}</h1>
+        <p class="text-ink-muted">{{ 'film_list.count'|trans({'%count%': films.total}) }}</p>
+    </header>
+
+    <twig:Card id="unwanted-films">
+        {{ include('film_list/_table.html.twig', {films: films, route: 'app_unwanted_films', list: 'unwanted', date_label: 'film_list.hidden_on'|trans}) }}
+    </twig:Card>
+{% endblock %}

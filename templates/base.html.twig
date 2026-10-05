@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{ app.request.locale }}">
+{# The theme chosen in the settings; without one ("auto"), the CSS follows the system. #}
+{% set theme = app.user ? app.user.theme.value : 'auto' %}
+<html lang="{{ app.request.locale }}"{% if theme != 'auto' %} data-theme="{{ theme }}"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,11 +16,16 @@
             {% if app.user %}
                 <nav class="flex items-center gap-4">
                     <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.plan'|trans }}</a>
-                    <a href="{{ path('app_profile') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.my_profile'|trans }}</a>
-                    <form method="post" action="{{ path('app_logout') }}">
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                        <twig:Button type="submit" variant="secondary" size="sm">{{ 'layout.log_out'|trans }}</twig:Button>
-                    </form>
+                    <twig:Dropdown id="profile-menu" :label="'layout.my_profile'|trans">
+                        <a href="{{ path('app_settings') }}">{{ 'layout.settings'|trans }}</a>
+                        <a href="{{ path('app_history') }}">{{ 'layout.history'|trans }}</a>
+                        <a href="{{ path('app_unwanted_films') }}">{{ 'layout.unwanted_films'|trans }}</a>
+                        <hr class="my-1 border-line">
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button type="submit">{{ 'layout.log_out'|trans }}</button>
+                        </form>
+                    </twig:Dropdown>
                 </nav>
             {% endif %}
         </div>

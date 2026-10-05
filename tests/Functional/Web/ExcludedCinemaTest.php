@@ -38,7 +38,7 @@ final class ExcludedCinemaTest extends WebTestCase
         return $client;
     }
 
-    public function testACinemaExcludedFromASearchComesBackFromMyProfile(): void
+    public function testACinemaExcludedFromASearchComesBackFromMySettings(): void
     {
         // Arrange
         $client = $this->signedInWithDijonCatalog();
@@ -49,16 +49,16 @@ final class ExcludedCinemaTest extends WebTestCase
         $client->submit($crawler->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
         $redirect = $client->getResponse();
         $withoutTheCinema = $client->followRedirect()->filter('.programme')->count();
-        $profile = $client->request('GET', '/profile');
-        $listedOnProfile = $profile->filter('#excluded-cinemas')->text();
-        $client->submit($profile->filter('#excluded-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
+        $settings = $client->request('GET', '/settings');
+        $listedInSettings = $settings->filter('#excluded-cinemas')->text();
+        $client->submit($settings->filter('#excluded-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
         $withTheCinemaAgain = $client->request('GET', '/', self::SEARCH)->filter('.programme')->count();
 
         // Assert
         self::assertSame(['cinema-pathe-dijon'], $listedBefore);
         self::assertSame(303, $redirect->getStatusCode());
         self::assertSame(0, $withoutTheCinema);
-        self::assertStringContainsString('Pathé Dijon', $listedOnProfile);
+        self::assertStringContainsString('Pathé Dijon', $listedInSettings);
         self::assertSame(3, $withTheCinemaAgain);
     }
 

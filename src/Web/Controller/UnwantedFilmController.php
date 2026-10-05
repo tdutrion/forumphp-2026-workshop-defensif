@@ -4,6 +4,7 @@ namespace App\Web\Controller;
 
 use App\Account\Entity\User;
 use App\Account\UnwantedFilmService;
+use App\Web\PostRedirectGet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,8 +14,10 @@ use Symfony\UX\Turbo\TurboBundle;
 
 class UnwantedFilmController extends AbstractController
 {
-    public function __construct(private UnwantedFilmService $unwantedFilmService)
-    {
+    public function __construct(
+        private UnwantedFilmService $unwantedFilmService,
+        private PostRedirectGet $postRedirectGet,
+    ) {
     }
 
     #[Route('/films/{slug}/unwanted', name: 'app_film_unwanted', methods: ['POST'])]
@@ -45,17 +48,14 @@ class UnwantedFilmController extends AbstractController
     }
 
     /**
-     * From a search (hidden "_return" field): Post/Redirect/Get back to the same search, now updated.
+     * From a list or a search (hidden "_return_route" and "_return" fields): Post/Redirect/Get back to it, now updated.
      * Otherwise, with Turbo: a stream that replaces every button of the film; without JavaScript: the film page.
      */
     private function respond(Request $request, string $slug, bool $unwanted): Response
     {
-        $return = $request->request->getString('_return');
-        if ('' !== $return) {
-            // Only the query of the planner page is taken back: no redirect to a URL chosen by the client.
-            parse_str($return, $query);
-
-            return $this->redirectToRoute('app_home', $query, Response::HTTP_SEE_OTHER);
+        $back = $this->postRedirectGet->back($request);
+        if (null !== $back) {
+            return $back;
         }
 
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {

@@ -30,6 +30,35 @@ class SeenFilmRepository extends ServiceEntityRepository
             ->getSingleColumnResult();
     }
 
+    public function countByUser(string $userId): int
+    {
+        return (int) $this->createQueryBuilder('s')
+            ->select('COUNT(s.id)')
+            ->where('s.user = :user')
+            ->setParameter('user', $userId, 'uuid')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return array rows 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt', latest first
+     */
+    public function findPageByUser(string $userId, int $offset, int $limit): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('f.slug', 'f.title', 'f.posterUrl', 'f.synopsis', 's.seenAt AS markedAt')
+            ->join('s.film', 'f')
+            ->where('s.user = :user')
+            ->setParameter('user', $userId, 'uuid')
+            // UUID v7: the identifier breaks the ties of a same second in the order of creation.
+            ->orderBy('s.seenAt', 'DESC')
+            ->addOrderBy('s.id', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     public function findOneByUserAndFilm(string $userId, string $filmSlug): ?SeenFilm
     {
         return $this->createQueryBuilder('s')

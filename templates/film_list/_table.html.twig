@@ -1,0 +1,50 @@
+{#
+    One page of films of the user, as a table.
+    Parameters: films (App\Account\FilmPage), route (of this list), list ('seen' or 'unwanted'), date_label.
+    The buttons of a row come back to this very page (Post/Redirect/Get).
+#}
+{% set return = {return_route: route, return_to: 'page=' ~ films.page} %}
+{% if films.films is empty %}
+    <p class="text-ink-muted">{{ 'film_list.empty'|trans }}</p>
+{% else %}
+    <table class="w-full text-left text-sm">
+        <thead class="border-b border-line text-xs uppercase text-ink-muted">
+            <tr>
+                <th scope="col" class="py-2 pe-3">{{ 'planner.films.film'|trans }}</th>
+                <th scope="col" class="hidden py-2 pe-3 sm:table-cell">{{ date_label }}</th>
+                <th scope="col" class="py-2"><span class="sr-only">{{ 'film.actions'|trans }}</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for film in films.films %}
+                <tr class="border-b border-line align-top last:border-0">
+                    <td class="py-3 pe-3">
+                        <div class="flex gap-3">
+                            {% if film.posterUrl %}
+                                <img src="{{ film.posterUrl }}" alt="" width="48" class="hidden h-auto w-12 shrink-0 rounded sm:block">
+                            {% endif %}
+                            <div class="min-w-0">
+                                <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
+                                {% if film.synopsis %}<p class="mt-1 line-clamp-2 text-ink-muted">{{ film.synopsis }}</p>{% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="hidden whitespace-nowrap py-3 pe-3 text-ink-muted sm:table-cell">{{ film.markedAt|format_date('medium', locale=app.request.locale, timezone='UTC') }}</td>
+                    <td class="py-3 text-end">
+                        <twig:Dropdown compact :label="'film_list.actions'|trans({'%title%': film.title})">
+                            <a href="{{ path('app_film_show', {slug: film.slug}) }}">{{ 'film_list.open'|trans }}</a>
+                            {% if list == 'seen' %}
+                                {{ include('seen/_button.html.twig', {slug: film.slug, seen: true, label: 'film_list.remove_from_history'|trans}|merge(return)) }}
+                                {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false}|merge(return)) }}
+                            {% else %}
+                                {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: true, label: 'film_list.want_again'|trans}|merge(return)) }}
+                                {{ include('seen/_button.html.twig', {slug: film.slug, seen: false}|merge(return)) }}
+                            {% endif %}
+                        </twig:Dropdown>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <twig:Pagination :page="films.page" :pages="films.pages" :route="route" class="mt-4" />
+{% endif %}

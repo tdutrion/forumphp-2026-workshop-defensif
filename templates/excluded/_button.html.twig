@@ -1,5 +1,6 @@
 <span data-excluded-cinema="{{ slug }}">
     <form method="post" action="{{ path(excluded ? 'app_cinema_include' : 'app_cinema_exclude', {slug: slug}) }}" class="inline">
+        {% if return_route|default('') %}<input type="hidden" name="_return_route" value="{{ return_route }}">{% endif %}
         {% if return_to|default('') %}<input type="hidden" name="_return" value="{{ return_to }}">{% endif %}
         <input type="hidden" name="_token" value="{{ csrf_token('excluded-cinema') }}">
         <twig:Button type="submit" variant="secondary" size="sm" aria-pressed="{{ excluded ? 'true' : 'false' }}"><twig:Icon name="eye-slash" />{{ (excluded ? 'cinema.undo' : 'cinema.exclude')|trans }}</twig:Button>

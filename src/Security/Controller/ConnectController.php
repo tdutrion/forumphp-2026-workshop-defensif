@@ -62,7 +62,7 @@ class ConnectController extends AbstractController
         } catch (\RuntimeException|\LogicException|IdentityProviderException|ClientExceptionInterface) {
             $this->addFlash('error', $this->translator->trans('security.linking_failed'));
 
-            return $this->redirectToRoute('app_profile');
+            return $this->redirectToRoute('app_settings');
         }
 
         if ($this->accountService->linkProvider($user, $provider, $userInfo)) {
@@ -71,6 +71,6 @@ class ConnectController extends AbstractController
             $this->addFlash('error', $this->translator->trans('security.account_linked_elsewhere', ['%provider%' => $provider]));
         }
 
-        return $this->redirectToRoute('app_profile');
+        return $this->redirectToRoute('app_settings');
     }
 }

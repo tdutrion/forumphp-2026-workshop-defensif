@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'layout.history'|trans }} · Movie Marathon{% endblock %}
+
+{% block body %}
+    <header>
+        <h1 class="text-3xl font-bold">{{ 'layout.history'|trans }}</h1>
+        <p class="text-ink-muted">{{ 'film_list.count'|trans({'%count%': films.total}) }}</p>
+    </header>
+
+    <twig:Card id="film-history">
+        {{ include('film_list/_table.html.twig', {films: films, route: 'app_history', list: 'seen', date_label: 'film_list.seen_on'|trans}) }}
+    </twig:Card>
+{% endblock %}

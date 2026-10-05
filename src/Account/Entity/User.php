@@ -3,6 +3,7 @@
 namespace App\Account\Entity;
 
 use App\Account\Repository\UserRepository;
+use App\Account\Theme;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -28,6 +29,9 @@ class User implements UserInterface
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(length: 5, enumType: Theme::class, options: ['default' => 'auto'])]
+    private Theme $theme = Theme::Auto;
 
     /** @var Collection<int, LinkedAccount> */
     #[ORM\OneToMany(targetEntity: LinkedAccount::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
@@ -103,6 +107,18 @@ class User implements UserInterface
     public function removeLinkedAccount(LinkedAccount $linkedAccount): static
     {
         $this->linkedAccounts->removeElement($linkedAccount);
+
+        return $this;
+    }
+
+    public function getTheme(): Theme
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(Theme $theme): static
+    {
+        $this->theme = $theme;
 
         return $this;
     }

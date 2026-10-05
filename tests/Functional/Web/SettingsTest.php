@@ -4,14 +4,12 @@ namespace App\Tests\Functional\Web;
 
 use App\Account\ApiTokenService;
 use App\Account\Entity\User;
-use App\Account\SeenFilmService;
-use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\UserBuilder;
 use App\Tests\StoresEntities;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-final class ProfileTest extends WebTestCase
+final class SettingsTest extends WebTestCase
 {
     use StoresEntities;
 
@@ -32,34 +30,75 @@ final class ProfileTest extends WebTestCase
         return self::getContainer()->get(ApiTokenService::class);
     }
 
-    public function testShowsTheSeenFilmsTheConnectionsAndTheProvidersLeftToLink(): void
+    public function testTheProfileMenuLeadsToTheSettingsTheHistoryTheUnwantedFilmsAndSigningOut(): void
     {
         // Arrange
         $client = $this->signedInAs(UserBuilder::aUser());
-        $this->store(FilmBuilder::aFilm()->withSlug('digger-51293')->titled('Digger')->lasting(129)->build());
-        self::getContainer()->get(SeenFilmService::class)->markSeen($this->user->getUserIdentifier(), 'digger-51293');
 
         // Act
-        $client->request('GET', '/profile');
+        $menu = $client->request('GET', '/settings')->filter('#profile-menu');
+
+        // Assert
+        self::assertSame(['/settings', '/history', '/not-for-me'], $menu->filter('a')->each(static fn ($link) => $link->attr('href')));
+        self::assertSame('/logout', $menu->filter('form')->attr('action'));
+    }
+
+    public function testShowsTheConnectionsAndTheProvidersLeftToLink(): void
+    {
+        // Arrange
+        $client = $this->signedInAs(UserBuilder::aUser());
+
+        // Act
+        $client->request('GET', '/settings');
 
         // Assert
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('#seen-films', 'Digger');
         self::assertSelectorTextContains('#connections', 'local');
         self::assertSelectorExists('#connections a[href="/connect/github?link=1"]');
         self::assertSelectorNotExists('#connections a[href="/connect/local?link=1"]');
+    }
+
+    public function testTheChosenThemeIsKeptOnEveryPage(): void
+    {
+        // Arrange
+        $client = $this->signedInAs(UserBuilder::aUser());
+        $automaticByDefault = $client->request('GET', '/settings')->filter('html')->attr('data-theme');
+        $form = $client->getCrawler()->filter('#theme form')->form(['theme' => 'dark']);
+
+        // Act
+        $client->submit($form);
+        $redirect = $client->getResponse();
+        $client->request('GET', '/');
+
+        // Assert
+        self::assertNull($automaticByDefault);
+        self::assertSame(303, $redirect->getStatusCode());
+        self::assertSelectorExists('html[data-theme="dark"]');
+    }
+
+    public function testAnUnknownThemeIsRefused(): void
+    {
+        // Arrange
+        $client = $this->signedInAs(UserBuilder::aUser());
+        $token = $client->request('GET', '/settings')->filter('#theme input[name="_token"]')->attr('value');
+
+        // Act
+        $client->request('POST', '/settings/theme', ['theme' => 'neon', '_token' => $token]);
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
     }
 
     public function testANewTokenIsShownOnlyOnce(): void
     {
         // Arrange
         $client = $this->signedInAs(UserBuilder::aUser());
-        $form = $client->request('GET', '/profile')->selectButton('Create a token')->form(['name' => 'My app']);
+        $form = $client->request('GET', '/settings')->selectButton('Create a token')->form(['name' => 'My app']);
 
         // Act
         $client->submit($form);
         $plain = $client->getCrawler()->filter('#new-token code')->text();
-        $client->request('GET', '/profile');
+        $client->request('GET', '/settings');
 
         // Assert
         self::assertStringStartsWith('mm_', $plain);
@@ -73,13 +112,13 @@ final class ProfileTest extends WebTestCase
         // Arrange
         $client = $this->signedInAs(UserBuilder::aUser());
         $plain = $this->tokens()->create($this->user, 'To revoke');
-        $form = $client->request('GET', '/profile')->selectButton('Revoke')->form();
+        $form = $client->request('GET', '/settings')->selectButton('Revoke')->form();
 
         // Act
         $client->submit($form);
 
         // Assert
-        self::assertResponseRedirects('/profile');
+        self::assertResponseRedirects('/settings');
         self::assertNull($this->tokens()->findUserByToken($plain));
     }
 
@@ -89,11 +128,11 @@ final class ProfileTest extends WebTestCase
         $client = $this->signedInAs(UserBuilder::aUser()->linkedTo('local', 'ada@example.org')->linkedTo('github', '42'));
 
         // Act
-        $client->submit($client->request('GET', '/profile')->filter('#connections form')->first()->form());
-        $client->submit($client->request('GET', '/profile')->filter('#connections form')->first()->form());
+        $client->submit($client->request('GET', '/settings')->filter('#connections form')->first()->form());
+        $client->submit($client->request('GET', '/settings')->filter('#connections form')->first()->form());
 
         // Assert
-        self::assertResponseRedirects('/profile');
+        self::assertResponseRedirects('/settings');
         $client->followRedirect();
         self::assertSelectorTextContains('.flash-error', 'last connection');
         self::assertCount(1, $client->getCrawler()->filter('#connections li'));
