@@ -12,7 +12,7 @@ final class LegalPagesTest extends WebTestCase
         $client = self::createClient();
 
         // Act
-        $footer = $client->request('GET', '/login', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr'])->filter('footer a');
+        $footer = $client->request('GET', '/login', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr'])->filter('footer a[href^="/legal/"]');
         $pages = [];
         foreach ($footer->each(static fn ($link) => $link->attr('href')) as $href) {
             $client->request('GET', $href, server: ['HTTP_ACCEPT_LANGUAGE' => 'fr']);

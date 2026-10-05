@@ -23,8 +23,15 @@ class HomeController extends AbstractController
     }
 
     #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function index(Request $request, #[CurrentUser] User $user): Response
+    public function index(Request $request, #[CurrentUser] ?User $user): Response
     {
+        // Same address for everyone: visitors discover the service, signed-in users plan.
+        if (null === $user) {
+            return $this->render('landing/index.html.twig', [
+                'cities' => array_column($this->cityRepository->findAllForSelect(), 'name'),
+            ]);
+        }
+
         $form = $this->createForm(PlanType::class, null, [
             'dates' => $this->calendar->availableDates(new \DateTimeImmutable('now', new \DateTimeZone('UTC'))),
             'cities' => $this->cityRepository->findAllForSelect(),

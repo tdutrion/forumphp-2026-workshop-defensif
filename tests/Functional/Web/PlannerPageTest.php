@@ -41,18 +41,6 @@ final class PlannerPageTest extends WebTestCase
         return ['plan' => $criteria + ['date' => '2030-01-10', 'films' => 2]];
     }
 
-    public function testAnonymousVisitorsAreSentToTheSignInPage(): void
-    {
-        // Arrange
-        $client = self::createClient();
-
-        // Act
-        $client->request('GET', '/');
-
-        // Assert
-        self::assertResponseRedirects('/login');
-    }
-
     public function testThePageListensToCatalogUpdatesInTheLanguageOfTheVisitor(): void
     {
         // Arrange

@@ -50,6 +50,8 @@
                         </form>
                     </twig:Dropdown>
                 </nav>
+            {% elseif app.request.attributes.get('_route') != 'app_login' %}
+                <twig:Button tag="a" href="{{ path('app_login') }}" variant="secondary" size="sm">{{ 'security.sign_in'|trans }}</twig:Button>
             {% endif %}
         </div>
     </header>
@@ -67,6 +69,8 @@
                 <a href="{{ path('app_legal_notice') }}" class="hover:text-ink hover:underline">{{ 'legal.notice.title'|trans }}</a>
                 <a href="{{ path('app_legal_terms') }}" class="hover:text-ink hover:underline">{{ 'legal.terms.title'|trans }}</a>
                 <a href="{{ path('app_legal_privacy') }}" class="hover:text-ink hover:underline">{{ 'legal.privacy.title'|trans }}</a>
+                {# AGPL-3.0, section 13: the users of the service are offered its source code. #}
+                <a href="{{ source_code_url }}" class="hover:text-ink hover:underline">{{ 'layout.footer.source_code'|trans }}</a>
             </nav>
         </div>
     </footer>
