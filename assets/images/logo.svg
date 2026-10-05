@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!--
-    ScreenRoute app icon and favicon: the symbol of templates/components/Logo.html.twig, its route in
-    white on the brand blue tile. The symbol: a route in S (the S of ScreenRoute) from a start ring to a
-    film reel, black and orange, the cinema at the end of the road. Keep both drawings in line.
+    ScreenRoute logo, app icon and favicon: a clapperboard whose slate carries the route in S (the S of
+    ScreenRoute) from its start ring. Same drawing as templates/components/Logo.html.twig: keep both in line.
   -->
-  <rect width="64" height="64" rx="15" fill="#2980b9"/>
-  <g transform="translate(6.4 6.4) scale(0.8)">
-    <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H40" fill="none" stroke="#fff" stroke-width="10"/>
-    <circle cx="16" cy="51" r="5.5" fill="none" stroke="#fff" stroke-width="4.5"/>
-    <circle cx="46.5" cy="15" r="10.2" fill="#111111" stroke="#e67e22" stroke-width="2.2"/>
-    <circle cx="46.50" cy="9.40" r="2.2" fill="#e67e22"/>
-    <circle cx="51.83" cy="13.27" r="2.2" fill="#e67e22"/>
-    <circle cx="49.79" cy="19.53" r="2.2" fill="#e67e22"/>
-    <circle cx="43.21" cy="19.53" r="2.2" fill="#e67e22"/>
-    <circle cx="41.17" cy="13.27" r="2.2" fill="#e67e22"/>
-    <circle cx="46.5" cy="15" r="1.5" fill="#e67e22"/>
+  <g transform="rotate(-12 6 22.5)">
+    <rect x="6" y="13.5" width="52" height="9" rx="2.5" fill="#e67e22"/>
+    <polygon points="12,22.5 17.5,22.5 22.5,13.5 17,13.5" fill="#2980b9"/>
+    <polygon points="23,22.5 28.5,22.5 33.5,13.5 28,13.5" fill="#2980b9"/>
+    <polygon points="34,22.5 39.5,22.5 44.5,13.5 39,13.5" fill="#2980b9"/>
+    <polygon points="45,22.5 50.5,22.5 55.5,13.5 50,13.5" fill="#2980b9"/>
+  </g>
+  <rect x="6" y="25" width="52" height="34" rx="6" fill="#2980b9"/>
+  <g transform="translate(13.29 22.75) scale(0.574)" fill="none" stroke="#fff">
+    <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H43" stroke-width="10"/>
+    <circle cx="43" cy="15" r="5" fill="#fff" stroke="none"/>
+    <circle cx="16" cy="51" r="5.5" stroke-width="4.5"/>
   </g>
 </svg>
