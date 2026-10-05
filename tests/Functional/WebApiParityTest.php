@@ -16,7 +16,7 @@ final class WebApiParityTest extends WebTestCase
     {
         // Arrange
         $this->arrangeDijonCatalogWithToken();
-        $criteria = ['date' => '2030-01-10', 'city' => 'dijon', 'radius' => 10, 'films' => 2];
+        $criteria = ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2];
 
         // Act
         $api = $this->api('GET', '/api/plans', $criteria);

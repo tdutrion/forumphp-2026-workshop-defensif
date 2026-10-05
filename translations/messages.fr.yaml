@@ -13,7 +13,6 @@
 'Date': 'Date'
 'City': 'Ville'
 'Choose a city': 'Choisir une ville'
-'Radius (km)': 'Rayon (km)'
 'Number of films': 'Nombre de films'
 'Version': 'Version'
 'Any': 'Toutes'
@@ -64,7 +63,6 @@
 'Not for me': 'Pas pour moi'
 'Hidden ✓ (undo)': 'Masqué ✓ (annuler)'
 "Films I don't want to see": 'Films que je ne veux pas voir'
-'No programme: no sequence of showtimes chains together, even with two films. Try a larger radius, another way of getting around or the ads option.': "Aucun programme : aucune suite de séances ne s'enchaîne, même avec deux films. Essayez un rayon plus grand, un autre moyen de déplacement ou l'option « pubs »."
 'No marathon of %requested% films is possible: here are programmes of %count% films.': "Aucun marathon de %requested% films n'est possible : voici des programmes de %count% films."
 'Film actions': 'Actions du film'
 'Between the two showtimes': 'Entre les deux séances'
@@ -77,3 +75,4 @@
 'VOST and VO also include the films made in the language of the cinema.': 'La VOST et la VO incluent aussi les films tournés dans la langue du cinéma.'
 'From': 'De'
 'Until': "Jusqu'à"
+'No programme: no sequence of showtimes chains together, even with two films. Try another time range, another way of getting around or the ads option.': "Aucun programme : aucune suite de séances ne s'enchaîne, même avec deux films. Essayez une autre plage horaire, un autre moyen de déplacement ou l'option « pubs »."

@@ -15,7 +15,7 @@ final class UnwantedFilmTest extends WebTestCase
 {
     use StoresEntities;
 
-    private const SEARCH = ['plan' => ['date' => '2030-01-10', 'city' => 'dijon', 'radius' => 10, 'films' => 2]];
+    private const SEARCH = ['plan' => ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2]];
 
     /**
      * Pathé Dijon with four films of 100 minutes on January 10, 2030, and a signed-in user.

@@ -30,7 +30,6 @@ class PlanController extends AbstractController
     #[OA\Parameter(name: 'until', in: 'query', required: false, description: 'Latest end, local time (H:i), after from: the range stays within the day', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'city', in: 'query', required: false, description: 'City slug (or position)', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'position', in: 'query', required: false, description: 'JSON position, e.g. {"lat": 47.32, "lng": 5.04}', schema: new OA\Schema(type: 'string'))]
-    #[OA\Parameter(name: 'radius', in: 'query', required: false, description: 'Radius in km (1 to 50, default 10)', schema: new OA\Schema(type: 'integer'))]
     #[OA\Parameter(name: 'films', in: 'query', required: false, description: 'Number of films (2 to 5, default 3)', schema: new OA\Schema(type: 'integer'))]
     #[OA\Parameter(name: 'version', in: 'query', required: false, description: 'vf, vost, vo or vfst; vost and vo also include the films made in the language of the cinema (French films at Pathé)', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'travelMode', in: 'query', required: false, description: 'walking, cycling, transit (default) or car: sets the travel time between two cinemas', schema: new OA\Schema(type: 'string'))]
@@ -43,7 +42,7 @@ class PlanController extends AbstractController
             'dates' => $this->calendar->availableDates(new \DateTimeImmutable('now', new \DateTimeZone('UTC'))),
             'cities' => $this->cityRepository->findAllForSelect(),
         ]);
-        // false: missing parameters keep their default value (radius 10, 3 films).
+        // false: missing parameters keep their default value (3 films, public transport).
         $form->submit($request->query->all(), false);
 
         if (!$form->isValid()) {

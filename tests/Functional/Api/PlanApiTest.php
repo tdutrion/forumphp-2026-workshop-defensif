@@ -98,13 +98,13 @@ final class PlanApiTest extends WebTestCase
         $this->arrangeDijonCatalogWithToken();
 
         // Act
-        $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'radius' => 80]);
+        $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'films' => 9]);
 
         // Assert
         self::assertResponseStatusCodeSame(422);
         self::assertResponseHeaderSame('content-type', 'application/problem+json');
         self::assertSame('Invalid parameters', $body['title']);
-        self::assertContains(['field' => 'radius', 'message' => 'The radius must be between 1 and 50 km.'], $body['errors']);
+        self::assertContains(['field' => 'films', 'message' => 'Choose between 2 and 5 films.'], $body['errors']);
         self::assertContains(['field' => 'city', 'message' => 'Choose a city or use your position.'], $body['errors']);
     }
 

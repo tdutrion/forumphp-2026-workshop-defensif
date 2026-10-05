@@ -59,10 +59,11 @@ order.
 ## 4. Planner input (20 min) — PHP 8.0, 8.6 (polyfill)
 
 - **Starting point**: `PlannerService::plan(array $criteria, string $userId)`
-  (`$criteria['radius'] ?? 10`), `PlannerService::planFromForm()`, `PlanType` without `data_class`.
+  (`$criteria['radius'] ?? self::DEFAULT_RADIUS_KM`, `$criteria['from'] ?? null`), `PlannerService::planFromForm()`,
+  `PlanType` without `data_class`, the time range as two `'H:i'` strings compared as text.
 - **Goal**: `PlanRequest` DTO (readonly, constructor promotion);
   `#[MapQueryString]` + Validator in `Api\Controller\PlanController`;
-  value objects `Radius` (with the polyfill 8.6 `clamp()`) and `FilmCount`.
+  value objects `FilmCount` (with the polyfill 8.6 `clamp()`) and `TimeRange`.
 
 ## 5. Planner output (20 min) — PHP 8.2, 8.5
 

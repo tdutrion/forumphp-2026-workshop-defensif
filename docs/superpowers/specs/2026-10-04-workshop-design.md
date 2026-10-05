@@ -180,7 +180,7 @@ Only the sync command calls Pathé. The site only reads the database.
 | Date     | a day that still has a bookable showtime (Pathé publishes the current week, from Wednesday to Tuesday); once today's last showtime has passed, the form opens on tomorrow |
 | Time range | optional "from" and "until" (local time of the cinema): the first showtime starts at or after "from", the last one ends at or before "until", on the same day; an "until" at or before "from" makes the search invalid (form error, 422 in the API) |
 | Place    | a Pathé city (autocomplete on the synchronized cities) or the browser position                            |
-| Radius   | 1 to 50 km, 10 km by default                                                                              |
+| Radius   | none in the form: fixed at 10 km around the city or the position (`PlannerService::DEFAULT_RADIUS_KM`)   |
 | Films    | 2 to 5                                                                                                    |
 | Version  | optional: VF, VOST, VO, VFST. VOST and VO also keep the films made in the language of the cinema's chain (`language` in `app.chains`: a French film in VF at Pathé, an English film at Cineworld UK); the original language comes from the film's nationality (`/show/{slug}`), read once per film |
 | Ads      | checkbox "I accept arriving during the ads (15 minutes)"                                                  |
@@ -243,7 +243,7 @@ A showtime is a candidate if it meets all these conditions:
    page explains it ("No marathon of 4 films is possible: here are programmes
    of 3 films.").
 5. If fewer than 3 exist, the ones found are returned, with a message that
-   explains why (no candidate showtime, radius too small, nothing chains even
+   explains why (no candidate showtime, nothing chains even
    with two films…).
 
 ### "Already seen"
@@ -460,7 +460,7 @@ not executable on PHP 8.5.
 | `readonly` classes | 8.2 | value objects with a forgotten property | `final readonly class` | 8 |
 | DNF types, standalone `true`/`false`/`null` | 8.2 | `array|false` as a return | precise type or Result | 5 |
 | `#[\SensitiveParameter]` | 8.2 | OAuth secrets, tokens | — | shown |
-| Typed class constants | 8.3 | `const DEFAULT_RADIUS = 10` | `const int DEFAULT_RADIUS = 10` | 13 |
+| Typed class constants | 8.3 | `const DEFAULT_RADIUS_KM = 10` | `const int DEFAULT_RADIUS_KM = 10` | 13 |
 | `#[\Override]` | 8.3 | OAuth provider implementations | `#[\Override]` | 9 |
 | `json_validate()` | 8.3 | same field: full decoding just to know whether it is valid | `json_validate()` | 11 |
 | Deep cloning of `readonly` | 8.3 | cloned programme that shares its showtimes | `__clone` with reassignment | 8 |
@@ -479,11 +479,11 @@ not executable on PHP 8.5.
 | URI extension: reading a received URL | 8.5 | `preg_match` on the `refCmd` booking link | `Uri\Rfc3986\Uri::parse()` then reading the host and the path | 15 |
 | `array_first`/`array_last` | 8.5 | `reset()`/`end()` on the showtimes | native functions | 12 |
 | `final` promoted properties | 8.5 | — | `final` on promoted properties | 8 |
-| `clamp()` | 8.6 (polyfill) | `max(1, min(50, $radius))` | `clamp()` in `Radius` | 4 |
+| `clamp()` | 8.6 (polyfill) | the 2–5 range of the number of films | `clamp()` in `FilmCount` | 4 |
 | `SortDirection` enum | 8.6 (polyfill) | `'asc'`/`'desc'` as strings in lists | `\SortDirection` | 16 |
 | `Time\Duration` | 8.6 (polyfill-time) | durations in whole minutes | `Time\Duration` | 3 |
 | `readonly` default values, partial application | 8.6 | — | — | shown (slide) |
-| Self-validating value objects | — | slugs, coordinates, radius as scalars | `CinemaSlug`, `Coordinates`, `Radius` | 1, 4 |
+| Self-validating value objects | — | slugs, coordinates, time range as scalars | `CinemaSlug`, `Coordinates`, `TimeRange` | 1, 4 |
 | Parse, don't validate (boundary) | — | inconsistent Pathé shapes propagated | normalization in `Pathe` | 1 |
 | `find`/`get` pair | — | `findBySlug(): ?array` everywhere | `find(): ?X`, `get(): X` | 6 |
 | Result for expected failures | — | `plan(): array\|false` | `PlanResult` | 5 |
@@ -517,7 +517,7 @@ are extensions, to be done in any order.
 | 1 | Pathé boundary: value objects, response normalization | 25 min |
 | 2 | Enums: versions and booking statuses | 15 min |
 | 3 | Time: `ScreeningTime`, `Time\Duration` | 20 min |
-| 4 | Planner input: DTO, `#[MapQueryString]`, `Radius`, `FilmCount` | 20 min |
+| 4 | Planner input: DTO, `#[MapQueryString]`, `FilmCount`, `TimeRange` | 20 min |
 | 5 | Planner output: typed collection, `PlanResult`, `#[\NoDiscard]` | 20 min |
 | 6 | Repositories: `find`/`get`, business exceptions | 15 min |
 | 7 | Entities: invariants, asymmetric visibility, property hooks, Doctrine | 45 min |

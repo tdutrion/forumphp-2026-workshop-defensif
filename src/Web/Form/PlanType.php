@@ -74,11 +74,6 @@ class PlanType extends AbstractType
                 'required' => false,
                 'attr' => ['data-geolocation-target' => 'position'],
             ])
-            ->add('radius', IntegerType::class, [
-                'label' => 'Radius (km)',
-                'data' => 10,
-                'constraints' => [new Range(min: 1, max: 50, notInRangeMessage: 'The radius must be between {{ min }} and {{ max }} km.')],
-            ])
             ->add('travelMode', ChoiceType::class, [
                 'label' => 'Getting around',
                 'choices' => ['On foot' => 'walking', 'By bike' => 'cycling', 'Public transport' => 'transit', 'By car' => 'car'],

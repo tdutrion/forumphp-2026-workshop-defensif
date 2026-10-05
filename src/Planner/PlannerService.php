@@ -12,6 +12,8 @@ use App\Catalog\Repository\ShowtimeRepository;
  */
 class PlannerService
 {
+    public const DEFAULT_RADIUS_KM = 10;
+
     public function __construct(
         private CinemaRepository $cinemaRepository,
         private ShowtimeRepository $showtimeRepository,
@@ -36,7 +38,8 @@ class PlannerService
      */
     public function plan(array $criteria, string $userId): array|false
     {
-        $radius = $criteria['radius'] ?? 10;
+        // Fixed search radius around the city or the position (the form has no radius field).
+        $radius = $criteria['radius'] ?? self::DEFAULT_RADIUS_KM;
         $films = $criteria['films'] ?? 3;
 
         $cinemaSlugs = [];
@@ -98,7 +101,7 @@ class PlannerService
     /**
      * Plans from the PlanType form data (website or API).
      *
-     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds', 'travelMode', 'from', 'until'
+     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'films', 'version', 'acceptAds', 'travelMode', 'from', 'until'
      *
      * @return array|false like plan(), with the additional reason 'unknown_location'
      */
@@ -119,7 +122,6 @@ class PlannerService
             'date' => $data['date'],
             'latitude' => $location['latitude'],
             'longitude' => $location['longitude'],
-            'radius' => $data['radius'] ?? null,
             'films' => $data['films'] ?? null,
             'version' => $data['version'] ?? null,
             'acceptAds' => $data['acceptAds'] ?? false,

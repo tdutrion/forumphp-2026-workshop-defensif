@@ -38,7 +38,7 @@ final class PlannerPageTest extends WebTestCase
 
     private function search(array $criteria): array
     {
-        return ['plan' => $criteria + ['date' => '2030-01-10', 'radius' => 10, 'films' => 2]];
+        return ['plan' => $criteria + ['date' => '2030-01-10', 'films' => 2]];
     }
 
     public function testAnonymousVisitorsAreSentToTheSignInPage(): void
@@ -236,12 +236,13 @@ final class PlannerPageTest extends WebTestCase
         $client = $this->signedInWithDijonCatalog();
 
         // Act
-        $client->request('GET', '/', $this->search(['radius' => 80]));
+        $client->request('GET', '/', $this->search(['films' => 9]));
 
         // Assert
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('form[name=plan]', 'Choose a city or use your position.');
-        self::assertSelectorTextContains('form[name=plan]', 'The radius must be between 1 and 50 km.');
+        self::assertSelectorTextContains('form[name=plan]', 'Choose between 2 and 5 films.');
+        self::assertSelectorNotExists('#plan_radius', 'the radius is fixed (10 km)');
     }
 
     public function testThePageIsInFrenchForAFrenchBrowser(): void
@@ -251,12 +252,12 @@ final class PlannerPageTest extends WebTestCase
         $client->setServerParameter('HTTP_ACCEPT_LANGUAGE', 'fr-FR,fr;q=0.9,en;q=0.5');
 
         // Act
-        $client->request('GET', '/', $this->search(['city' => 'dijon', 'radius' => 80]));
+        $client->request('GET', '/', $this->search(['city' => 'dijon', 'films' => 9]));
 
         // Assert
         self::assertSelectorTextContains('html', 'Planifier un marathon');
         self::assertSelectorTextContains('label[for=plan_acceptAds]', "J'accepte d'arriver pendant les pubs (15 minutes)");
-        self::assertSelectorTextContains('form[name=plan]', 'Le rayon doit être compris entre 1 et 50 km.');
+        self::assertSelectorTextContains('form[name=plan]', 'Choisissez entre 2 et 5 films.');
         self::assertSelectorTextContains('header', 'Se déconnecter');
         self::assertSelectorTextContains('#plan_travelMode', 'En transports en commun');
     }
