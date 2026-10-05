@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Web;
 
-use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\UserBuilder;
 use App\Tests\StoresEntities;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -15,7 +14,6 @@ final class LandingPageTest extends WebTestCase
     {
         // Arrange
         $client = self::createClient();
-        $this->store(CityBuilder::aCity()->build());
 
         // Act
         $crawler = $client->request('GET', '/', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr']);
@@ -25,7 +23,7 @@ final class LandingPageTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Enchaînez les films');
         self::assertGreaterThan(0, $crawler->filter('main a[href="/login"]')->count(), 'a way to start');
         self::assertGreaterThan(0, $crawler->filter('main a[href$="/docs/self-hosting.md"]')->count(), 'the self-hosting guide');
-        self::assertSelectorTextContains('#coverage', 'Dijon', 'the cities of the catalog');
+        self::assertSelectorTextContains('#coverage', 'Tous les cinémas', 'every cinema of the supported chains, not the cities of a development catalog');
         self::assertSelectorNotExists('form[name="plan"]', 'the planner is for signed-in users');
     }
 

@@ -103,12 +103,10 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    {% if cities is not empty %}
-                        <p id="coverage" class="text-sm text-ink-muted">
-                            <twig:Icon name="map-pin" class="inline size-4 align-text-bottom text-accent-500" />
-                            {{ 'landing.coverage'|trans({'%cities%': cities|join(', ')}) }}
-                        </p>
-                    {% endif %}
+                    <p id="coverage" class="text-sm text-ink-muted">
+                        <twig:Icon name="map-pin" class="inline size-4 align-text-bottom text-accent-500" />
+                        {{ 'landing.coverage'|trans }}
+                    </p>
                 </twig:Card>
                 <twig:Card class="space-y-3 md:col-span-2">
                     <twig:Badge>{{ 'landing.chains.planned'|trans }}</twig:Badge>

@@ -33,7 +33,6 @@ class HomeController extends AbstractController
         // Same address for everyone: visitors discover the service, signed-in users plan.
         if (null === $user) {
             return $this->render('landing/index.html.twig', [
-                'cities' => array_column($this->cityRepository->findAllForSelect(), 'name'),
                 'supportedChains' => array_map(static fn (array $chain): array => ['name' => $chain['name'], 'countries' => [$chain['country']]], array_values($this->chains)),
                 'plannedChains' => $this->plannedChains,
             ]);
