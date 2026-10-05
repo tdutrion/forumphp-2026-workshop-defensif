@@ -132,4 +132,22 @@ final class FilmCatalogTest extends WebTestCase
         self::assertSame('/films?city=dijon&sort=showtimes', $afterLanguage);
         self::assertSame('/films?city=dijon&sort=showtimes', $afterTheme);
     }
+
+    public function testMarksAFilmFromThePageAndComesBackToItsCriteria(): void
+    {
+        // Arrange
+        $client = $this->signedInWithCatalog();
+        $crawler = $client->request('GET', '/films?city=dijon&sort=showtimes');
+
+        // Act
+        $client->submit($crawler->filter('#films [data-film="garance"] [data-seen-film] button')->form());
+        $redirect = $client->getResponse()->headers->get('Location');
+        $client->submit($client->request('GET', '/films?city=dijon')->filter('#films [data-film="digger"] [data-unwanted-film] button')->form());
+        $card = $client->followRedirect()->filter('#films [data-film="digger"]');
+
+        // Assert
+        self::assertSame('/films?city=dijon&sort=showtimes&page=1', $redirect);
+        self::assertContains('garance', self::getContainer()->get(SeenFilmService::class)->getSeenFilmSlugs($this->user->getUserIdentifier()));
+        self::assertSame('true', $card->filter('[data-unwanted-film] button')->attr('aria-pressed'), 'the button shows the new state');
+    }
 }

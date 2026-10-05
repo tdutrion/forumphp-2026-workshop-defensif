@@ -53,17 +53,20 @@
         {% if films.films is empty %}
             <twig:Alert type="info">{{ 'films.empty'|trans }}</twig:Alert>
         {% else %}
+            {% set return = {return_route: 'app_films', return_to: query.toQuery|merge({page: films.page})|url_encode} %}
             <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {% for film in films.films %}
-                    <li data-film="{{ film.slug }}">
-                        <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="group flex h-full gap-4 rounded-card bg-surface p-4 shadow-card ring-1 ring-line hover:ring-brand-600">
-                            {% if film.posterUrl %}
-                                <img src="{{ film.posterUrl }}" alt="" width="72" class="h-auto w-18 shrink-0 self-start rounded">
-                            {% else %}
-                                <span class="flex h-24 w-18 shrink-0 items-center justify-center rounded bg-surface-muted text-ink-muted"><twig:Icon name="film" class="size-6" /></span>
-                            {% endif %}
+                    <li data-film="{{ film.slug }}" class="flex h-full flex-col gap-3 rounded-card bg-surface p-4 shadow-card ring-1 ring-line">
+                        <div class="flex gap-4">
+                            <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="shrink-0 self-start" tabindex="-1" aria-hidden="true">
+                                {% if film.posterUrl %}
+                                    <img src="{{ film.posterUrl }}" alt="" width="72" class="h-auto w-18 rounded">
+                                {% else %}
+                                    <span class="flex h-24 w-18 items-center justify-center rounded bg-surface-muted text-ink-muted"><twig:Icon name="film" class="size-6" /></span>
+                                {% endif %}
+                            </a>
                             <div class="min-w-0 space-y-1">
-                                <h2 class="font-semibold group-hover:text-brand-700">{{ film.title }}</h2>
+                                <h2 class="font-semibold"><a href="{{ path('app_film_show', {slug: film.slug}) }}" class="hover:text-brand-700 hover:underline">{{ film.title }}</a></h2>
                                 <p class="text-sm text-ink-muted">
                                     {% if film.duration %}{{ 'film.running_time'|trans({'%minutes%': film.duration}) }}{% endif %}
                                     {% if film.releaseDate %} · {{ film.releaseDate|format_date('medium', locale=app.request.locale) }}{% endif %}
@@ -71,11 +74,14 @@
                                 <p class="text-sm font-medium text-brand-700">{{ 'films.showtimes'|trans({'%count%': film.showtimes, '%cinemas%': film.cinemas}) }}</p>
                                 <p class="flex flex-wrap gap-1">
                                     {% for genre in film.genres|slice(0, 3) %}<twig:Badge>{{ genre }}</twig:Badge>{% endfor %}
-                                    {% if film.seen %}<twig:Badge tone="brand">{{ 'films.seen'|trans }}</twig:Badge>{% endif %}
-                                    {% if film.unwanted %}<twig:Badge tone="warning">{{ 'films.unwanted'|trans }}</twig:Badge>{% endif %}
                                 </p>
                             </div>
-                        </a>
+                        </div>
+                        {# The buttons come back to this very page, criteria included (Post/Redirect/Get). #}
+                        <twig:ButtonGroup class="button-group-sm mt-auto self-start" aria-label="{{ 'film.actions'|trans }}">
+                            {{ include('seen/_button.html.twig', {slug: film.slug, seen: film.seen}|merge(return)) }}
+                            {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: film.unwanted}|merge(return)) }}
+                        </twig:ButtonGroup>
                     </li>
                 {% endfor %}
             </ul>
