@@ -34,6 +34,8 @@
             {{ form_row(form.version) }}
             <div class="self-center">{{ form_row(form.acceptAds) }}</div>
             <div class="sm:col-span-2">
+                {# The draw used for the programmes below: a new search with other criteria keeps it. #}
+                {{ form_widget(form.seed, {value: seed ?? form.seed.vars.value}) }}
                 <twig:Button type="submit">{{ 'planner.form.submit'|trans }}</twig:Button>
             </div>
         {{ form_end(form) }}
@@ -65,7 +67,7 @@
                                     </td>
                                     <td class="py-2 text-right">
                                         <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'planner.cinemas.actions'|trans }}">
-                                            {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: cinema.excluded, return_to: app.request.queryString}) }}
+                                            {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: cinema.excluded, return_to: returnQuery}) }}
                                         </twig:ButtonGroup>
                                     </td>
                                 </tr>
@@ -118,8 +120,8 @@
                                     </td>
                                     <td class="py-2 text-right">
                                         <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'film.actions'|trans }}">
-                                            {{ include('seen/_button.html.twig', {slug: film.slug, seen: false, return_to: app.request.queryString}) }}
-                                            {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false, return_to: app.request.queryString}) }}
+                                            {{ include('seen/_button.html.twig', {slug: film.slug, seen: false, return_to: returnQuery}) }}
+                                            {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false, return_to: returnQuery}) }}
                                         </twig:ButtonGroup>
                                     </td>
                                 </tr>
@@ -131,6 +133,11 @@
             </twig:Card>
         {% endif %}
 
+        {% if otherProgrammesQuery and result.programmes is not empty %}
+            <div class="flex justify-end">
+                <twig:Button tag="a" variant="secondary" href="{{ path('app_home', otherProgrammesQuery) }}" id="other-programmes">{{ 'planner.other_programmes'|trans }}</twig:Button>
+            </div>
+        {% endif %}
         <div class="grid gap-6 lg:grid-cols-3">
             {% for programme in result.programmes %}
                 {{ include('home/_programme.html.twig', {programme: programme, number: loop.index}) }}

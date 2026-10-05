@@ -7,6 +7,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    # The planner draws its programmes among this many best ones (ProgrammeSelector).
+    app.planner.draw_pool: 10
 
 services:
     # default configuration for services in *this* file
@@ -40,6 +42,10 @@ services:
     # please note that last definitions always *replace* previous ones
 
 when@test:
+    parameters:
+        # As many as shown: the functional tests always get the best programmes, the draw has its unit tests.
+        app.planner.draw_pool: 3
+
     services:
         # Use cases called directly by the integration tests (also kept when no controller uses them yet).
         App\Account\AccountService: { autowire: true, public: true }

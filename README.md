@@ -66,7 +66,7 @@ The catalog is never synchronized on its own: set `CATALOG_SCHEDULE_ENABLED=1` i
 sync never run together (lock in MySQL).
 
 The API is documented at https://localhost/api/doc; create a personal token
-from your profile page.
+from **My profile › My settings** (https://localhost/settings).
 
 ## Production image
 

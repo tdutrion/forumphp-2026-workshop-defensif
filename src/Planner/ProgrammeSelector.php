@@ -2,22 +2,37 @@
 
 namespace App\Planner;
 
+use Random\Engine\Xoshiro256StarStar;
+use Random\Randomizer;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
 /**
- * Keeps the best programmes, pairwise different.
+ * Keeps good programmes, pairwise different.
  */
 class ProgrammeSelector
 {
+    /** With a seed, the programmes are drawn among this many best ones (app.planner.draw_pool). */
+    public const POOL = 10;
+
+    public function __construct(#[Autowire('%app.planner.draw_pool%')] private int $pool = self::POOL)
+    {
+    }
+
     /**
-     * @param array $programmes programmes produced by ChainBuilder::build()
+     * @param array    $programmes programmes produced by ChainBuilder::build()
+     * @param int|null $seed       null: the $max best ones; otherwise $max drawn among the pool of best
+     *                             ones, always the same for the same seed (a new seed, other programmes)
      *
      * @return array at most $max programmes, from least wait to most wait (then from least travel to most travel)
      */
-    public function select(array $programmes, int $max = 3): array
+    public function select(array $programmes, int $max = 3, ?int $seed = null): array
     {
-        usort($programmes, static fn (array $a, array $b) => [$a['wait'], $a['distance']] <=> [$b['wait'], $b['distance']]);
+        $score = static fn (array $a, array $b) => [$a['wait'], $a['distance']] <=> [$b['wait'], $b['distance']];
+        usort($programmes, $score);
 
-        $selected = [];
+        $candidates = [];
         $filmSets = [];
+        $wanted = null === $seed ? $max : max($max, $this->pool);
         foreach ($programmes as $programme) {
             $films = array_column($programme['showtimes'], 'filmSlug');
             sort($films);
@@ -26,12 +41,19 @@ class ProgrammeSelector
                 continue;
             }
             $filmSets[$key] = true;
-            $selected[] = $programme;
-            if (\count($selected) === $max) {
+            $candidates[] = $programme;
+            if (\count($candidates) === $wanted) {
                 break;
             }
         }
 
-        return $selected;
+        if (null === $seed || \count($candidates) <= $max) {
+            return array_slice($candidates, 0, $max);
+        }
+
+        $drawn = (new Randomizer(new Xoshiro256StarStar($seed)))->pickArrayKeys($candidates, $max);
+
+        // pickArrayKeys() keeps the order of the array: the best of the drawn programmes come first.
+        return array_values(array_intersect_key($candidates, array_flip($drawn)));
     }
 }

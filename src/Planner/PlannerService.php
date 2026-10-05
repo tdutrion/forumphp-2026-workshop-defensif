@@ -14,6 +14,7 @@ use App\Catalog\Repository\ShowtimeRepository;
 class PlannerService
 {
     public const DEFAULT_RADIUS_KM = 10;
+    public const MAX_SEED = 999_999_999;
 
     public function __construct(
         private CinemaRepository $cinemaRepository,
@@ -31,11 +32,13 @@ class PlannerService
      * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number, 1 to 8; 2 by default),
      *                         'version' (or null), 'acceptAds' (bool),
      *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default),
-     *                         'from' and 'until' (local 'H:i' time range, each optional)
+     *                         'from' and 'until' (local 'H:i' time range, each optional),
+     *                         'seed' (draw of the programmes, 0 to MAX_SEED; drawn when null)
      * @param string $userId   user identifier (the films they have already seen are excluded)
      *
      * @return array|false ['programmes' => [...], 'reason' => null|'not_enough_programmes'|'fewer_films'|'no_programme',
-     *                     'films' => number of films per programme (fewer than asked with 'fewer_films')],
+     *                     'films' => number of films per programme (fewer than asked with 'fewer_films'),
+     *                     'seed' => the seed of the draw, to get the same programmes again],
      *                     or false if no showtime matches the place and date
      */
     public function plan(array $criteria, string $userId): array|false
@@ -43,6 +46,7 @@ class PlannerService
         // Fixed search radius around the city or the position (the form has no radius field).
         $radius = $criteria['radius'] ?? self::DEFAULT_RADIUS_KM;
         $films = $criteria['films'] ?? 2;
+        $seed = $criteria['seed'] ?? random_int(0, self::MAX_SEED);
 
         $cinemaSlugs = [];
         $excludedCinemas = $this->excludedCinemaService->getExcludedCinemaSlugs($userId);
@@ -84,6 +88,7 @@ class PlannerService
         do {
             $programmes = $this->programmeSelector->select(
                 $this->chainBuilder->build($showtimes, $films, $criteria['acceptAds'] ?? false, $criteria['travelMode'] ?? 'transit'),
+                seed: $seed,
             );
         } while ([] === $programmes && --$films >= 1);
         $films = max($films, 1);
@@ -101,13 +106,14 @@ class PlannerService
             'programmes' => array_map([$this, 'format'], $programmes),
             'reason' => $reason,
             'films' => $films,
+            'seed' => $seed,
         ];
     }
 
     /**
      * Plans from the PlanType form data (website or API).
      *
-     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'films', 'version', 'acceptAds', 'travelMode', 'from', 'until'
+     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'films', 'version', 'acceptAds', 'travelMode', 'from', 'until', 'seed' (digits or null)
      *
      * @return array|false like plan(), with the additional reason 'unknown_location'
      */
@@ -128,6 +134,7 @@ class PlannerService
             'travelMode' => $data['travelMode'] ?? null,
             'from' => $data['from'] ?? null,
             'until' => $data['until'] ?? null,
+            'seed' => isset($data['seed']) && '' !== $data['seed'] ? (int) $data['seed'] : null,
         ], $userId);
     }
 

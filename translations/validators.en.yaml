@@ -1,4 +1,5 @@
 'planner.date.required': 'Choose a date.'
 'planner.films.range': 'Choose between {{ min }} and {{ max }} films.'
 'planner.location.required': 'Choose a city or use your position.'
+'planner.seed.invalid': 'Invalid draw.'
 'planner.time_range.order': 'The end of the time range must be after its start.'

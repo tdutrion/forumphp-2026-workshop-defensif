@@ -48,8 +48,21 @@ class HomeController extends AbstractController
             }
         }
 
+        // The buttons of the page come back to the same draw; "Other programmes" draws again.
+        $seed = \is_array($result) ? ($result['seed'] ?? null) : null;
+        $query = $request->query->all();
+        $returnQuery = $request->getQueryString();
+        $otherProgrammesQuery = null;
+        if (null !== $seed && \is_array($query['plan'] ?? null)) {
+            $returnQuery = http_build_query(array_replace_recursive($query, ['plan' => ['seed' => $seed]]));
+            $otherProgrammesQuery = array_replace_recursive($query, ['plan' => ['seed' => random_int(0, PlannerService::MAX_SEED)]]);
+        }
+
         return $this->render('home/index.html.twig', [
             'form' => $form,
+            'seed' => $seed,
+            'returnQuery' => $returnQuery,
+            'otherProgrammesQuery' => $otherProgrammesQuery,
             'result' => $result,
             'proposedFilms' => array_values($proposedFilms),
             'nearbyCinemas' => $nearbyCinemas,

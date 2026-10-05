@@ -190,7 +190,7 @@ order.
   profiler: "use an instance of SortDirection instead"); Twig templates fed with arrays;
   flash messages translated by hand where they are added
   (`$this->translator->trans('security.account_linked', ['%provider%' => $provider])`
-  in `ConnectController`, `OAuthAuthenticator` and `ProfileController`).
+  in `ConnectController`, `OAuthAuthenticator` and `SettingsController`).
 - **Goal**: output DTOs + ObjectMapper or Serializer (the OpenAPI doc
   becomes precise by itself); `\SortDirection` enum (polyfill 8.6);
   `TranslatableMessage` (or `t()`) stored in the flash bag and translated by

@@ -78,6 +78,7 @@
 'planner.geolocation.locating': 'Localisation en cours…'
 'planner.geolocation.saved': 'Position enregistrée.'
 'planner.geolocation.unavailable': 'La géolocalisation n''est pas disponible dans ce navigateur.'
+'planner.other_programmes': 'Autres programmes'
 'planner.programme.between': 'Entre les deux séances'
 'planner.programme.book': 'Réserver'
 'planner.programme.break': '%minutes% min de pause'

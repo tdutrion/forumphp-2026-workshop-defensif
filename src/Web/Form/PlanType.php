@@ -14,6 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -75,6 +76,11 @@ class PlanType extends AbstractType
             ->add('position', HiddenType::class, [
                 'required' => false,
                 'attr' => ['data-geolocation-target' => 'position'],
+            ])
+            // Draw of the programmes (see ProgrammeSelector): the same seed, the same programmes.
+            ->add('seed', HiddenType::class, [
+                'required' => false,
+                'constraints' => [new Regex(pattern: '/^\d{1,9}$/', message: 'planner.seed.invalid')],
             ])
             ->add('travelMode', ChoiceType::class, [
                 'label' => 'planner.form.travel_mode',

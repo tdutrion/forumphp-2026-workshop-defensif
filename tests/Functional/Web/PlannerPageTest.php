@@ -139,6 +139,25 @@ final class PlannerPageTest extends WebTestCase
         self::assertNotContains('f4', $listed);
     }
 
+    public function testOtherProgrammesAreDrawnForTheSameSearchAndKeptWhileMarkingFilms(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'dijon']));
+        $seed = $crawler->filter('input[name="plan[seed]"]')->attr('value');
+
+        // Act
+        parse_str((string) parse_url($crawler->selectLink('Other programmes')->attr('href'), \PHP_URL_QUERY), $other);
+        $client->submit($crawler->filter('#proposed-films [data-proposed-film="f3"] [data-seen-film] form')->form());
+        parse_str((string) parse_url((string) $client->getResponse()->headers->get('Location'), \PHP_URL_QUERY), $back);
+
+        // Assert
+        self::assertMatchesRegularExpression('/^\d+$/', (string) $seed, 'the search draws with a seed');
+        self::assertSame('dijon', $other['plan']['city']);
+        self::assertNotSame($seed, $other['plan']['seed']);
+        self::assertSame($seed, $back['plan']['seed'], 'marking a film keeps the same draw');
+    }
+
     public function testTheSearchCanBeLimitedToATimeRange(): void
     {
         // Arrange

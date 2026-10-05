@@ -36,7 +36,8 @@ class PlanController extends AbstractController
     #[OA\Parameter(name: 'version', in: 'query', required: false, description: 'vf, vost, vo or vfst; vost and vo also include the films made in the language of the cinema (French films at Pathé)', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'travelMode', in: 'query', required: false, description: 'walking, cycling, transit (default) or car: sets the travel time between two cinemas', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'acceptAds', in: 'query', required: false, description: '1 to accept arriving during the ads (15 minutes)', schema: new OA\Schema(type: 'string'))]
-    #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), and the reason if there are fewer')]
+    #[OA\Parameter(name: 'seed', in: 'query', required: false, description: 'Draw of the programmes among the best ones (0 to 999999999): the same seed gives the same programmes; drawn when missing', schema: new OA\Schema(type: 'integer'))]
+    #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), the reason if there are fewer, and the seed of the draw')]
     #[OA\Response(response: 422, description: 'Invalid parameters')]
     public function plan(Request $request, #[CurrentUser] User $user): JsonResponse
     {
@@ -103,7 +104,7 @@ class PlanController extends AbstractController
             ];
         }
 
-        return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason'], 'films' => $result['films']]);
+        return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason'], 'films' => $result['films'], 'seed' => $result['seed']]);
     }
 
     private function localIso(string $utc, string $timezone): string

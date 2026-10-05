@@ -78,6 +78,7 @@
 'planner.geolocation.locating': 'Locating…'
 'planner.geolocation.saved': 'Position saved.'
 'planner.geolocation.unavailable': 'Geolocation is not available in this browser.'
+'planner.other_programmes': 'Other programmes'
 'planner.programme.between': 'Between the two showtimes'
 'planner.programme.book': 'Book'
 'planner.programme.break': '%minutes% min break'
