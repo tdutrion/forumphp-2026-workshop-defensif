@@ -30,7 +30,6 @@
 'Unknown place: choose a city from the list or allow geolocation.': 'Lieu introuvable : choisissez une ville de la liste ou autorisez la géolocalisation.'
 'Only %count% programme(s) possible with these criteria.': 'Seulement %count% programme(s) possible(s) avec ces critères.'
 'Programme %number%': 'Programme %number%'
-'Total wait: %minutes% min': 'Attente totale : %minutes% min'
 'travel: %km% km': 'trajets : %km% km'
 'arriving during the ads (%minutes% min)': 'arrivée pendant les pubs (%minutes% min)'
 'Book': 'Réserver'
@@ -73,3 +72,5 @@
 'including %minutes% min of travel': 'dont %minutes% min de trajet'
 'Film': 'Film'
 'Films in these programmes (%count%)': 'Films de ces programmes (%count%)'
+'Total break: %minutes% min': 'Pause totale : %minutes% min'
+'(including %minutes% min of travel)': '(dont %minutes% min de trajet)'

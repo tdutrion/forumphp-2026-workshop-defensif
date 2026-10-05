@@ -2,7 +2,7 @@
     <header>
         <h2 class="text-xl font-semibold">{{ 'Programme %number%'|trans({'%number%': number}) }}</h2>
         <p class="text-sm text-ink-muted">
-            {{ 'Total wait: %minutes% min'|trans({'%minutes%': programme.wait}) }}
+            {{ 'Total break: %minutes% min'|trans({'%minutes%': programme.breakMinutes}) }}{% if programme.travelMinutes > 0 %} {{ '(including %minutes% min of travel)'|trans({'%minutes%': programme.travelMinutes}) }}{% endif %}
             {% if programme.distance > 0 %} · {{ 'travel: %km% km'|trans({'%km%': programme.distance|format_number({fraction_digit: 1}, locale=app.request.locale)}) }}{% endif %}
         </p>
     </header>

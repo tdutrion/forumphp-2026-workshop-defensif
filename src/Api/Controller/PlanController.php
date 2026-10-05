@@ -90,7 +90,14 @@ class PlanController extends AbstractController
                     'bookingUrl' => $showtime['bookingUrl'],
                 ];
             }
-            $programmes[] = ['wait' => $programme['wait'], 'distance' => $programme['distance'], 'showtimes' => $showtimes];
+            $programmes[] = [
+                // wait = minutes really lost waiting (breaks minus the 10-minute margins and the travel): the ranking score.
+                'wait' => $programme['wait'],
+                'breakMinutes' => $programme['breakMinutes'],
+                'travelMinutes' => $programme['travelMinutes'],
+                'distance' => $programme['distance'],
+                'showtimes' => $showtimes,
+            ];
         }
 
         return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason'], 'films' => $result['films']]);

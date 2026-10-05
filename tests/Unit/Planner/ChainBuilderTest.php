@@ -133,6 +133,8 @@ final class ChainBuilderTest extends TestCase
         self::assertSame(0, $programme['showtimes'][1]['lateMinutes']);
         self::assertSame(40, $programme['showtimes'][1]['breakMinutes'], 'from the end of the first film (16:00) to the next showtime (16:40)');
         self::assertSame(12, $programme['showtimes'][1]['travelMinutes']);
+        self::assertSame(40, $programme['breakMinutes'], 'sum of the breaks shown between the showtimes');
+        self::assertSame(12, $programme['travelMinutes']);
     }
 
     public function testTheSearchBudgetIsSharedAcrossTheDay(): void

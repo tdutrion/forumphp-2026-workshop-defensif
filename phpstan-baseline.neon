@@ -153,7 +153,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Api/Controller/PlanController.php
 
 		-
@@ -231,7 +231,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Api/Controller/PlanController.php
 
 		-
@@ -1845,7 +1845,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
@@ -1893,7 +1893,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
@@ -2361,7 +2361,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Unit/Planner/ChainBuilderTest.php
 
 		-
@@ -2385,7 +2385,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Unit/Planner/ChainBuilderTest.php
 
 		-

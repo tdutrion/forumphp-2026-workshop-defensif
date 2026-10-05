@@ -130,8 +130,12 @@ class ChainBuilder
 
         return [
             'showtimes' => $path,
+            // Score: time really lost waiting (the breaks minus the 10-minute margins and the travel).
             'wait' => intdiv($wait, 60),
             'distance' => round($distance, 2),
+            // Shown to the user: the sum of the breaks between the showtimes, and the travel they include.
+            'breakMinutes' => array_sum(array_column($path, 'breakMinutes')),
+            'travelMinutes' => array_sum(array_column($path, 'travelMinutes')),
         ];
     }
 }

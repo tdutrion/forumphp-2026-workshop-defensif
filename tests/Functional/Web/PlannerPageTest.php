@@ -67,6 +67,7 @@ final class PlannerPageTest extends WebTestCase
         self::assertSelectorTextContains('.programme', 'Film f3');
         self::assertSelectorTextContains('.programme', '16:40');
         self::assertSelectorTextContains('.programme', '20 min break', 'f3 ends at 18:40, f4 starts at 19:00');
+        self::assertSelectorTextContains('.programme', 'Total break: 20 min');
     }
 
     public function testListsTheProposedFilmsAboveProgrammesThatOnlyOfferBooking(): void

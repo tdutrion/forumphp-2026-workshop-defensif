@@ -232,6 +232,9 @@ A showtime is a candidate if it meets all these conditions:
    Between two showtimes, the page and the API show the break in clear
    (minutes from the end of the previous film to the next start) and the
    travel time it includes.
+   Each programme shows its total break (the sum of those breaks) and the
+   travel it includes. The wait used for the ranking is smaller: it leaves
+   out the 10-minute margins and the travel; the API exposes both.
 3. The 3 best programmes that are pairwise different are kept: each
    must have at least one film that the other does not have.
 4. If no programme of N films exists, the search starts again with one film
