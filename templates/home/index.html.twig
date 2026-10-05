@@ -44,7 +44,7 @@
             {# Closed by default: open it to exclude a cinema, or to reactivate one. #}
             <details class="group">
                 <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
-                    <h2>{{ 'planner.cinemas.title'|trans({'%count%': nearbyCinemas|length}) }}</h2>
+                    <h2>{{ 'planner.cinemas.title'|trans({'%active%': nearbyCinemas|filter(c => not c.excluded)|length, '%count%': nearbyCinemas|length}) }}</h2>
                     <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
                 </summary>
                 <div class="mt-2">

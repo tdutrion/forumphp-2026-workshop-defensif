@@ -34,7 +34,7 @@
 'planner.cinemas.cinema': 'Cinéma'
 'planner.cinemas.distance': '%km% km'
 'planner.cinemas.in_programmes': 'Dans les programmes'
-'planner.cinemas.title': 'Cinémas à proximité (%count%)'
+'planner.cinemas.title': 'Cinémas à proximité (%active%/%count%)'
 'planner.films.film': 'Film'
 'planner.films.title': 'Films de ces programmes (%count%)'
 'planner.form.accept_ads': 'J''accepte d''arriver pendant les pubs (15 minutes)'

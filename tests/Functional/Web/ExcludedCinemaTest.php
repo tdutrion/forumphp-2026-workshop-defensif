@@ -76,7 +76,8 @@ final class ExcludedCinemaTest extends WebTestCase
 
         // Assert
         self::assertCount(1, $crawler->filter('#nearby-cinemas details:not([open])'), 'closed by default');
-        self::assertSelectorTextContains('#nearby-cinemas summary', 'Nearby cinemas (1)');
+        self::assertSame('Nearby cinemas (1/1)', trim($crawler->filter('#nearby-cinemas summary h2')->text()), 'active / total');
+        self::assertSame('Nearby cinemas (0/1)', trim($withoutProgramme->filter('#nearby-cinemas summary h2')->text()), 'one excluded');
         self::assertSame(0, $withoutProgramme->filter('.programme')->count());
         self::assertSame('true', $withoutProgramme->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] button')->attr('aria-pressed'));
         self::assertSame(3, $reactivated->filter('.programme')->count());

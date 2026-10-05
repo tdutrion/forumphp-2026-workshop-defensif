@@ -266,7 +266,7 @@ A showtime is a candidate if it meets all these conditions:
 
 ### Excluded cinemas
 
-- With the results, a "Nearby cinemas" table (every open cinema within the
+- With the results, a "Nearby cinemas (active/total)" table (every open cinema within the
   fixed 10 km radius of the search, with its distance), closed by default,
   excluded cinemas included: each one has an
   "Exclude" or "Excluded ✓ (undo)" button (Post/Redirect/Get back to the same
