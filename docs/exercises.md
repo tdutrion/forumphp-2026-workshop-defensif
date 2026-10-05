@@ -185,9 +185,11 @@ order.
 
 - **Starting point**: `JsonResponse` built from arrays in
   `Api\Controller\*`; `?order=asc|desc` as a string in
-  `Api\Controller\SeenFilmController::list()`; Twig templates fed with arrays;
+  `Api\Controller\SeenFilmController::list()` and `'ASC'`/`'DESC'` strings in the
+  `orderBy()` calls of the repositories (Doctrine reports the deprecation in the
+  profiler: "use an instance of SortDirection instead"); Twig templates fed with arrays;
   flash messages translated by hand where they are added
-  (`$this->translator->trans('%provider% account linked.', ['%provider%' => $provider])`
+  (`$this->translator->trans('security.account_linked', ['%provider%' => $provider])`
   in `ConnectController`, `OAuthAuthenticator` and `ProfileController`).
 - **Goal**: output DTOs + ObjectMapper or Serializer (the OpenAPI doc
   becomes precise by itself); `\SortDirection` enum (polyfill 8.6);
