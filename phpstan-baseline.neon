@@ -121,24 +121,6 @@ parameters:
 			path: src/Account/SeenFilmService.php
 
 		-
-			message: '#^Method App\\Account\\SeenFilmService\:\:markAllSeen\(\) has parameter \$filmSlugs with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Account/SeenFilmService.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Account/SeenFilmService.php
-
-		-
-			message: '#^Parameter \#2 \$filmSlug of method App\\Account\\SeenFilmService\:\:markSeen\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Account/SeenFilmService.php
-
-		-
 			message: '#^Method App\\Account\\UnwantedFilmService\:\:getUnwantedFilmSlugs\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1615,8 +1597,38 @@ parameters:
 			path: src/Security/OAuthUserInfoExtractor.php
 
 		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Cannot access offset ''filmSlug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Cannot access offset ''filmTitle'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
 			message: '#^Parameter \#1 \$data of method App\\Planner\\PlannerService\:\:planFromForm\(\) expects array, mixed given\.$#'
 			identifier: argument.type
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: src/Web/Controller/HomeController.php
 
@@ -1625,12 +1637,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Web/Controller/ProfileController.php
-
-		-
-			message: '#^Method App\\Web\\Controller\\SeenFilmController\:\:respond\(\) has parameter \$slugs with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Web/Controller/SeenFilmController.php
 
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'

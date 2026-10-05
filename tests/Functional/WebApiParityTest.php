@@ -29,7 +29,7 @@ final class WebApiParityTest extends WebTestCase
             $api['programmes'],
         );
         $webFilms = $crawler->filter('.programme')->each(
-            static fn ($programme) => $programme->filter('input[name="films[]"]')->each(static fn ($input) => $input->attr('value')),
+            static fn ($programme) => $programme->filter('[data-film-slug]')->each(static fn ($showtime) => $showtime->attr('data-film-slug')),
         );
         self::assertCount(3, $webFilms);
         self::assertSame($apiFilms, $webFilms);

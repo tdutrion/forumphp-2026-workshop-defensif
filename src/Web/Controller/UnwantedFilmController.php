@@ -45,11 +45,19 @@ class UnwantedFilmController extends AbstractController
     }
 
     /**
-     * With Turbo: a stream that replaces every button of the film.
-     * Without JavaScript: back to the film page.
+     * From a search (hidden "_return" field): Post/Redirect/Get back to the same search, now updated.
+     * Otherwise, with Turbo: a stream that replaces every button of the film; without JavaScript: the film page.
      */
     private function respond(Request $request, string $slug, bool $unwanted): Response
     {
+        $return = $request->request->getString('_return');
+        if ('' !== $return) {
+            // Only the query of the planner page is taken back: no redirect to a URL chosen by the client.
+            parse_str($return, $query);
+
+            return $this->redirectToRoute('app_home', $query, Response::HTTP_SEE_OTHER);
+        }
+
         if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 

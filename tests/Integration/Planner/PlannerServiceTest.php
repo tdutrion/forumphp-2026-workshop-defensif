@@ -196,7 +196,9 @@ final class PlannerServiceTest extends KernelTestCase
         // Arrange: only f4 remains in Dijon, so not even two films can chain.
         self::bootKernel();
         $userId = $this->dijonCatalog();
-        self::getContainer()->get(SeenFilmService::class)->markAllSeen($userId, ['f1', 'f2', 'f3']);
+        foreach (['f1', 'f2', 'f3'] as $slug) {
+            self::getContainer()->get(SeenFilmService::class)->markSeen($userId, $slug);
+        }
 
         // Act
         $result = $this->planner()->plan($this->criteria(['films' => 3]), $userId);

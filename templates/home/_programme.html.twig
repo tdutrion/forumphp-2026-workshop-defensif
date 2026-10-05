@@ -17,7 +17,7 @@
                     </span>
                 </li>
             {% endif %}
-            <li class="border-l-2 border-brand-600 pl-3">
+            <li class="border-l-2 border-brand-600 pl-3" data-film-slug="{{ showtime.filmSlug }}">
                 <p class="text-sm font-semibold text-brand-700">{{ showtime.startTime }} – {{ showtime.endTime }}</p>
                 <a href="{{ path('app_film_show', {slug: showtime.filmSlug}) }}" class="font-medium hover:underline">{{ showtime.filmTitle }}</a>
                 <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
@@ -25,17 +25,8 @@
                     {{ showtime.cinemaName }}
                     {% if showtime.lateMinutes > 0 %}<twig:Badge tone="warning">{{ 'arriving during the ads (%minutes% min)'|trans({'%minutes%': showtime.lateMinutes}) }}</twig:Badge>{% endif %}
                 </p>
-                <twig:ButtonGroup class="mt-2 w-full" aria-label="{{ 'Film actions'|trans }}">
-                    <twig:Button tag="a" size="sm" data-primary href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer"><twig:Icon name="ticket" />{{ 'Book'|trans }}</twig:Button>
-                    {{ include('seen/_button.html.twig', {slug: showtime.filmSlug, seen: false}) }}
-                    {{ include('unwanted/_button.html.twig', {slug: showtime.filmSlug, unwanted: false}) }}
-                </twig:ButtonGroup>
+                <twig:Button tag="a" size="sm" data-primary class="mt-2" href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer"><twig:Icon name="ticket" />{{ 'Book'|trans }}</twig:Button>
             </li>
         {% endfor %}
     </ol>
-    <form method="post" action="{{ path('app_programme_seen') }}" class="mt-auto">
-        <input type="hidden" name="_token" value="{{ csrf_token('seen-film') }}">
-        {% for slug in programme.filmSlugs %}<input type="hidden" name="films[]" value="{{ slug }}">{% endfor %}
-        <twig:Button type="submit" variant="ghost" size="sm">{{ 'Mark this programme as seen'|trans }}</twig:Button>
-    </form>
 </twig:Card>

@@ -34,7 +34,6 @@
 'travel: %km% km': 'trajets : %km% km'
 'arriving during the ads (%minutes% min)': 'arrivée pendant les pubs (%minutes% min)'
 'Book': 'Réserver'
-'Mark this programme as seen': 'Marquer ce programme comme vu'
 'Already seen': 'Déjà vu'
 'Seen ✓ (undo)': 'Vu ✓ (annuler)'
 'Poster of %title%': 'Affiche de %title%'
@@ -72,3 +71,4 @@
 'Between the two showtimes': 'Entre les deux séances'
 '%minutes% min break': '%minutes% min de pause'
 'including %minutes% min of travel': 'dont %minutes% min de trajet'
+'Films in these programmes': 'Films de ces programmes'

@@ -36,9 +36,18 @@ class HomeController extends AbstractController
             $result = $this->plannerService->planFromForm($form->getData(), $user->getUserIdentifier());
         }
 
+        // Every film of the proposed programmes, once, in order of appearance.
+        $proposedFilms = [];
+        foreach (false === $result || null === $result ? [] : $result['programmes'] as $programme) {
+            foreach ($programme['showtimes'] as $showtime) {
+                $proposedFilms[$showtime['filmSlug']] ??= ['slug' => $showtime['filmSlug'], 'title' => $showtime['filmTitle']];
+            }
+        }
+
         return $this->render('home/index.html.twig', [
             'form' => $form,
             'result' => $result,
+            'proposedFilms' => array_values($proposedFilms),
         ]);
     }
 }

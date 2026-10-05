@@ -55,22 +55,6 @@ class SeenFilmService
     }
 
     /**
-     * @return int number of films added to the list
-     */
-    public function markAllSeen(string $userId, array $filmSlugs): int
-    {
-        $added = 0;
-        $alreadySeen = $this->getSeenFilmSlugs($userId);
-        foreach (array_unique($filmSlugs) as $slug) {
-            if (!in_array($slug, $alreadySeen, true) && $this->markSeen($userId, $slug)) {
-                ++$added;
-            }
-        }
-
-        return $added;
-    }
-
-    /**
      * @return array slugs of the films already seen
      */
     public function getSeenFilmSlugs(string $userId): array

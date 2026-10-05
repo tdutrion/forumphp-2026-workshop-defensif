@@ -244,15 +244,17 @@ A showtime is a candidate if it meets all these conditions:
 
 ### "Already seen"
 
-- "Already seen" button on each film, in the results and on the film page.
-  Can be undone.
+- Above the programmes, the list of every film they propose (each film once),
+  with "Already seen" and "Not for me" buttons. A click posts, then redirects
+  (303, Post/Redirect/Get) to the same search, which no longer proposes the
+  film. The programmes themselves only offer "Book".
+- "Already seen" button on the film page too. Can be undone.
 - List managed from the profile.
-- "Mark this programme as seen" button that adds all its films.
 
 ### "Not for me" (films the user does not want to see)
 
-- "Not for me" button under "Already seen", in the results and
-  on the film page. Can be undone.
+- "Not for me" button next to "Already seen", in the list of proposed films
+  and on the film page. Can be undone.
 - Those films are never offered by the planner, like the films already seen.
 - List managed from the profile ("Films I don't want to see").
 

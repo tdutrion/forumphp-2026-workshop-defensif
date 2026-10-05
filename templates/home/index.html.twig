@@ -49,6 +49,23 @@
             <twig:Alert type="info" class="plan-message">{{ 'Only %count% programme(s) possible with these criteria.'|trans({'%count%': result.programmes|length}) }}</twig:Alert>
         {% endif %}
 
+        {% if proposedFilms is not empty %}
+            <twig:Card id="proposed-films">
+                <h2 class="mb-4 text-xl font-semibold">{{ 'Films in these programmes'|trans }}</h2>
+                <ul class="grid gap-3 sm:grid-cols-2">
+                    {% for film in proposedFilms %}
+                        <li class="flex flex-wrap items-center justify-between gap-2" data-proposed-film="{{ film.slug }}">
+                            <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
+                            <twig:ButtonGroup aria-label="{{ 'Film actions'|trans }}">
+                                {{ include('seen/_button.html.twig', {slug: film.slug, seen: false, return_to: app.request.queryString}) }}
+                                {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false, return_to: app.request.queryString}) }}
+                            </twig:ButtonGroup>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </twig:Card>
+        {% endif %}
+
         <div class="grid gap-6 lg:grid-cols-3">
             {% for programme in result.programmes %}
                 {{ include('home/_programme.html.twig', {programme: programme, number: loop.index}) }}

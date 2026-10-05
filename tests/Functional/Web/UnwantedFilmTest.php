@@ -41,7 +41,7 @@ final class UnwantedFilmTest extends WebTestCase
     private function plannedFilms(KernelBrowser $client): array
     {
         return array_merge(...$client->request('GET', '/', self::SEARCH)->filter('.programme')->each(
-            static fn ($programme) => $programme->filter('input[name="films[]"]')->each(static fn ($input) => $input->attr('value')),
+            static fn ($programme) => $programme->filter('[data-film-slug]')->each(static fn ($showtime) => $showtime->attr('data-film-slug')),
         ));
     }
 

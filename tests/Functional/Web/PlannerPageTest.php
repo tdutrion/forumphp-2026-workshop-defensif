@@ -69,6 +69,48 @@ final class PlannerPageTest extends WebTestCase
         self::assertSelectorTextContains('.programme', '20 min break', 'f3 ends at 18:40, f4 starts at 19:00');
     }
 
+    public function testListsTheProposedFilmsAboveProgrammesThatOnlyOfferBooking(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'dijon']));
+
+        // Assert
+        $listed = $crawler->filter('#proposed-films [data-proposed-film]')->each(static fn ($film) => $film->attr('data-proposed-film'));
+        sort($listed);
+        self::assertSame(['f1', 'f2', 'f3', 'f4'], $listed, 'each film once, whatever the number of programmes');
+        self::assertCount(1, $crawler->filter('#proposed-films [data-proposed-film="f3"] [data-seen-film] form'));
+        self::assertCount(1, $crawler->filter('#proposed-films [data-proposed-film="f3"] [data-unwanted-film] form'));
+        self::assertCount(0, $crawler->filter('.programme form'), 'a programme only offers booking');
+        self::assertSame($crawler->filter('.programme [data-film-slug]')->count(), $crawler->filter('.programme a[data-primary]')->count());
+    }
+
+    public function testMarkingAProposedFilmComesBackToTheUpdatedSearch(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'dijon']));
+        $seen = $crawler->filter('#proposed-films [data-proposed-film="f3"] [data-seen-film] form')->form();
+        $notForMe = $crawler->filter('#proposed-films [data-proposed-film="f4"] [data-unwanted-film] form')->form();
+
+        // Act: a plain form post, then a Turbo one: both get a redirect to the same search.
+        $client->submit($seen);
+        $afterSeen = $client->getResponse();
+        $client->submit($notForMe, [], ['HTTP_ACCEPT' => 'text/vnd.turbo-stream.html, text/html']);
+        $afterNotForMe = $client->getResponse();
+        $updated = $client->followRedirect();
+
+        // Assert
+        self::assertSame(303, $afterSeen->getStatusCode());
+        self::assertSame(303, $afterNotForMe->getStatusCode());
+        self::assertStringStartsWith('/?plan', (string) $afterNotForMe->headers->get('Location'));
+        $listed = $updated->filter('#proposed-films [data-proposed-film]')->each(static fn ($film) => $film->attr('data-proposed-film'));
+        self::assertNotContains('f3', $listed);
+        self::assertNotContains('f4', $listed);
+    }
+
     public function testPlansAroundTheBrowserPosition(): void
     {
         // Arrange
