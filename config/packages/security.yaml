@@ -35,6 +35,7 @@ security:
         - { path: ^/connect/, roles: PUBLIC_ACCESS }
         - { path: ^/design-system, roles: PUBLIC_ACCESS }
         - { path: ^/legal/, roles: PUBLIC_ACCESS }
+        - { path: ^/locale$, roles: PUBLIC_ACCESS }
         # The landing page for visitors, the planner for signed-in users (HomeController).
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }

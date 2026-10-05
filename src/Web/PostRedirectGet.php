@@ -17,7 +17,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final class PostRedirectGet
 {
-    private const ROUTES = ['app_home', 'app_history', 'app_unwanted_films', 'app_settings', 'app_film_show'];
+    private const ROUTES = [
+        'app_home', 'app_history', 'app_unwanted_films', 'app_settings', 'app_film_show',
+        'app_login', 'app_legal_notice', 'app_legal_terms', 'app_legal_privacy', 'app_design_system',
+    ];
 
     public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
