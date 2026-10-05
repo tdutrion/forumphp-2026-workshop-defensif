@@ -263,9 +263,12 @@ A showtime is a candidate if it meets all these conditions:
 
 ### Excluded cinemas
 
-- Under the proposed films, the list of every cinema of the programmes, with an
-  "Exclude" button (Post/Redirect/Get back to the same search). The planner
-  never uses an excluded cinema.
+- With the results, a table of every open cinema within 10 km of the place of
+  the search, closed by default, excluded cinemas included: each one has an
+  "Exclude" or "Excluded ✓ (undo)" button (Post/Redirect/Get back to the same
+  search) and a badge when the programmes use it. A cinema excluded by mistake
+  can be reactivated from there, even when nothing can be planned without it.
+  The planner never uses an excluded cinema.
 - List managed from the profile ("Excluded cinemas").
 
 ### Accounts and sign-in

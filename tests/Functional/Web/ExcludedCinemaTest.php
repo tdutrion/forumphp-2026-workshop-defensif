@@ -43,10 +43,10 @@ final class ExcludedCinemaTest extends WebTestCase
         // Arrange
         $client = $this->signedInWithDijonCatalog();
         $crawler = $client->request('GET', '/', self::SEARCH);
-        $listedBefore = $crawler->filter('#proposed-cinemas [data-proposed-cinema]')->each(static fn ($row) => $row->attr('data-proposed-cinema'));
+        $listedBefore = $crawler->filter('#nearby-cinemas [data-nearby-cinema]')->each(static fn ($row) => $row->attr('data-nearby-cinema'));
 
         // Act
-        $client->submit($crawler->filter('#proposed-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
+        $client->submit($crawler->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
         $redirect = $client->getResponse();
         $withoutTheCinema = $client->followRedirect()->filter('.programme')->count();
         $profile = $client->request('GET', '/profile');
@@ -60,5 +60,24 @@ final class ExcludedCinemaTest extends WebTestCase
         self::assertSame(0, $withoutTheCinema);
         self::assertStringContainsString('Pathé Dijon', $listedOnProfile);
         self::assertSame(3, $withTheCinemaAgain);
+    }
+
+    public function testTheNearbyCinemasStayListedToReactivateAnExcludedOne(): void
+    {
+        // Arrange: the only cinema of the search is excluded, so nothing can be planned.
+        $client = $this->signedInWithDijonCatalog();
+        $crawler = $client->request('GET', '/', self::SEARCH);
+        $client->submit($crawler->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
+        $withoutProgramme = $client->followRedirect();
+
+        // Act
+        $client->submit($withoutProgramme->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] form')->form());
+        $reactivated = $client->followRedirect();
+
+        // Assert
+        self::assertCount(1, $crawler->filter('#nearby-cinemas details:not([open])'), 'closed by default');
+        self::assertSame(0, $withoutProgramme->filter('.programme')->count());
+        self::assertSame('true', $withoutProgramme->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] button')->attr('aria-pressed'));
+        self::assertSame(3, $reactivated->filter('.programme')->count());
     }
 }

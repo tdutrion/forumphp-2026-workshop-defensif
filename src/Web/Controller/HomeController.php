@@ -32,17 +32,19 @@ class HomeController extends AbstractController
         $form->handleRequest($request);
 
         $result = null;
+        $nearbyCinemas = [];
         if ($form->isSubmitted() && $form->isValid()) {
             $result = $this->plannerService->planFromForm($form->getData(), $user->getUserIdentifier());
+            $nearbyCinemas = $this->plannerService->nearbyCinemas($form->getData(), $user->getUserIdentifier());
         }
 
         // Every film and every cinema of the proposed programmes, once, in order of appearance.
         $proposedFilms = [];
-        $proposedCinemas = [];
+        $usedCinemas = [];
         foreach (false === $result || null === $result ? [] : $result['programmes'] as $programme) {
             foreach ($programme['showtimes'] as $showtime) {
                 $proposedFilms[$showtime['filmSlug']] ??= ['slug' => $showtime['filmSlug'], 'title' => $showtime['filmTitle']];
-                $proposedCinemas[$showtime['cinemaSlug']] ??= ['slug' => $showtime['cinemaSlug'], 'name' => $showtime['cinemaName']];
+                $usedCinemas[$showtime['cinemaSlug']] = true;
             }
         }
 
@@ -50,7 +52,8 @@ class HomeController extends AbstractController
             'form' => $form,
             'result' => $result,
             'proposedFilms' => array_values($proposedFilms),
-            'proposedCinemas' => array_values($proposedCinemas),
+            'nearbyCinemas' => $nearbyCinemas,
+            'usedCinemas' => $usedCinemas,
         ]);
     }
 }

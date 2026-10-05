@@ -39,6 +39,44 @@
         {{ form_end(form) }}
     </twig:Card>
 
+    {% if nearbyCinemas is not empty %}
+        <twig:Card id="nearby-cinemas">
+            {# Closed by default: open it to exclude a cinema, or to reactivate one. #}
+            <details class="group">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
+                    <h2>{{ 'Cinemas within %km% km (%count%)'|trans({'%km%': constant('App\\Planner\\PlannerService::DEFAULT_RADIUS_KM'), '%count%': nearbyCinemas|length}) }}</h2>
+                    <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
+                </summary>
+                <div class="mt-2">
+                    <table class="w-full text-sm">
+                        <thead class="sr-only">
+                            <tr>
+                                <th scope="col">{{ 'Cinema'|trans }}</th>
+                                <th scope="col">{{ 'Cinema actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-line">
+                            {% for cinema in nearbyCinemas %}
+                                <tr data-nearby-cinema="{{ cinema.slug }}">
+                                    <td class="py-2 pr-4">
+                                        <span class="font-medium">{{ cinema.name }}</span>
+                                        <span class="text-ink-muted">· {{ '%km% km'|trans({'%km%': cinema.distance|format_number({fraction_digit: 1}, locale=app.request.locale)}) }}</span>
+                                        {% if usedCinemas[cinema.slug] is defined %}<twig:Badge tone="brand">{{ 'In the programmes'|trans }}</twig:Badge>{% endif %}
+                                    </td>
+                                    <td class="py-2 text-right">
+                                        <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'Cinema actions'|trans }}">
+                                            {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: cinema.excluded, return_to: app.request.queryString}) }}
+                                        </twig:ButtonGroup>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </twig:Card>
+    {% endif %}
+
     {% if result is same as(false) %}
         <twig:Alert type="info" class="plan-message">{{ 'No showtime matches this place and date (or you have already seen every film on offer).'|trans }}</twig:Alert>
     {% elseif result %}
@@ -88,39 +126,6 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    </div>
-                </details>
-            </twig:Card>
-        {% endif %}
-
-        {% if proposedCinemas is not empty %}
-            <twig:Card id="proposed-cinemas">
-                <details class="group" open>
-                    <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
-                        <h2>{{ 'Cinemas in these programmes (%count%)'|trans({'%count%': proposedCinemas|length}) }}</h2>
-                        <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
-                    </summary>
-                    <div class="mt-2">
-                        <table class="w-full text-sm">
-                            <thead class="sr-only">
-                                <tr>
-                                    <th scope="col">{{ 'Cinema'|trans }}</th>
-                                    <th scope="col">{{ 'Cinema actions'|trans }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-line">
-                                {% for cinema in proposedCinemas %}
-                                    <tr data-proposed-cinema="{{ cinema.slug }}">
-                                        <td class="py-2 pr-4 font-medium">{{ cinema.name }}</td>
-                                        <td class="py-2 text-right">
-                                            <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'Cinema actions'|trans }}">
-                                                {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: false, return_to: app.request.queryString}) }}
-                                            </twig:ButtonGroup>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
                     </div>
                 </details>
             </twig:Card>

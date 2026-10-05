@@ -113,13 +113,7 @@ class PlannerService
      */
     public function planFromForm(array $data, string $userId): array|false
     {
-        $location = false;
-        if (!empty($data['city'])) {
-            $location = $this->locationResolver->fromCity($data['city']);
-        } elseif (!empty($data['position'])) {
-            $location = $this->locationResolver->fromPosition($data['position']);
-        }
-
+        $location = $this->locationFromForm($data);
         if (false === $location) {
             return ['programmes' => [], 'reason' => 'unknown_location'];
         }
@@ -135,6 +129,55 @@ class PlannerService
             'from' => $data['from'] ?? null,
             'until' => $data['until'] ?? null,
         ], $userId);
+    }
+
+    /**
+     * The open cinemas around the place of a search (same radius as plan()), excluded ones included
+     * with a flag, so that the user can exclude or reactivate them from the results.
+     *
+     * @param array $data the PlanType data (only 'city' and 'position' are read)
+     *
+     * @return array list of ['slug', 'name', 'distance' (km), 'excluded' (bool)], nearest first;
+     *               [] if the place is unknown
+     */
+    public function nearbyCinemas(array $data, string $userId): array
+    {
+        $location = $this->locationFromForm($data);
+        if (false === $location) {
+            return [];
+        }
+
+        $excluded = $this->excludedCinemaService->getExcludedCinemaSlugs($userId);
+        $cinemas = [];
+        foreach ($this->cinemaRepository->findOpenWithCoordinates() as $cinema) {
+            $distance = Geo::distanceKm($location['latitude'], $location['longitude'], $cinema['latitude'], $cinema['longitude']);
+            if ($distance <= self::DEFAULT_RADIUS_KM) {
+                $cinemas[] = [
+                    'slug' => $cinema['slug'],
+                    'name' => $cinema['name'],
+                    'distance' => round($distance, 1),
+                    'excluded' => in_array($cinema['slug'], $excluded, true),
+                ];
+            }
+        }
+        usort($cinemas, static fn (array $a, array $b) => $a['distance'] <=> $b['distance']);
+
+        return $cinemas;
+    }
+
+    /**
+     * @return array|false ['latitude', 'longitude'] of the city or of the browser position, false if unknown
+     */
+    private function locationFromForm(array $data): array|false
+    {
+        if (!empty($data['city'])) {
+            return $this->locationResolver->fromCity($data['city']);
+        }
+        if (!empty($data['position'])) {
+            return $this->locationResolver->fromPosition($data['position']);
+        }
+
+        return false;
     }
 
     /**

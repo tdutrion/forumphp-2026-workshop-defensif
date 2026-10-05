@@ -1143,11 +1143,17 @@ parameters:
 		-
 			message: '#^Cannot access offset ''latitude'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
 			message: '#^Cannot access offset ''longitude'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Planner/PlannerService.php
@@ -1155,7 +1161,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''slug'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 4
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1208,6 +1214,30 @@ parameters:
 
 		-
 			message: '#^Method App\\Planner\\PlannerService\:\:isWithinTimeRange\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Method App\\Planner\\PlannerService\:\:locationFromForm\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Method App\\Planner\\PlannerService\:\:locationFromForm\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Method App\\Planner\\PlannerService\:\:nearbyCinemas\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Method App\\Planner\\PlannerService\:\:nearbyCinemas\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Planner/PlannerService.php
@@ -1269,7 +1299,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$lat1 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1299,7 +1329,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$lng1 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1317,13 +1347,13 @@ parameters:
 		-
 			message: '#^Parameter \#3 \$lat2 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
 			message: '#^Parameter \#4 \$lng2 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1711,15 +1741,9 @@ parameters:
 			path: src/Web/Controller/HomeController.php
 
 		-
-			message: '#^Cannot access offset ''cinemaName'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Web/Controller/HomeController.php
-
-		-
 			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 1
 			path: src/Web/Controller/HomeController.php
 
 		-
@@ -1737,6 +1761,12 @@ parameters:
 		-
 			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Parameter \#1 \$data of method App\\Planner\\PlannerService\:\:nearbyCinemas\(\) expects array, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Web/Controller/HomeController.php
 
