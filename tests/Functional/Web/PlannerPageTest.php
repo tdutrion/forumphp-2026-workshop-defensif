@@ -175,6 +175,19 @@ final class PlannerPageTest extends WebTestCase
         self::assertNotContains('f1', $films, 'f1 starts at 14:00');
     }
 
+    public function testTheFormKnowsWhereEachCityIsToPrefillTheNearestOne(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $form = $client->request('GET', '/')->filter('form[name="plan"]');
+
+        // Assert
+        $centres = json_decode((string) $form->attr('data-geolocation-cities-value'), true);
+        self::assertSame([['slug' => 'dijon', 'latitude' => 47.318031, 'longitude' => 5.029935]], $centres, 'the centre of its open cinemas');
+    }
+
     public function testPlansAroundTheBrowserPosition(): void
     {
         // Arrange

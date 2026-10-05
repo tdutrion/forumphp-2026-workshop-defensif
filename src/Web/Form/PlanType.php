@@ -72,6 +72,7 @@ class PlanType extends AbstractType
                 'required' => false,
                 'placeholder' => 'planner.form.city_placeholder',
                 'autocomplete' => true,
+                'attr' => ['data-geolocation-target' => 'city'],
             ])
             ->add('position', HiddenType::class, [
                 'required' => false,

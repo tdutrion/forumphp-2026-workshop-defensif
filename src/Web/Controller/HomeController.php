@@ -63,6 +63,7 @@ class HomeController extends AbstractController
             'seed' => $seed,
             'returnQuery' => $returnQuery,
             'otherProgrammesQuery' => $otherProgrammesQuery,
+            'cityCentres' => $this->cityRepository->findCentres(),
             'result' => $result,
             'proposedFilms' => array_values($proposedFilms),
             'nearbyCinemas' => $nearbyCinemas,

@@ -79,6 +79,7 @@
 'planner.form.version_help': 'VOST and VO also include the films made in the language of the cinema.'
 'planner.geolocation.denied': 'Position denied or unavailable: choose a city.'
 'planner.geolocation.locating': 'Locating…'
+'planner.geolocation.prefilled': 'City chosen from your position.'
 'planner.geolocation.saved': 'Position saved.'
 'planner.geolocation.unavailable': 'Geolocation is not available in this browser.'
 'planner.other_programmes': 'Other programmes'
