@@ -249,9 +249,9 @@ A showtime is a candidate if it meets all these conditions:
 - List managed from the profile.
 - "Mark this programme as seen" button that adds all its films.
 
-### "I don't want to see it"
+### "Not for me" (films the user does not want to see)
 
-- "I don't want to see it" button next to "Already seen", in the results and
+- "Not for me" button under "Already seen", in the results and
   on the film page. Can be undone.
 - Those films are never offered by the planner, like the films already seen.
 - List managed from the profile ("Films I don't want to see").

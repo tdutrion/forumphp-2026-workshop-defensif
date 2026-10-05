@@ -73,8 +73,8 @@
  * <twig:ButtonGroup> (Flowbite-like): joined buttons sharing their borders, one shadow, the focus
  * ring above the neighbours. The wrappers of a toggle (span, form) are transparent.
  * - Without a primary action: one row, rounded at both ends.
- * - With one (data-primary, always first): it takes the whole first row, the other buttons share
- *   the second row.
+ * - With one (data-primary, always first): the buttons are stacked, full width, the primary
+ *   action on top.
  * In the utilities layer so that it wins over the classes of <twig:Button>.
  */
 @layer utilities {
@@ -112,24 +112,20 @@
         @apply rounded-e-control;
     }
 
-    /* With a primary action: first row for it, second row for the others. */
+    /* With a primary action (first): the buttons are stacked, full width. */
     .button-group:has([data-primary]) {
-        @apply grid-flow-row grid-cols-2;
+        @apply grid-flow-row grid-cols-1;
     }
 
     .button-group :is(a, button)[data-primary] {
-        @apply col-span-2 rounded-none rounded-t-control border-brand-600 bg-brand-600 text-white hover:border-brand-700 hover:bg-brand-700 hover:text-white;
+        @apply rounded-none rounded-t-control border-brand-600 bg-brand-600 text-white hover:border-brand-700 hover:bg-brand-700 hover:text-white;
     }
 
     .button-group:has([data-primary]) > :not(:first-child) :is(a, button) {
-        @apply -mt-px;
-    }
-
-    .button-group:has([data-primary]) > :nth-child(2) :is(a, button) {
-        @apply ms-0 rounded-none rounded-bl-control;
+        @apply ms-0 -mt-px rounded-none;
     }
 
     .button-group:has([data-primary]) > :last-child :is(a, button) {
-        @apply rounded-none rounded-br-control;
+        @apply rounded-b-control;
     }
 }
