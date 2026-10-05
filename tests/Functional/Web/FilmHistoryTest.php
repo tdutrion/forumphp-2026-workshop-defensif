@@ -72,6 +72,21 @@ final class FilmHistoryTest extends WebTestCase
         self::assertNotContains('f01', $this->seenFilms()->getSeenFilmSlugs($this->user->getUserIdentifier()));
     }
 
+    public function testTheActionsOfARowAreShownWithALinkToTheFilm(): void
+    {
+        // Arrange
+        $client = $this->signedInHavingSeen(1);
+
+        // Act
+        $row = $client->request('GET', '/history')->filter('#film-history tbody tr');
+
+        // Assert
+        self::assertCount(0, $row->filter('details'), 'no actions menu to open');
+        self::assertCount(1, $row->filter('a[href="/films/f01"][aria-label] svg'), 'an icon links to the film page');
+        self::assertCount(1, $row->filter('[data-seen-film="f01"] button'));
+        self::assertCount(1, $row->filter('[data-unwanted-film="f01"] button'));
+    }
+
     public function testAPageAfterTheLastOneShowsTheLastOne(): void
     {
         // Arrange

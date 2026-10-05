@@ -4,6 +4,7 @@ namespace App\Tests\Functional\Web;
 
 use App\Account\ApiTokenService;
 use App\Account\Entity\User;
+use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\UserBuilder;
 use App\Tests\StoresEntities;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -74,6 +75,27 @@ final class SettingsTest extends WebTestCase
         self::assertNull($automaticByDefault);
         self::assertSame(303, $redirect->getStatusCode());
         self::assertSelectorExists('html[data-theme="dark"]');
+    }
+
+    public function testTheSwitchOfTheTopMenuTogglesLightAndDarkAndStaysOnThePage(): void
+    {
+        // Arrange
+        $client = $this->signedInAs(UserBuilder::aUser());
+        $this->store(FilmBuilder::aFilm()->withSlug('digger-51293')->titled('Digger')->build());
+        $crawler = $client->request('GET', '/films/digger-51293');
+
+        // Act
+        $client->submit($crawler->filter('#theme-switch form')->form());
+        $redirect = $client->getResponse();
+        $dark = $client->followRedirect()->filter('html')->attr('data-theme');
+        $client->submit($client->getCrawler()->filter('#theme-switch form')->form());
+        $light = $client->followRedirect()->filter('html')->attr('data-theme');
+
+        // Assert
+        self::assertSame(303, $redirect->getStatusCode());
+        self::assertSame('/films/digger-51293', $redirect->headers->get('Location'));
+        self::assertSame('dark', $dark, 'from the automatic theme, without JavaScript: dark');
+        self::assertSame('light', $light);
     }
 
     public function testAnUnknownThemeIsRefused(): void

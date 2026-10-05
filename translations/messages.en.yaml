@@ -41,6 +41,8 @@
 'layout.my_profile': 'My profile'
 'layout.plan': 'Plan'
 'layout.settings': 'My settings'
+'layout.theme_dark': 'Switch to the dark theme'
+'layout.theme_light': 'Switch to the light theme'
 'layout.unwanted_films': 'Films not for me'
 'pagination.label': 'Pages'
 'pagination.next': 'Next'

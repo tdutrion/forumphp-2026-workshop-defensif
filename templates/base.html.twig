@@ -16,6 +16,24 @@
             {% if app.user %}
                 <nav class="flex items-center gap-4">
                     <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.plan'|trans }}</a>
+                    {#
+                        Light/dark switch, saved on the account like the choice of the settings, back to this page.
+                        With the automatic theme, the controller reads the system to offer the other one
+                        (without JavaScript: dark).
+                    #}
+                    <div id="theme-switch" data-controller="theme-switch" data-theme-switch-theme-value="{{ theme }}">
+                        <form method="post" action="{{ path('app_settings_theme') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('settings-theme') }}">
+                            <input type="hidden" name="theme" value="{{ theme == 'dark' ? 'light' : 'dark' }}" data-theme-switch-target="input">
+                            <input type="hidden" name="_return_route" value="{{ app.request.attributes.get('_route') }}">
+                            <input type="hidden" name="_return_params" value="{{ app.request.attributes.get('_route_params')|default({})|url_encode }}">
+                            <input type="hidden" name="_return" value="{{ app.request.queryString }}">
+                            <button type="submit" class="inline-flex rounded-control p-1.5 text-ink-muted hover:bg-surface-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-brand-600">
+                                <span data-theme-switch-target="toDark" class="{{ theme == 'dark' ? 'hidden' : '' }}"><twig:Icon name="moon" class="size-5" /><span class="sr-only">{{ 'layout.theme_dark'|trans }}</span></span>
+                                <span data-theme-switch-target="toLight" class="{{ theme == 'dark' ? '' : 'hidden' }}"><twig:Icon name="sun" class="size-5" /><span class="sr-only">{{ 'layout.theme_light'|trans }}</span></span>
+                            </button>
+                        </form>
+                    </div>
                     <twig:Dropdown id="profile-menu" :label="'layout.my_profile'|trans">
                         <a href="{{ path('app_settings') }}">{{ 'layout.settings'|trans }}</a>
                         <a href="{{ path('app_history') }}">{{ 'layout.history'|trans }}</a>

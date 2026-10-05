@@ -8,6 +8,7 @@ use App\Account\Entity\User;
 use App\Account\ExcludedCinemaService;
 use App\Account\Theme;
 use App\Security\OAuthProviders;
+use App\Web\PostRedirectGet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +29,7 @@ class SettingsController extends AbstractController
         private OAuthProviders $oauthProviders,
         private ExcludedCinemaService $excludedCinemaService,
         private TranslatorInterface $translator,
+        private PostRedirectGet $postRedirectGet,
     ) {
     }
 
@@ -97,7 +99,8 @@ class SettingsController extends AbstractController
         }
         $this->accountService->changeTheme($user, $theme);
 
-        return $this->redirectToRoute('app_settings', [], Response::HTTP_SEE_OTHER);
+        // From the switch of the top menu: back to the page it was on.
+        return $this->postRedirectGet->back($request) ?? $this->redirectToRoute('app_settings', [], Response::HTTP_SEE_OTHER);
     }
 
     private function renderSettings(User $user, #[\SensitiveParameter] ?string $newToken): Response

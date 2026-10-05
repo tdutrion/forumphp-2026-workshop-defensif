@@ -31,16 +31,18 @@
                     </td>
                     <td class="hidden whitespace-nowrap py-3 pe-3 text-ink-muted sm:table-cell">{{ film.markedAt|format_date('medium', locale=app.request.locale, timezone='UTC') }}</td>
                     <td class="py-3 text-end">
-                        <twig:Dropdown compact :label="'film_list.actions'|trans({'%title%': film.title})">
-                            <a href="{{ path('app_film_show', {slug: film.slug}) }}">{{ 'film_list.open'|trans }}</a>
-                            {% if list == 'seen' %}
-                                {{ include('seen/_button.html.twig', {slug: film.slug, seen: true, label: 'film_list.remove_from_history'|trans}|merge(return)) }}
-                                {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false}|merge(return)) }}
-                            {% else %}
-                                {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: true, label: 'film_list.want_again'|trans}|merge(return)) }}
-                                {{ include('seen/_button.html.twig', {slug: film.slug, seen: false}|merge(return)) }}
-                            {% endif %}
-                        </twig:Dropdown>
+<div class="flex items-center justify-end gap-2">
+                            <a href="{{ path('app_film_show', {slug: film.slug}) }}" aria-label="{{ 'film_list.open'|trans }}" title="{{ 'film_list.open'|trans }}" class="inline-flex rounded-control p-1.5 text-brand-700 hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-brand-600"><twig:Icon name="link" class="size-5" /></a>
+                            <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'film_list.actions'|trans({'%title%': film.title}) }}">
+                                {% if list == 'seen' %}
+                                    {{ include('seen/_button.html.twig', {slug: film.slug, seen: true, label: 'film_list.remove_from_history'|trans}|merge(return)) }}
+                                    {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false}|merge(return)) }}
+                                {% else %}
+                                    {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: true, label: 'film_list.want_again'|trans}|merge(return)) }}
+                                    {{ include('seen/_button.html.twig', {slug: film.slug, seen: false}|merge(return)) }}
+                                {% endif %}
+                            </twig:ButtonGroup>
+                        </div>
                     </td>
                 </tr>
             {% endfor %}
