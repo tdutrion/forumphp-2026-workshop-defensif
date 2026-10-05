@@ -14,7 +14,7 @@ Docker with Compose v2, `make` and `curl`. Nothing else runs on the host.
 
 ```bash
 make up        # build and start FrankenPHP, MySQL, the worker and the local OIDC provider
-make db-load   # reset the database and import the Pathé catalog (data/catalog.sql.gz, downloaded once)
+make db-load   # reset the database and import the Pathé catalog (downloaded once from the GitHub release)
 ```
 
 The ports are published on 127.0.0.1 only: the development secrets are public. Set
@@ -56,9 +56,9 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make cs` | PHP-CS-Fixer (`@Symfony`) |
 | `make css` / `make css-watch` | Build the Tailwind CSS once / on every change |
 | `make sync` | Sync the catalog from pathe.fr (network; `c="--city=dijon"`) |
-| `make db-dump` | Write `data/catalog.sql.gz` from the current catalog |
-| `make db-download` | Download the latest `data/catalog.sql.gz` (public, Synology C2) |
-| `make db-upload` | Publish `data/catalog.sql.gz` on Synology C2 (`C2_ACCESS_KEY_ID` and `C2_SECRET_ACCESS_KEY` in `.env.local`, AWS CLI on the host) |
+| `make db-dump` | Write `data/catalog-<today>.sql.gz` from the current catalog and pin it in the Makefile |
+| `make db-download` | Download the pinned dump again from the `catalog` GitHub release |
+| `make db-upload` | Publish the pinned dump on the `catalog` GitHub release (`gh` CLI, signed in) |
 | `make sh` / `make console c="…"` | Shell / Symfony console in the PHP container |
 
 The catalog is never synchronized on its own: set `CATALOG_SCHEDULE_ENABLED=1` in

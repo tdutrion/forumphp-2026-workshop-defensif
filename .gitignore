@@ -25,5 +25,5 @@
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
-# Catalog dump: hosted on Synology C2 (make db-download / make db-upload)
-/data/catalog.sql.gz
+# Catalog dumps: assets of the "catalog" GitHub release (make db-upload / make db-download)
+/data/*.sql.gz

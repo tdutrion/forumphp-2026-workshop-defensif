@@ -3,11 +3,12 @@ PHP     = $(COMPOSE) exec -T php
 CONSOLE = $(PHP) bin/console
 c ?=
 
-# Synology C2 Object Storage (S3-compatible) hosting the catalog dump, publicly readable.
-# The upload keys (C2_ACCESS_KEY_ID, C2_SECRET_ACCESS_KEY) only live in .env.local.
-C2_ENDPOINT      ?= https://eu-005.s3.synologyc2.net
-C2_BUCKET        ?= forumphp2026
-CATALOG_DUMP_URL ?= $(C2_ENDPOINT)/$(C2_BUCKET)/catalog.sql.gz
+# Catalog dumps are assets of the "catalog" GitHub release, named after the day they were made
+# (catalog-2026-10-05.sql.gz): the Makefile pins the one to load, make db-dump moves the pin.
+CATALOG_REPO      ?= tdutrion/forumphp-2026-workshop-defensif
+CATALOG_RELEASE   ?= catalog
+CATALOG_DUMP_DATE ?= 2026-10-05
+CATALOG_DUMP      = data/catalog-$(CATALOG_DUMP_DATE).sql.gz
 
 .DEFAULT_GOAL := help
 
@@ -55,33 +56,34 @@ cs: ## Fixes the code style (@Symfony)
 sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
 	$(CONSOLE) catalog:sync $(c)
 
-db-dump: ## Writes data/catalog.sql.gz: catalog data, without schema or users
+db-dump: ## Writes data/catalog-<today>.sql.gz (catalog data, no schema or users) and pins it
 	@mkdir -p data
-	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema film showtime' | gzip -9 > data/catalog.sql.gz
+	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema film showtime' | gzip -9 > data/catalog-$$(date +%F).sql.gz
+	@sed "s/^CATALOG_DUMP_DATE ?= .*/CATALOG_DUMP_DATE ?= $$(date +%F)/" Makefile > Makefile.tmp && mv Makefile.tmp Makefile
+	@echo "Pinned data/catalog-$$(date +%F).sql.gz: run make db-upload, then commit the Makefile."
 
-data/catalog.sql.gz:
-	@test -n "$(C2_ENDPOINT)" -a -n "$(C2_BUCKET)" || { echo "C2_ENDPOINT and C2_BUCKET are not set in the Makefile"; exit 1; }
+data/catalog-%.sql.gz:
 	@mkdir -p data
-	curl -fSL --proto '=https' -o $@.part '$(CATALOG_DUMP_URL)'
+	curl -fSL --proto '=https' -o $@.part 'https://github.com/$(CATALOG_REPO)/releases/download/$(CATALOG_RELEASE)/$(notdir $@)'
 	@mv $@.part $@
 
-db-download: ## Downloads the latest data/catalog.sql.gz from Synology C2
-	rm -f data/catalog.sql.gz
-	$(MAKE) data/catalog.sql.gz
+db-download: ## Downloads the pinned catalog dump again from the GitHub release
+	rm -f $(CATALOG_DUMP)
+	$(MAKE) $(CATALOG_DUMP)
 
-db-upload: ## Uploads data/catalog.sql.gz to Synology C2 (keys in .env.local; the bucket must be public)
-	@test -n "$(C2_ENDPOINT)" -a -n "$(C2_BUCKET)" || { echo "C2_ENDPOINT and C2_BUCKET are not set in the Makefile"; exit 1; }
-	@test -f .env.local || { echo ".env.local is missing (C2_ACCESS_KEY_ID, C2_SECRET_ACCESS_KEY)"; exit 1; }
-	@set -a; . ./.env.local; set +a; \
-	AWS_ACCESS_KEY_ID="$$C2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$$C2_SECRET_ACCESS_KEY" \
-	aws s3 cp data/catalog.sql.gz 's3://$(C2_BUCKET)/catalog.sql.gz' --endpoint-url '$(C2_ENDPOINT)' --content-type application/gzip
+db-upload: ## Publishes the pinned catalog dump on the GitHub release (gh CLI, signed in)
+	@test -f $(CATALOG_DUMP) || { echo "$(CATALOG_DUMP) is missing: run make db-dump first"; exit 1; }
+	gh release view $(CATALOG_RELEASE) --repo $(CATALOG_REPO) >/dev/null 2>&1 || \
+		gh release create $(CATALOG_RELEASE) --repo $(CATALOG_REPO) --title 'Catalog dumps' --latest=false \
+			--notes 'Pathé catalog dumps (cities, cinemas, films, showtimes), one asset per day of creation. Loaded by make db-load.'
+	gh release upload $(CATALOG_RELEASE) $(CATALOG_DUMP) --repo $(CATALOG_REPO) --clobber
 
-db-load: data/catalog.sql.gz ## Resets the database (all data!) then imports data/catalog.sql.gz (downloaded if missing)
+db-load: $(CATALOG_DUMP) ## Resets the database (all data!) then imports the pinned catalog dump (downloaded if missing)
 	$(CONSOLE) doctrine:database:drop --force --if-exists
 	$(CONSOLE) doctrine:database:create
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction
 	$(CONSOLE) cache:pool:clear cache.catalog
-	gunzip -c data/catalog.sql.gz | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
+	gunzip -c $(CATALOG_DUMP) | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
 
 phpstan-max: ## PHPStan max level (workshop progress measure)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G
