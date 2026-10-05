@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'films.title'|trans }} · ScreenRoute{% endblock %}
+
+{% block body %}
+    <header>
+        <h1 class="text-3xl font-bold">{{ 'films.title'|trans }}</h1>
+        <p class="text-ink-muted">{{ 'film_list.count'|trans({'%count%': films.total}) }}</p>
+    </header>
+
+    {# Selection and order: a GET form, so that the URL keeps them (and can be shared). #}
+    <twig:Card>
+        <form method="get" action="{{ path('app_films') }}" id="film-filters" class="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {% set field = 'block w-full min-h-10.5 rounded-control border border-line bg-surface px-3 py-2 leading-6 text-ink shadow-sm focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30' %}
+            <label class="grid gap-1 text-sm font-medium lg:col-span-2">{{ 'films.filter.search'|trans }}
+                <input type="search" name="q" value="{{ query.q }}" maxlength="100" placeholder="{{ 'films.filter.search_placeholder'|trans }}" class="{{ field }} font-normal">
+            </label>
+            <label class="grid gap-1 text-sm font-medium">{{ 'films.filter.sort'|trans }}
+                <select name="sort" class="{{ field }} font-normal">
+                    {% for sort in sorts %}<option value="{{ sort }}"{% if query.sort == sort %} selected{% endif %}>{{ ('films.sort.' ~ sort)|trans }}</option>{% endfor %}
+                </select>
+            </label>
+            <label class="grid gap-1 text-sm font-medium">{{ 'films.filter.genre'|trans }}
+                <select name="genre" class="{{ field }} font-normal">
+                    <option value="">{{ 'films.filter.all'|trans }}</option>
+                    {% for genre in genres %}<option value="{{ genre }}"{% if query.genre == genre %} selected{% endif %}>{{ genre }}</option>{% endfor %}
+                </select>
+            </label>
+            <label class="grid gap-1 text-sm font-medium">{{ 'planner.form.city'|trans }}
+                <select name="city" class="{{ field }} font-normal">
+                    <option value="">{{ 'films.filter.all'|trans }}</option>
+                    {% for city in cities %}<option value="{{ city.slug }}"{% if query.city == city.slug %} selected{% endif %}>{{ city.name }}</option>{% endfor %}
+                </select>
+            </label>
+            <label class="grid gap-1 text-sm font-medium">{{ 'planner.form.version'|trans }}
+                <select name="version" class="{{ field }} font-normal">
+                    <option value="">{{ 'planner.form.version_any'|trans }}</option>
+                    {% for version in ['vf', 'vost', 'vo', 'vfst'] %}<option value="{{ version }}"{% if query.version == version %} selected{% endif %}>{{ ('planner.form.version.' ~ version)|trans }}</option>{% endfor %}
+                </select>
+            </label>
+            <label class="flex items-center gap-2 self-center text-sm">
+                <input type="checkbox" name="hide_marked" value="1" class="size-4 accent-brand-600"{% if query.hideMarked %} checked{% endif %}>
+                {{ 'films.filter.hide_marked'|trans }}
+            </label>
+            <div class="flex gap-2">
+                <twig:Button type="submit">{{ 'films.filter.apply'|trans }}</twig:Button>
+                <twig:Button tag="a" href="{{ path('app_films') }}" variant="ghost">{{ 'films.filter.reset'|trans }}</twig:Button>
+            </div>
+        </form>
+    </twig:Card>
+
+    <section id="films" class="space-y-6">
+        {% if films.films is empty %}
+            <twig:Alert type="info">{{ 'films.empty'|trans }}</twig:Alert>
+        {% else %}
+            <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {% for film in films.films %}
+                    <li data-film="{{ film.slug }}">
+                        <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="group flex h-full gap-4 rounded-card bg-surface p-4 shadow-card ring-1 ring-line hover:ring-brand-600">
+                            {% if film.posterUrl %}
+                                <img src="{{ film.posterUrl }}" alt="" width="72" class="h-auto w-18 shrink-0 self-start rounded">
+                            {% else %}
+                                <span class="flex h-24 w-18 shrink-0 items-center justify-center rounded bg-surface-muted text-ink-muted"><twig:Icon name="film" class="size-6" /></span>
+                            {% endif %}
+                            <div class="min-w-0 space-y-1">
+                                <h2 class="font-semibold group-hover:text-brand-700">{{ film.title }}</h2>
+                                <p class="text-sm text-ink-muted">
+                                    {% if film.duration %}{{ 'film.running_time'|trans({'%minutes%': film.duration}) }}{% endif %}
+                                    {% if film.releaseDate %} · {{ film.releaseDate|format_date('medium', locale=app.request.locale) }}{% endif %}
+                                </p>
+                                <p class="text-sm font-medium text-brand-700">{{ 'films.showtimes'|trans({'%count%': film.showtimes, '%cinemas%': film.cinemas}) }}</p>
+                                <p class="flex flex-wrap gap-1">
+                                    {% for genre in film.genres|slice(0, 3) %}<twig:Badge>{{ genre }}</twig:Badge>{% endfor %}
+                                    {% if film.seen %}<twig:Badge tone="brand">{{ 'films.seen'|trans }}</twig:Badge>{% endif %}
+                                    {% if film.unwanted %}<twig:Badge tone="warning">{{ 'films.unwanted'|trans }}</twig:Badge>{% endif %}
+                                </p>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <twig:Pagination :page="films.page" :pages="films.pages" route="app_films" :query="query.toQuery" />
+        {% endif %}
+    </section>
+{% endblock %}

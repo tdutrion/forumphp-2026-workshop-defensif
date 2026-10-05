@@ -11,6 +11,7 @@ final class FilmBuilder
     private int $duration = 100;
     private ?string $originalLanguage = null;
     private ?string $synopsis = null;
+    private array $genres = [];
 
     public static function aFilm(): self
     {
@@ -60,6 +61,14 @@ final class FilmBuilder
         return $clone;
     }
 
+    public function inGenres(string ...$genres): self
+    {
+        $clone = clone $this;
+        $clone->genres = $genres;
+
+        return $clone;
+    }
+
     public function build(): Film
     {
         return (new Film())
@@ -68,6 +77,7 @@ final class FilmBuilder
             ->setChain('pathe')
             ->setDuration($this->duration)
             ->setOriginalLanguage($this->originalLanguage)
-            ->setSynopsis($this->synopsis);
+            ->setSynopsis($this->synopsis)
+            ->setGenres($this->genres);
     }
 }

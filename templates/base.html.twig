@@ -35,6 +35,7 @@
             {% if app.user %}
                 <nav class="flex items-center gap-4">
                     <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.plan'|trans }}</a>
+                    <a href="{{ path('app_films') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.films'|trans }}</a>
                     {#
                         Light/dark switch, saved on the account like the choice of the settings, back to this page.
                         With the automatic theme, the controller reads the system to offer the other one
