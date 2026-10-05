@@ -82,12 +82,14 @@ final class PlanApiTest extends WebTestCase
         // Act
         $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2, 'from' => '16:00']);
         $invalid = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'from' => '25:99']);
+        $reversed = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'from' => '20:00', 'until' => '19:00']);
 
         // Assert
         foreach ($body['programmes'] as $programme) {
             self::assertNotContains('f1', array_column(array_column($programme['showtimes'], 'film'), 'slug'));
         }
         self::assertContains('from', array_column($invalid['errors'] ?? [], 'field'));
+        self::assertContains('until', array_column($reversed['errors'] ?? [], 'field'));
     }
 
     public function testInvalidParametersGiveAProblem(): void

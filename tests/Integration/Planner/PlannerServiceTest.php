@@ -201,23 +201,6 @@ final class PlannerServiceTest extends KernelTestCase
         self::assertNotEmpty($beforeDinner['programmes']);
     }
 
-    public function testATimeRangeCanEndAfterMidnight(): void
-    {
-        // Arrange: a late showtime from 22:30 to 00:30.
-        self::bootKernel();
-        $userId = $this->dijonCatalog();
-        $late = FilmBuilder::aFilm()->withSlug('late-1')->lasting(100)->build();
-        $this->store($late, ShowtimeBuilder::aShowtime()->of($late)->at($this->dijon)->startingAt(self::DAY.' 22:30:00')->build());
-
-        // Act
-        $untilOne = $this->planner()->plan($this->criteria(['films' => 1, 'from' => '20:00', 'until' => '01:00']), $userId);
-        $untilMidnight = $this->planner()->plan($this->criteria(['films' => 1, 'from' => '20:00', 'until' => '00:00']), $userId);
-
-        // Assert
-        self::assertContains(['late-1'], $this->filmSets($untilOne));
-        self::assertNotContains(['late-1'], $this->filmSets($untilMidnight));
-    }
-
     public function testKeepsOnlyCinemasWithinTheRadiusAndTheChosenVersion(): void
     {
         // Arrange

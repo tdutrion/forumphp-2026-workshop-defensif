@@ -178,7 +178,7 @@ Only the sync command calls Pathé. The site only reads the database.
 | Field    | Rule                                                                                                      |
 |----------|-----------------------------------------------------------------------------------------------------------|
 | Date     | a day that still has a bookable showtime (Pathé publishes the current week, from Wednesday to Tuesday); once today's last showtime has passed, the form opens on tomorrow |
-| Time range | optional "from" and "until" (local time of the cinema): the first showtime starts at or after "from", the last one ends at or before "until"; an "until" earlier than "from" is on the next day (20:00 to 01:00) |
+| Time range | optional "from" and "until" (local time of the cinema): the first showtime starts at or after "from", the last one ends at or before "until", on the same day; an "until" at or before "from" makes the search invalid (form error, 422 in the API) |
 | Place    | a Pathé city (autocomplete on the synchronized cities) or the browser position                            |
 | Radius   | 1 to 50 km, 10 km by default                                                                              |
 | Films    | 2 to 5                                                                                                    |

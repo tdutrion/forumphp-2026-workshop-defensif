@@ -2,3 +2,4 @@
 'Choose a city or use your position.': 'Choisissez une ville ou utilisez votre position.'
 'The radius must be between {{ min }} and {{ max }} km.': 'Le rayon doit être compris entre {{ min }} et {{ max }} km.'
 'Choose between {{ min }} and {{ max }} films.': 'Choisissez entre {{ min }} et {{ max }} films.'
+'The end of the time range must be after its start.': 'La fin de la plage horaire doit être après son début.'

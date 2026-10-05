@@ -216,6 +216,20 @@ final class PlannerPageTest extends WebTestCase
         self::assertSame(['walking', 'cycling', 'transit', 'car'], $crawler->filter('#plan_travelMode option')->each(static fn ($o) => $o->attr('value')));
     }
 
+    public function testATimeRangeThatEndsBeforeItStartsIsInvalid(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $client->request('GET', '/', $this->search(['city' => 'dijon', 'from' => '20:00', 'until' => '01:00']));
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('form[name=plan]', 'The end of the time range must be after its start.');
+        self::assertSelectorNotExists('.programme');
+    }
+
     public function testInvalidCriteriaAreExplained(): void
     {
         // Arrange

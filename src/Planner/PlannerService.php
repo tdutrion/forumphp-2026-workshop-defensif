@@ -64,7 +64,8 @@ class PlannerService
             // The database stores UTC instants: the planner only compares timestamps.
             $row['start'] = (new \DateTimeImmutable($row['startsAt'], new \DateTimeZone('UTC')))->getTimestamp();
             $row['end'] = (new \DateTimeImmutable($row['endsAt'], new \DateTimeZone('UTC')))->getTimestamp();
-            if ($this->isWithinTimeRange($row, $criteria['date'], $criteria['from'] ?? null, $criteria['until'] ?? null)) {
+            // An empty field of the form means "no limit".
+            if ($this->isWithinTimeRange($row, $criteria['date'], ($criteria['from'] ?? null) ?: null, ($criteria['until'] ?? null) ?: null)) {
                 $showtimes[] = $row;
             }
         }
@@ -130,8 +131,8 @@ class PlannerService
 
     /**
      * Time range of the search, in the local time of the cinema: the showtime starts at or after $from
-     * and ends at or before $until ('H:i', each optional). An $until earlier than $from is on the next
-     * day (20:00 → 01:00), as a film can end after midnight.
+     * and ends at or before $until ('H:i', each optional, on the same day; PlanType refuses an $until
+     * before $from).
      */
     private function isWithinTimeRange(array $row, string $date, ?string $from, ?string $until): bool
     {
@@ -150,12 +151,7 @@ class PlannerService
             return true;
         }
 
-        $untilMinutes = $toMinutes($until);
-        if ($untilMinutes <= $fromMinutes) {
-            $untilMinutes += 24 * 60;
-        }
-
-        return intdiv($row['end'] - $midnight, 60) <= $untilMinutes;
+        return intdiv($row['end'] - $midnight, 60) <= $toMinutes($until);
     }
 
     /**

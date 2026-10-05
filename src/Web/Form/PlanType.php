@@ -62,7 +62,6 @@ class PlanType extends AbstractType
                 'input' => 'string',
                 'input_format' => 'H:i',
                 'required' => false,
-                'help' => 'An end earlier than the start is the next day (20:00 to 01:00).',
             ])
             ->add('city', ChoiceType::class, [
                 'label' => 'City',
@@ -126,6 +125,11 @@ class PlanType extends AbstractType
     {
         if (empty($data['city']) && empty($data['position'])) {
             $context->buildViolation('Choose a city or use your position.')->atPath('[city]')->addViolation();
+        }
+
+        // 'H:i' strings compare in time order; a range ending after midnight is refused.
+        if (!empty($data['from']) && !empty($data['until']) && $data['until'] <= $data['from']) {
+            $context->buildViolation('The end of the time range must be after its start.')->atPath('[until]')->addViolation();
         }
     }
 }
