@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!--
     ScreenRoute logo, app icon and favicon: a clapperboard whose slate carries the route in S (the S of
-    ScreenRoute) from its start ring. Same drawing as templates/components/Logo.html.twig: keep both in line.
+    ScreenRoute) from its start ring to an orange arrow. Same drawing as templates/components/Logo.html.twig: keep both in line.
   -->
   <g transform="rotate(-12 6 22.5)">
     <rect x="6" y="13.5" width="52" height="9" rx="2.5" fill="#e67e22"/>
@@ -11,9 +11,9 @@
     <polygon points="45,22.5 50.5,22.5 55.5,13.5 50,13.5" fill="#2980b9"/>
   </g>
   <rect x="6" y="25" width="52" height="34" rx="6" fill="#2980b9"/>
-  <g transform="translate(13.29 22.75) scale(0.574)" fill="none" stroke="#fff">
-    <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H43" stroke-width="10"/>
-    <circle cx="43" cy="15" r="5" fill="#fff" stroke="none"/>
+  <g transform="translate(14.72 25.6) scale(0.53)" fill="none" stroke="#fff">
+    <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H42" stroke-width="10"/>
+    <path d="M41 6.5v17l14.5-8.5z" fill="#e67e22" stroke="#e67e22" stroke-width="3" stroke-linejoin="round"/>
     <circle cx="16" cy="51" r="5.5" stroke-width="4.5"/>
   </g>
 </svg>
