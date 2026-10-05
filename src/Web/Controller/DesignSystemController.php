@@ -29,7 +29,11 @@ class DesignSystemController extends AbstractController
 
     private function exampleForm(string $name): FormInterface
     {
-        $form = $this->container->get('form.factory')->createNamedBuilder($name, options: ['csrf_protection' => false])
+        $form = $this->container->get('form.factory')->createNamedBuilder($name, options: [
+            'csrf_protection' => false,
+            // Developer page, in English only: the example labels are not translation keys.
+            'translation_domain' => false,
+        ])
             ->add('name', TextType::class, ['label' => 'Text field', 'required' => false])
             ->add('invalid', TextType::class, ['label' => 'Field with an error', 'required' => false])
             ->add('choice', ChoiceType::class, ['label' => 'Choice', 'choices' => ['First' => 1, 'Second' => 2]])
