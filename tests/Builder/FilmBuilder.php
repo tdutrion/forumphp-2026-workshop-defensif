@@ -3,6 +3,7 @@
 namespace App\Tests\Builder;
 
 use App\Catalog\Entity\Film;
+use App\Catalog\Entity\Work;
 
 final class FilmBuilder
 {
@@ -12,6 +13,7 @@ final class FilmBuilder
     private ?string $originalLanguage = null;
     private ?string $synopsis = null;
     private array $genres = [];
+    private ?Work $work = null;
 
     public static function aFilm(): self
     {
@@ -69,6 +71,14 @@ final class FilmBuilder
         return $clone;
     }
 
+    public function ofWork(Work $work): self
+    {
+        $clone = clone $this;
+        $clone->work = $work;
+
+        return $clone;
+    }
+
     public function build(): Film
     {
         return (new Film())
@@ -78,6 +88,7 @@ final class FilmBuilder
             ->setDuration($this->duration)
             ->setOriginalLanguage($this->originalLanguage)
             ->setSynopsis($this->synopsis)
-            ->setGenres($this->genres);
+            ->setGenres($this->genres)
+            ->setWork($this->work ?? WorkBuilder::aWork()->titled($this->title ?? 'Film '.$this->slug)->build());
     }
 }

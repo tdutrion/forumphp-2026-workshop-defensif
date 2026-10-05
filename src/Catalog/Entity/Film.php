@@ -16,6 +16,11 @@ class Film
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    /** The work this chain's film shows, common to every chain. */
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Work $work = null;
+
     /** Cinema chain this record comes from, e.g. 'pathe' (see config/packages/chains.yaml). */
     #[ORM\Column(length: 32)]
     private ?string $chain = null;
@@ -162,6 +167,18 @@ class Film
     public function setSynopsis(?string $synopsis): static
     {
         $this->synopsis = $synopsis;
+
+        return $this;
+    }
+
+    public function getWork(): Work
+    {
+        return $this->work ?? throw new \LogicException('A film always has a work.');
+    }
+
+    public function setWork(Work $work): static
+    {
+        $this->work = $work;
 
         return $this;
     }

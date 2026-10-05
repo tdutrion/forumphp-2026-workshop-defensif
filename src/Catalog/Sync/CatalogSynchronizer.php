@@ -6,6 +6,7 @@ use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
 use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Showtime;
+use App\Catalog\Entity\Work;
 use App\Catalog\Repository\ShowtimeRepository;
 use App\Sdk\Pathe\PatheClient;
 use App\Sdk\Pathe\PatheMapper;
@@ -97,7 +98,12 @@ class CatalogSynchronizer
             if (false === $data) {
                 continue;
             }
-            $film = $this->em->find(Film::class, $data['slug']) ?? (new Film())->setSlug($data['slug']);
+            $film = $this->em->find(Film::class, $data['slug']);
+            if (null === $film) {
+                // A new film is a new work until its film page tells more (see WorkLinker).
+                $year = null !== $data['releaseDate'] ? (int) substr($data['releaseDate'], 0, 4) : null;
+                $film = (new Film())->setSlug($data['slug'])->setWork((new Work())->describe($data['title'], $year, null));
+            }
             $film
                 ->setTitle($data['title'])
                 ->setChain(self::CHAIN)

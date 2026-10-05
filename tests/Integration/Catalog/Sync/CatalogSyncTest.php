@@ -175,4 +175,20 @@ final class CatalogSyncTest extends KernelTestCase
         $this->em()->clear();
         self::assertSame('L\'homme le plus puissant du monde.', $this->em()->find(Film::class, 'digger-51293')->getSynopsis());
     }
+
+    public function testEverySynchronizedFilmHasItsOwnWork(): void
+    {
+        // Arrange
+        self::bootKernel();
+
+        // Act
+        $this->synchronize($this->dijon());
+
+        // Assert
+        $this->em()->clear();
+        $digger = $this->em()->find(Film::class, 'digger-51293');
+        $verity = $this->em()->find(Film::class, 'verity-50815');
+        self::assertSame('Digger', $digger->getWork()->getOriginalTitle());
+        self::assertNotEquals($digger->getWork()->getId(), $verity->getWork()->getId());
+    }
 }
