@@ -57,7 +57,7 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
     {
         $provider = (string) $request->attributes->get('provider');
         if (!in_array($provider, $this->providers->enabled(), true)) {
-            throw new CustomUserMessageAuthenticationException('Unknown sign-in provider.');
+            throw new CustomUserMessageAuthenticationException('security.unknown_provider');
         }
 
         $client = $this->clientRegistry->getClient($provider);
@@ -65,16 +65,16 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
             $accessToken = $this->fetchAccessToken($client);
         } catch (\LogicException) {
             // No PKCE verifier in the session: this browser did not start the sign-in (reloaded or shared URL).
-            throw new CustomUserMessageAuthenticationException('Sign-in failed. Please try again.');
+            throw new CustomUserMessageAuthenticationException('security.sign_in_failed');
         } catch (ClientExceptionInterface|\UnexpectedValueException) {
             // Network failure or unreadable answer during the token exchange.
-            throw new CustomUserMessageAuthenticationException('The sign-in provider is not responding. Please try again.');
+            throw new CustomUserMessageAuthenticationException('security.provider_not_responding');
         }
 
         try {
             $userInfo = $this->extractor->extract($provider, $client, $accessToken);
         } catch (IdentityProviderException|ClientExceptionInterface|\UnexpectedValueException) {
-            throw new CustomUserMessageAuthenticationException('The sign-in provider is not responding. Please try again.');
+            throw new CustomUserMessageAuthenticationException('security.provider_not_responding');
         }
 
         $user = $this->accountService->loginWithProvider($provider, $userInfo);
@@ -94,7 +94,7 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
     {
         $message = $exception instanceof CustomUserMessageAuthenticationException
             ? $exception->getMessageKey()
-            : 'Sign-in failed. Please try again.';
+            : 'security.sign_in_failed';
 
         $session = $request->getSession();
         if ($session instanceof FlashBagAwareSessionInterface) {

@@ -4,16 +4,16 @@
 
 {% block body %}
     <twig:Card class="flex flex-col gap-6 sm:flex-row">
-        {% if film.posterUrl %}<img src="{{ film.posterUrl }}" alt="{{ 'Poster of %title%'|trans({'%title%': film.title}) }}" width="200" class="rounded-card">{% endif %}
+        {% if film.posterUrl %}<img src="{{ film.posterUrl }}" alt="{{ 'film.poster_alt'|trans({'%title%': film.title}) }}" width="200" class="rounded-card">{% endif %}
         <div class="space-y-4">
             <h1 class="text-3xl font-bold">{{ film.title }}</h1>
             <ul class="space-y-1 text-sm text-ink-muted">
-                {% if film.duration %}<li>{{ 'Running time: %minutes% min'|trans({'%minutes%': film.duration}) }}</li>{% endif %}
-                {% if film.releaseDate %}<li>{{ 'Release: %date%'|trans({'%date%': film.releaseDate|format_date('long', locale=app.request.locale)}) }}</li>{% endif %}
-                {% if film.genres %}<li>{{ 'Genres: %genres%'|trans({'%genres%': film.genres|join(', ')}) }}</li>{% endif %}
-                {% if film.contentRating %}<li>{{ 'Rating: %rating%'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
+                {% if film.duration %}<li>{{ 'film.running_time'|trans({'%minutes%': film.duration}) }}</li>{% endif %}
+                {% if film.releaseDate %}<li>{{ 'film.release'|trans({'%date%': film.releaseDate|format_date('long', locale=app.request.locale)}) }}</li>{% endif %}
+                {% if film.genres %}<li>{{ 'film.genres'|trans({'%genres%': film.genres|join(', ')}) }}</li>{% endif %}
+                {% if film.contentRating %}<li>{{ 'film.rating'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
             </ul>
-            <twig:ButtonGroup aria-label="{{ 'Film actions'|trans }}">
+            <twig:ButtonGroup aria-label="{{ 'film.actions'|trans }}">
                 {{ include('seen/_button.html.twig', {slug: film.slug, seen: seen}) }}
                 {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: unwanted}) }}
             </twig:ButtonGroup>

@@ -60,15 +60,15 @@ class ConnectController extends AbstractController
         try {
             $userInfo = $this->extractor->extract($provider, $client, $client->getAccessToken());
         } catch (\RuntimeException|\LogicException|IdentityProviderException|ClientExceptionInterface) {
-            $this->addFlash('error', $this->translator->trans('Linking failed. Please try again.'));
+            $this->addFlash('error', $this->translator->trans('security.linking_failed'));
 
             return $this->redirectToRoute('app_profile');
         }
 
         if ($this->accountService->linkProvider($user, $provider, $userInfo)) {
-            $this->addFlash('success', $this->translator->trans('%provider% account linked.', ['%provider%' => $provider]));
+            $this->addFlash('success', $this->translator->trans('security.account_linked', ['%provider%' => $provider]));
         } else {
-            $this->addFlash('error', $this->translator->trans('This %provider% account is already linked to another user.', ['%provider%' => $provider]));
+            $this->addFlash('error', $this->translator->trans('security.account_linked_elsewhere', ['%provider%' => $provider]));
         }
 
         return $this->redirectToRoute('app_profile');

@@ -44,7 +44,7 @@ class ProfileController extends AbstractController
         }
 
         if (!$this->accountService->removeLinkedAccount($user, $id)) {
-            $this->addFlash('error', $this->translator->trans('Cannot remove this connection: it is your last connection, or it does not exist.'));
+            $this->addFlash('error', $this->translator->trans('profile.cannot_remove_connection'));
         }
 
         return $this->redirectToRoute('app_profile');
@@ -59,7 +59,7 @@ class ProfileController extends AbstractController
 
         $name = trim($request->request->getString('name'));
         if ('' === $name || mb_strlen($name) > 100) {
-            $this->addFlash('error', $this->translator->trans('Give the token a name (100 characters at most).'));
+            $this->addFlash('error', $this->translator->trans('profile.token_name_invalid'));
 
             return $this->redirectToRoute('app_profile');
         }
@@ -77,7 +77,7 @@ class ProfileController extends AbstractController
         }
 
         if (!$this->apiTokenService->revoke($user, $id)) {
-            $this->addFlash('error', $this->translator->trans('Token not found.'));
+            $this->addFlash('error', $this->translator->trans('profile.token_not_found'));
         }
 
         return $this->redirectToRoute('app_profile');

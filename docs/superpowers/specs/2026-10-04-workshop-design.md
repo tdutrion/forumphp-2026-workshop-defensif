@@ -93,6 +93,9 @@ explicit and checked by the language and the tooling.
   implementations explicitly (Symfony HttpClient through `Psr18Client`,
   nyholm/psr7, a `cache.pathe` pool, Monolog).
 - **Languages**: Identifiers, messages, comments, documentation, README and commits are in English. The UI is written in English and translated into French with the Symfony Translator (default locale en, French served to browsers that ask for it).
+  Templates and code use translation keys (`planner.form.date`, `seen.mark`…), never English
+  text: the English catalog (`messages.en.yaml`, generated with `bin/console translation:extract`)
+  and the French one hold the texts; constraint messages are keys of the `validators` domain.
 - **Git**: Conventional Commits in English, signed commits authored by `Thomas Dutrion <hello@tdutrion.fr>`.
 
 ## 3. Scope

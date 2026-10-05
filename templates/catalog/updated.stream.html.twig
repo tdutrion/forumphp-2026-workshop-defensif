@@ -1,5 +1,5 @@
 <turbo-stream action="update" target="catalog-status">
     <template>
-        <twig:Alert type="info">{{ 'Programme updated: %count% showtimes. Run your search again to use them.'|trans({'%count%': stats.showtimes}, 'messages', locale) }}</twig:Alert>
+        <twig:Alert type="info">{{ 'catalog.updated'|trans({'%count%': stats.showtimes}, 'messages', locale) }}</twig:Alert>
     </template>
 </turbo-stream>

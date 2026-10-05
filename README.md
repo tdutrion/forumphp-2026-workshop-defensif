@@ -23,8 +23,12 @@ The ports are published on 127.0.0.1 only: the development secrets are public. S
 Open https://localhost (accept the local certificate) and sign in with
 **Local provider**: any username works, no Internet connection needed.
 
-The interface is in English, and in French when the browser asks for it
-(`translations/*.fr.yaml`). Instants are stored in UTC and shown in the time
+The interface is in English, and in French when the browser asks for it. Templates and code
+use translation keys (`planner.form.date`, `seen.mark`…); the texts live in
+`translations/messages.{en,fr}.yaml` and `translations/validators.{en,fr}.yaml`. After adding
+a key, run `make console c="translation:extract en --force --format=yaml --sort=asc --domain=messages"`
+to list it in the English catalog, write its text, then translate it in the French one; form labels and
+constraint messages are not detected by the extractor and are added by hand. Instants are stored in UTC and shown in the time
 zone of each cinema's chain (`config/packages/chains.yaml`). Everything that
 talks to Pathé lives in a framework-free SDK, see
 [`src/Sdk/Pathe/README.md`](src/Sdk/Pathe/README.md). The interface is built with

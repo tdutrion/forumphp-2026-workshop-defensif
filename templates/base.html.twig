@@ -13,11 +13,11 @@
             <a href="{{ path('app_home') }}" class="text-lg font-bold text-brand-700">Movie Marathon</a>
             {% if app.user %}
                 <nav class="flex items-center gap-4">
-                    <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'Plan'|trans }}</a>
-                    <a href="{{ path('app_profile') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'My profile'|trans }}</a>
+                    <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.plan'|trans }}</a>
+                    <a href="{{ path('app_profile') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.my_profile'|trans }}</a>
                     <form method="post" action="{{ path('app_logout') }}">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                        <twig:Button type="submit" variant="secondary" size="sm">{{ 'Log out'|trans }}</twig:Button>
+                        <twig:Button type="submit" variant="secondary" size="sm">{{ 'layout.log_out'|trans }}</twig:Button>
                     </form>
                 </nav>
             {% endif %}

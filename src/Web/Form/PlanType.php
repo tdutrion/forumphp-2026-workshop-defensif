@@ -44,30 +44,30 @@ class PlanType extends AbstractType
 
         $builder
             ->add('date', ChoiceType::class, [
-                'label' => 'Date',
+                'label' => 'planner.form.date',
                 'choices' => $dates,
                 'choice_translation_domain' => false,
-                'constraints' => [new NotBlank(message: 'Choose a date.')],
+                'constraints' => [new NotBlank(message: 'planner.date.required')],
             ])
             ->add('from', TimeType::class, [
-                'label' => 'From',
+                'label' => 'planner.form.from',
                 'widget' => 'single_text',
                 'input' => 'string',
                 'input_format' => 'H:i',
                 'required' => false,
             ])
             ->add('until', TimeType::class, [
-                'label' => 'Until',
+                'label' => 'planner.form.until',
                 'widget' => 'single_text',
                 'input' => 'string',
                 'input_format' => 'H:i',
                 'required' => false,
             ])
             ->add('city', ChoiceType::class, [
-                'label' => 'City',
+                'label' => 'planner.form.city',
                 'choices' => $cities,
                 'required' => false,
-                'placeholder' => 'Choose a city',
+                'placeholder' => 'planner.form.city_placeholder',
                 'autocomplete' => true,
             ])
             ->add('position', HiddenType::class, [
@@ -75,24 +75,24 @@ class PlanType extends AbstractType
                 'attr' => ['data-geolocation-target' => 'position'],
             ])
             ->add('travelMode', ChoiceType::class, [
-                'label' => 'Getting around',
-                'choices' => ['On foot' => 'walking', 'By bike' => 'cycling', 'Public transport' => 'transit', 'By car' => 'car'],
+                'label' => 'planner.form.travel_mode',
+                'choices' => ['planner.form.travel_mode.walking' => 'walking', 'planner.form.travel_mode.cycling' => 'cycling', 'planner.form.travel_mode.transit' => 'transit', 'planner.form.travel_mode.car' => 'car'],
                 'data' => 'transit',
             ])
             ->add('films', IntegerType::class, [
-                'label' => 'Number of films',
+                'label' => 'planner.form.films',
                 'data' => 2,
-                'constraints' => [new Range(min: 1, max: 8, notInRangeMessage: 'Choose between {{ min }} and {{ max }} films.')],
+                'constraints' => [new Range(min: 1, max: 8, notInRangeMessage: 'planner.films.range')],
             ])
             ->add('version', ChoiceType::class, [
-                'label' => 'Version',
+                'label' => 'planner.form.version',
                 'choices' => self::VERSIONS,
                 'required' => false,
-                'placeholder' => 'Any',
-                'help' => 'VOST and VO also include the films made in the language of the cinema.',
+                'placeholder' => 'planner.form.version_any',
+                'help' => 'planner.form.version_help',
             ])
             ->add('acceptAds', CheckboxType::class, [
-                'label' => 'I accept arriving during the ads (15 minutes)',
+                'label' => 'planner.form.accept_ads',
                 'required' => false,
                 // API clients send "0" or "false" to say no (a browser sends nothing).
                 'false_values' => [null, '', '0', 'false'],
@@ -119,12 +119,12 @@ class PlanType extends AbstractType
     public function validateLocation(?array $data, ExecutionContextInterface $context): void
     {
         if (empty($data['city']) && empty($data['position'])) {
-            $context->buildViolation('Choose a city or use your position.')->atPath('[city]')->addViolation();
+            $context->buildViolation('planner.location.required')->atPath('[city]')->addViolation();
         }
 
         // 'H:i' strings compare in time order; a range ending after midnight is refused.
         if (!empty($data['from']) && !empty($data['until']) && $data['until'] <= $data['from']) {
-            $context->buildViolation('The end of the time range must be after its start.')->atPath('[until]')->addViolation();
+            $context->buildViolation('planner.time_range.order')->atPath('[until]')->addViolation();
         }
     }
 }
