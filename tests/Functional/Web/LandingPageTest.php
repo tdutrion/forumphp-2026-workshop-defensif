@@ -48,6 +48,23 @@ final class LandingPageTest extends WebTestCase
         self::assertSelectorTextContains('#chains', 'Seul Pathé est pris en charge pour le moment');
     }
 
+    public function testAnnouncesThePaidFeaturesAsNotAvailableYet(): void
+    {
+        // Arrange
+        $client = self::createClient();
+
+        // Act
+        $crawler = $client->request('GET', '/', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr']);
+
+        // Assert
+        $features = $crawler->filter('#paid-features [data-paid-feature]');
+        self::assertCount(2, $features);
+        self::assertStringContainsString('Recommandations', $features->eq(0)->text());
+        self::assertStringContainsString('Google Maps', $features->eq(1)->text());
+        self::assertSelectorTextContains('#paid-features', 'Pas encore disponible');
+        self::assertStringNotContainsString('Aucune fonctionnalité payante', $crawler->filter('main')->text());
+    }
+
     public function testEveryPageCarriesTheNameAndTheLogoOfScreenRoute(): void
     {
         // Arrange

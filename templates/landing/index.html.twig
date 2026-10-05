@@ -124,6 +124,30 @@
             </div>
         </section>
 
+        {# Paid options to come: announced, not available. #}
+        <section id="paid-features" aria-labelledby="paid-title" class="space-y-6">
+            <div class="mx-auto max-w-2xl space-y-2 text-center">
+                <h2 id="paid-title" class="text-3xl font-bold">{{ 'landing.paid.title'|trans }}</h2>
+                <p class="text-ink-muted">{{ 'landing.paid.text'|trans }}</p>
+            </div>
+            <ul class="grid gap-6 md:grid-cols-2">
+                {% for feature, icon in {recommendations: 'sparkles', travel: 'map-pin'} %}
+                    <li data-paid-feature>
+                        <twig:Card class="h-full space-y-3 border-2 border-dashed border-line shadow-none ring-0">
+                            <p class="flex flex-wrap gap-2">
+                                <twig:Badge tone="warning">{{ 'landing.paid.badge'|trans }}</twig:Badge>
+                                <twig:Badge>{{ 'landing.paid.not_available'|trans }}</twig:Badge>
+                            </p>
+                            <h3 class="flex items-center gap-2 text-lg font-semibold">
+                                <twig:Icon :name="icon" class="size-5 text-accent-500" />{{ ('landing.paid.' ~ feature ~ '.title')|trans }}
+                            </h3>
+                            <p class="text-ink-muted">{{ ('landing.paid.' ~ feature ~ '.text')|trans }}</p>
+                        </twig:Card>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
         {# Free, and yours to host. #}
         <section class="grid gap-6 md:grid-cols-2">
             <twig:Card class="space-y-3">
