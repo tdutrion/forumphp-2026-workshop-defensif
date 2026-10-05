@@ -84,12 +84,44 @@
                     </li>
                 {% endfor %}
             </ul>
-            {% if cities is not empty %}
-                <p id="coverage" class="text-center text-ink-muted">
-                    <twig:Icon name="map-pin" class="inline size-5 align-text-bottom text-accent-500" />
-                    {{ 'landing.coverage'|trans({'%cities%': cities|join(', ')}) }}
-                </p>
-            {% endif %}
+        </section>
+
+        {# Every chain with an unlimited pass; only the supported ones can be planned today. #}
+        <section id="chains" aria-labelledby="chains-title" class="space-y-6">
+            <div class="mx-auto max-w-2xl space-y-2 text-center">
+                <h2 id="chains-title" class="text-3xl font-bold">{{ 'landing.chains.title'|trans }}</h2>
+                <p class="text-ink-muted">{{ 'landing.chains.text'|trans }}</p>
+            </div>
+            <div class="grid gap-6 md:grid-cols-3">
+                <twig:Card class="space-y-3 ring-2 ring-brand-600">
+                    <twig:Badge tone="brand">{{ 'landing.chains.supported'|trans }}</twig:Badge>
+                    <ul class="space-y-2">
+                        {% for chain in supportedChains %}
+                            <li data-chain-supported class="text-lg">
+                                <span class="font-semibold">{{ chain.name }}</span>
+                                <span class="text-ink-muted">· {{ chain.countries|map(code => code|country_name(app.request.locale))|join(', ') }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if cities is not empty %}
+                        <p id="coverage" class="text-sm text-ink-muted">
+                            <twig:Icon name="map-pin" class="inline size-4 align-text-bottom text-accent-500" />
+                            {{ 'landing.coverage'|trans({'%cities%': cities|join(', ')}) }}
+                        </p>
+                    {% endif %}
+                </twig:Card>
+                <twig:Card class="space-y-3 md:col-span-2">
+                    <twig:Badge>{{ 'landing.chains.planned'|trans }}</twig:Badge>
+                    <ul class="flex flex-wrap gap-2">
+                        {% for chain in plannedChains %}
+                            <li data-chain-planned class="rounded-control bg-surface-muted px-2.5 py-1 text-sm text-ink-muted">
+                                <span class="font-medium text-ink">{{ chain.name }}</span>
+                                · {{ chain.countries|map(code => code|country_name(app.request.locale))|join(', ') }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </twig:Card>
+            </div>
         </section>
 
         {# Free, and yours to host. #}

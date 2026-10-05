@@ -29,6 +29,25 @@ final class LandingPageTest extends WebTestCase
         self::assertSelectorNotExists('form[name="plan"]', 'the planner is for signed-in users');
     }
 
+    public function testShowsEveryChainWithAnUnlimitedPassButOnlyPatheAsSupported(): void
+    {
+        // Arrange
+        $client = self::createClient();
+
+        // Act
+        $crawler = $client->request('GET', '/', server: ['HTTP_ACCEPT_LANGUAGE' => 'fr']);
+
+        // Assert
+        $supported = $crawler->filter('#chains [data-chain-supported]')->each(static fn ($chain) => $chain->text());
+        $planned = $crawler->filter('#chains [data-chain-planned]')->each(static fn ($chain) => $chain->text());
+        self::assertCount(1, $supported);
+        self::assertStringContainsString('Pathé', $supported[0]);
+        self::assertStringContainsString('France', $supported[0]);
+        self::assertGreaterThan(10, \count($planned));
+        self::assertStringContainsString('Cineworld', implode(' ', $planned));
+        self::assertSelectorTextContains('#chains', 'Seul Pathé est pris en charge pour le moment');
+    }
+
     public function testEveryPageCarriesTheNameAndTheLogoOfScreenRoute(): void
     {
         // Arrange

@@ -8,6 +8,7 @@ use App\Catalog\Repository\CityRepository;
 use App\Planner\PlannerService;
 use App\Web\Form\PlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,6 +20,10 @@ class HomeController extends AbstractController
         private PlannerService $plannerService,
         private CityRepository $cityRepository,
         private CatalogCalendar $calendar,
+        #[Autowire('%app.chains%')]
+        private array $chains,
+        #[Autowire('%app.chains_planned%')]
+        private array $plannedChains,
     ) {
     }
 
@@ -29,6 +34,8 @@ class HomeController extends AbstractController
         if (null === $user) {
             return $this->render('landing/index.html.twig', [
                 'cities' => array_column($this->cityRepository->findAllForSelect(), 'name'),
+                'supportedChains' => array_map(static fn (array $chain): array => ['name' => $chain['name'], 'countries' => [$chain['country']]], array_values($this->chains)),
+                'plannedChains' => $this->plannedChains,
             ]);
         }
 
