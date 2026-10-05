@@ -85,5 +85,5 @@ to its source code (`SOURCE_CODE_URL`), as the license requires.
 Every film of a chain points to a *work*, the common identifier of the film across chains.
 Works are linked to [Wikidata](https://www.wikidata.org) (CC0 open data) during the
 synchronization, which also gives their IMDb and TMDB ids; a work not found yet is retried once
-a day. Catalog dumps made before works existed (`catalog-2026-10-05`) cannot be loaded any more:
-publish a new one with `make db-dump` then `make db-upload`.
+a day. Only the films with showtimes are looked up. Publish a new catalog dump with `make db-dump`
+then `make db-upload` (a dump of the same day replaces the previous one).

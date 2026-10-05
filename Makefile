@@ -54,7 +54,7 @@ cs: ## Fixes the code style (@Symfony)
 	$(PHP) vendor/bin/php-cs-fixer fix
 
 sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
-	$(CONSOLE) catalog:sync $(c)
+	$(CONSOLE) catalog:sync --no-debug $(c) # debug keeps every SQL backtrace: out of memory on 3 cities
 
 db-dump: ## Writes data/catalog-<today>.sql.gz (catalog data, no schema or users) and pins it
 	@mkdir -p data
@@ -75,7 +75,7 @@ db-upload: ## Publishes the pinned catalog dump on the GitHub release (gh CLI, s
 	@test -f $(CATALOG_DUMP) || { echo "$(CATALOG_DUMP) is missing: run make db-dump first"; exit 1; }
 	gh release view $(CATALOG_RELEASE) --repo $(CATALOG_REPO) >/dev/null 2>&1 || \
 		gh release create $(CATALOG_RELEASE) --repo $(CATALOG_REPO) --title 'Catalog dumps' --latest=false \
-			--notes 'Pathé catalog dumps (cities, cinemas, films, showtimes), one asset per day of creation. Loaded by make db-load.'
+			--notes 'Pathé catalog dumps (cities, cinemas, works, films, showtimes), one asset per day of creation. Loaded by make db-load.'
 	gh release upload $(CATALOG_RELEASE) $(CATALOG_DUMP) --repo $(CATALOG_REPO) --clobber
 
 db-load: $(CATALOG_DUMP) ## Resets the database (all data!) then imports the pinned catalog dump (downloaded if missing)
