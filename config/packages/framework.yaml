@@ -14,6 +14,9 @@ framework:
             pathe.http_client:
                 scope: '^https://www\.pathe\.fr/'
                 timeout: 10
+            wikidata.http_client:
+                scope: '^https://www\.wikidata\.org/'
+                timeout: 10
     cache:
         pools:
             # Pathé reference data (cities, cinemas, films), kept PATHE_CACHE_TTL seconds.
@@ -21,6 +24,9 @@ framework:
                 adapter: cache.app
             # Last bookable time of each day, computed by the import (CatalogCalendar).
             cache.catalog:
+                adapter: cache.app
+            # Wikidata answers (works), kept a day.
+            cache.wikidata:
                 adapter: cache.app
 
     # Note that the session will be started ONLY if you read or write from it.
@@ -36,6 +42,8 @@ when@test:
             pools:
                 # One empty calendar per test kernel.
                 cache.catalog:
+                    adapter: cache.adapter.array
+                cache.wikidata:
                     adapter: cache.adapter.array
         session:
             storage_factory_id: session.storage.factory.mock_file

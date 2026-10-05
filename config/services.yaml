@@ -38,6 +38,17 @@ services:
             $delayMs: '%env(int:PATHE_DELAY_MS)%'
             $cacheTtl: '%env(int:PATHE_CACHE_TTL)%'
 
+    app.wikidata_http_client:
+        class: Symfony\Component\HttpClient\Psr18Client
+        arguments: ['@wikidata.http_client']
+
+    App\Sdk\Wikidata\WikidataClient:
+        arguments:
+            # Wikidata asks every client to name itself and give a contact.
+            $userAgent: 'ScreenRoute/1.0 (%env(SOURCE_CODE_URL)%)'
+            $httpClient: '@app.wikidata_http_client'
+            $cache: '@cache.wikidata'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
@@ -57,6 +68,16 @@ when@test:
         App\Planner\LocationResolver: { autowire: true, public: true }
         App\Tests\Fake\FakePatheApi:
             public: true
+        App\Tests\Fake\FakeWikidataApi:
+            public: true
+        # The Wikidata SDK talks to the fake Wikidata API, without delay.
+        App\Sdk\Wikidata\WikidataClient:
+            public: true
+            arguments:
+                $userAgent: 'ScreenRoute/test'
+                $httpClient: '@App\Tests\Fake\FakeWikidataApi'
+                $cache: '@cache.wikidata'
+                $delayMs: 0
         App\Tests\Fake\FakeOAuthServer:
             public: true
         app.fake_oauth_http_client:
