@@ -9,7 +9,12 @@
     {% block stylesheets %}{% endblock %}
     {% block javascripts %}{% block importmap %}{{ importmap('app') }}{% endblock %}{% endblock %}
 </head>
-<body class="min-h-screen">
+{#
+    data-turbo="false": every link and form is a plain browser navigation. Buttons always do a
+    Post/Redirect/Get with a full page load (more reliable than fetch, and <html data-theme> follows).
+    Turbo only serves the Mercure stream of catalog updates.
+#}
+<body class="min-h-screen" data-turbo="false">
     <header class="site-header border-b border-line bg-surface">
         <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
             <a href="{{ path('app_home') }}" class="text-lg font-bold text-brand-700">Movie Marathon</a>

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\UX\Turbo\TurboBundle;
 
 class UnwantedFilmController extends AbstractController
 {
@@ -28,7 +27,7 @@ class UnwantedFilmController extends AbstractController
             throw $this->createNotFoundException('error.film_not_found');
         }
 
-        return $this->respond($request, $slug, true);
+        return $this->respond($request, $slug);
     }
 
     #[Route('/films/{slug}/wanted', name: 'app_film_wanted', methods: ['POST'])]
@@ -37,7 +36,7 @@ class UnwantedFilmController extends AbstractController
         $this->denyUnlessValidToken($request);
         $this->unwantedFilmService->unmarkUnwanted($user->getUserIdentifier(), $slug);
 
-        return $this->respond($request, $slug, false);
+        return $this->respond($request, $slug);
     }
 
     private function denyUnlessValidToken(Request $request): void
@@ -49,21 +48,15 @@ class UnwantedFilmController extends AbstractController
 
     /**
      * From a list or a search (hidden "_return_route" and "_return" fields): Post/Redirect/Get back to it, now updated.
-     * Otherwise, with Turbo: a stream that replaces every button of the film; without JavaScript: the film page.
+     * Otherwise: the film page. Always a Post/Redirect/Get, never a partial (AJAX) answer.
      */
-    private function respond(Request $request, string $slug, bool $unwanted): Response
+    private function respond(Request $request, string $slug): Response
     {
         $back = $this->postRedirectGet->back($request);
         if (null !== $back) {
             return $back;
         }
 
-        if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-            $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-            return $this->render('unwanted/toggle.stream.html.twig', ['slug' => $slug, 'unwanted' => $unwanted]);
-        }
-
-        return $this->redirectToRoute('app_film_show', ['slug' => $slug]);
+        return $this->redirectToRoute('app_film_show', ['slug' => $slug], Response::HTTP_SEE_OTHER);
     }
 }

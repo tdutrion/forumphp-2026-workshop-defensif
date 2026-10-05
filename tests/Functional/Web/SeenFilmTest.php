@@ -47,18 +47,17 @@ final class SeenFilmTest extends WebTestCase
         self::assertSame([], $this->seenFilms());
     }
 
-    public function testTurboGetsAStreamThatReplacesEveryButtonOfTheFilm(): void
+    public function testAButtonAlwaysAnswersWithARedirectEvenToAClientAcceptingStreams(): void
     {
         // Arrange
         $client = $this->signedInWithDigger();
         $token = $client->request('GET', '/films/digger-51293')->filter('[data-seen-film="digger-51293"] input[name=_token]')->attr('value');
 
         // Act
-        $client->request('POST', '/films/digger-51293/seen', ['_token' => $token], [], ['HTTP_ACCEPT' => 'text/vnd.turbo-stream.html']);
+        $client->request('POST', '/films/digger-51293/seen', ['_token' => $token], [], ['HTTP_ACCEPT' => 'text/vnd.turbo-stream.html, text/html']);
 
-        // Assert
-        self::assertResponseHeaderSame('content-type', 'text/vnd.turbo-stream.html; charset=UTF-8');
-        self::assertStringContainsString('targets="[data-seen-film=&quot;digger-51293&quot;]"', (string) $client->getResponse()->getContent());
+        // Assert: Post/Redirect/Get, never a partial answer.
+        self::assertResponseRedirects('/films/digger-51293', 303);
     }
 
     public function testRefusesAFormWithoutItsCsrfToken(): void

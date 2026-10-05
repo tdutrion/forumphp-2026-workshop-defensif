@@ -1,5 +1,0 @@
-{% for slug in slugs %}
-    <turbo-stream action="replace" targets="[data-seen-film=&quot;{{ slug|e('html_attr') }}&quot;]">
-        <template>{{ include('seen/_button.html.twig', {slug: slug, seen: seen}) }}</template>
-    </turbo-stream>
-{% endfor %}
