@@ -1,0 +1,52 @@
+{% extends 'legal/_page.html.twig' %}
+
+{% block page %}legal.terms.title{% endblock %}
+
+{% block text %}
+    <p>This translation is provided for convenience: the French version prevails.</p>
+
+    <h2>1. Purpose</h2>
+    <p>These terms of use govern the use of Movie Marathon, a service that proposes sequences of cinema showtimes ("programmes") based on the schedules published by Pathé. By creating an account or using the service, you accept these terms.</p>
+
+    <h2>2. Publisher</h2>
+    <p>The service is published by TDUTRION SOLUTIONS, identified in the <a href="{{ path('app_legal_notice') }}">legal notice</a>.</p>
+
+    <h2>3. Access to the service</h2>
+    <ul>
+        <li>The service is free of charge. Internet connection costs remain yours.</li>
+        <li>It is reserved for signed-in users. Signing in goes through an identity provider (for example Google or GitHub): Movie Marathon neither knows nor stores any password.</li>
+        <li>You agree to use an account that belongs to you and not to impersonate anyone.</li>
+    </ul>
+
+    <h2>4. How it works, and its limits</h2>
+    <ul>
+        <li>Programmes are computed from the schedules published by Pathé, updated regularly. They are given for information only: a showtime may change or be cancelled between two updates.</li>
+        <li>Travel times between cinemas are estimated as the crow flies, for the chosen travel mode, regardless of traffic or public transport schedules.</li>
+        <li>Tickets are booked and paid for only on the Pathé website, under its own terms. Movie Marathon takes no part in the sale.</li>
+    </ul>
+
+    <h2>5. Your commitments</h2>
+    <ul>
+        <li>Use the service for personal and lawful purposes.</li>
+        <li>Do not try to disrupt it, bypass its protections or query it automatically other than through the API provided for that purpose.</li>
+        <li>Keep your API tokens secret and revoke at once, from your settings, any token you believe compromised. Actions taken with a token are deemed taken by you.</li>
+    </ul>
+
+    <h2>6. Liability</h2>
+    <p>TDUTRION SOLUTIONS takes reasonable measures to keep the service available and working, without any guarantee of permanent availability: it may be interrupted, in particular for maintenance. TDUTRION SOLUTIONS cannot be held liable for a missed showtime, a schedule change, or the terms of sale of Pathé.</p>
+
+    <h2>7. Intellectual property</h2>
+    <p>The service and its content are protected, as described in the <a href="{{ path('app_legal_notice') }}">legal notice</a>.</p>
+
+    <h2>8. Personal data</h2>
+    <p>The data processed and your rights are described in the <a href="{{ path('app_legal_privacy') }}">privacy policy</a>.</p>
+
+    <h2>9. Ending the use of the service</h2>
+    <p>You may stop using the service at any time and ask for your account to be deleted at <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>. If these terms are breached, TDUTRION SOLUTIONS may suspend or delete an account.</p>
+
+    <h2>10. Changes to these terms</h2>
+    <p>These terms may change. The version in force is the one published on this page, with its date of update.</p>
+
+    <h2>11. Governing law and disputes</h2>
+    <p>These terms are governed by French law. In case of dispute, an amicable solution will be sought first, by writing to <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>. Failing that, the French courts will have jurisdiction, under the conditions set by law.</p>
+{% endblock %}

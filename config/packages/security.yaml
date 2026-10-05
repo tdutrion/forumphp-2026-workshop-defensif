@@ -34,4 +34,5 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/connect/, roles: PUBLIC_ACCESS }
         - { path: ^/design-system, roles: PUBLIC_ACCESS }
+        - { path: ^/legal/, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }

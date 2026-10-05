@@ -1,0 +1,50 @@
+{% extends 'legal/_page.html.twig' %}
+
+{% block page %}legal.terms.title{% endblock %}
+
+{% block text %}
+    <h2>1. Objet</h2>
+    <p>Les présentes conditions générales d'utilisation (CGU) encadrent l'utilisation de Movie Marathon, service qui propose des enchaînements de séances de cinéma (« programmes ») à partir des horaires publiés par Pathé. En créant un compte ou en utilisant le service, vous acceptez ces CGU.</p>
+
+    <h2>2. Éditeur</h2>
+    <p>Le service est édité par TDUTRION SOLUTIONS, dont l'identité figure dans les <a href="{{ path('app_legal_notice') }}">mentions légales</a>.</p>
+
+    <h2>3. Accès au service</h2>
+    <ul>
+        <li>Le service est gratuit. Les frais de connexion à Internet restent à votre charge.</li>
+        <li>Il est réservé aux utilisateurs connectés. La connexion passe par un fournisseur d'identité (par exemple Google ou GitHub) : Movie Marathon ne connaît ni ne conserve aucun mot de passe.</li>
+        <li>Vous vous engagez à utiliser un compte qui vous appartient et à ne pas usurper l'identité d'un tiers.</li>
+    </ul>
+
+    <h2>4. Fonctionnement et limites</h2>
+    <ul>
+        <li>Les programmes sont calculés à partir des horaires publiés par Pathé et mis à jour régulièrement. Ils sont fournis à titre indicatif : un horaire peut changer ou une séance être annulée entre deux mises à jour.</li>
+        <li>Les temps de trajet entre cinémas sont estimés à vol d'oiseau, selon le mode de déplacement choisi, sans tenir compte du trafic ni des horaires de transport.</li>
+        <li>La réservation et le paiement des places se font exclusivement sur le site de Pathé, selon ses propres conditions. Movie Marathon n'intervient pas dans la vente.</li>
+    </ul>
+
+    <h2>5. Vos engagements</h2>
+    <ul>
+        <li>Utiliser le service pour un usage personnel et conforme à la loi.</li>
+        <li>Ne pas tenter de perturber son fonctionnement, d'en contourner les protections ni de l'interroger de manière automatisée en dehors de l'API prévue à cet effet.</li>
+        <li>Garder secrets vos jetons d'API et révoquer sans délai, depuis vos paramètres, un jeton que vous pensez compromis. Les actions faites avec un jeton sont réputées faites par vous.</li>
+    </ul>
+
+    <h2>6. Responsabilité</h2>
+    <p>TDUTRION SOLUTIONS met en œuvre les moyens raisonnables pour assurer l'accès et le bon fonctionnement du service, sans garantie de disponibilité permanente : il peut être interrompu, notamment pour maintenance. TDUTRION SOLUTIONS ne saurait être tenue responsable d'une séance manquée, d'un changement d'horaire, ni des conditions de vente de Pathé.</p>
+
+    <h2>7. Propriété intellectuelle</h2>
+    <p>Le service et ses contenus sont protégés, dans les conditions décrites dans les <a href="{{ path('app_legal_notice') }}">mentions légales</a>.</p>
+
+    <h2>8. Données personnelles</h2>
+    <p>Les données traitées et vos droits sont décrits dans la <a href="{{ path('app_legal_privacy') }}">politique de confidentialité</a>.</p>
+
+    <h2>9. Fin de l'utilisation</h2>
+    <p>Vous pouvez cesser d'utiliser le service à tout moment et demander la suppression de votre compte à <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>. En cas de manquement à ces CGU, TDUTRION SOLUTIONS peut suspendre ou supprimer un compte.</p>
+
+    <h2>10. Modification des CGU</h2>
+    <p>Ces CGU peuvent évoluer. La version en vigueur est celle publiée sur cette page, avec sa date de mise à jour.</p>
+
+    <h2>11. Droit applicable et litiges</h2>
+    <p>Les présentes CGU sont soumises au droit français. En cas de litige, une solution amiable sera recherchée en priorité, en écrivant à <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>. À défaut, les tribunaux français seront compétents, dans les conditions prévues par la loi.</p>
+{% endblock %}

@@ -60,5 +60,15 @@
         {% endfor %}
         {% block body %}{% endblock %}
     </main>
+    <footer class="border-t border-line">
+        <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-ink-muted">
+            <p>{{ 'layout.footer.copyright'|trans({'%year%': 'now'|date('Y')}) }}</p>
+            <nav aria-label="{{ 'layout.footer.legal'|trans }}" class="flex flex-wrap gap-4">
+                <a href="{{ path('app_legal_notice') }}" class="hover:text-ink hover:underline">{{ 'legal.notice.title'|trans }}</a>
+                <a href="{{ path('app_legal_terms') }}" class="hover:text-ink hover:underline">{{ 'legal.terms.title'|trans }}</a>
+                <a href="{{ path('app_legal_privacy') }}" class="hover:text-ink hover:underline">{{ 'legal.privacy.title'|trans }}</a>
+            </nav>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,36 @@
+{% extends 'legal/_page.html.twig' %}
+
+{% block page %}legal.notice.title{% endblock %}
+
+{% block text %}
+    <p>Mentions prévues par l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN).</p>
+
+    <h2>Éditeur du site</h2>
+    <p>
+        TDUTRION SOLUTIONS, entreprise unipersonnelle à responsabilité limitée (EURL) au capital de 5 000 €<br>
+        Siège social : 229 rue Saint-Honoré, 75001 Paris, France<br>
+        RCS Paris 987 542 230 — SIRET 987 542 230 00014<br>
+        N° de TVA intracommunautaire : FR31987542230<br>
+        Contact : <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>
+    </p>
+
+    <h2>Directeur de la publication</h2>
+    <p>Thomas Dutrion, gérant de TDUTRION SOLUTIONS.</p>
+
+    <h2>Conception et réalisation</h2>
+    <p>Thomas Dutrion, <a href="https://www.pappers.fr/entreprise/tdutrion-solutions-987542230">tdutrion solutions</a>.</p>
+
+    <h2>Hébergement</h2>
+    <p>
+        Infomaniak Network SA<br>
+        Rue Eugène-Marziano 25, 1227 Les Acacias (Genève), Suisse<br>
+        Téléphone : +41 22 820 35 40 — <a href="https://www.infomaniak.com">www.infomaniak.com</a>
+    </p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>Le code, la mise en page et les textes de Movie Marathon appartiennent à TDUTRION SOLUTIONS. Toute reproduction sans autorisation est interdite.</p>
+    <p>Les cinémas, horaires des séances, titres, affiches et synopsis des films proviennent de Pathé et restent la propriété de leurs titulaires. Movie Marathon est un service indépendant : il n'est ni édité, ni approuvé par Pathé. La réservation et le paiement des places se font sur le site de Pathé.</p>
+
+    <h2>Données personnelles</h2>
+    <p>Le traitement de vos données est décrit dans la <a href="{{ path('app_legal_privacy') }}">politique de confidentialité</a>, et l'usage du service dans les <a href="{{ path('app_legal_terms') }}">conditions générales d'utilisation</a>.</p>
+{% endblock %}
