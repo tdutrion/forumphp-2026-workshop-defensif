@@ -68,7 +68,13 @@ sync never run together (lock in MySQL).
 The API is documented at https://localhost/api/doc; create a personal token
 from **My profile › My settings** (https://localhost/settings).
 
-## Production image
+## Production and self-hosting
 
-`docker build --target prod .` builds a production image without development
-tools, running as a non-root user.
+`compose.prod.yaml` runs the production image (`frankenphp_prod` target: no
+development tools, non-root user) with every secret required. The step-by-step
+guide is [`docs/self-hosting.md`](docs/self-hosting.md).
+
+## License
+
+[GNU AGPL-3.0](LICENSE) © TDUTRION SOLUTIONS. Every page of an instance links
+to its source code (`SOURCE_CODE_URL`), as the license requires.

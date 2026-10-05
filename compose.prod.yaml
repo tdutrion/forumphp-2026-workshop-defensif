@@ -1,0 +1,35 @@
+# Production, for a self-hosted instance: see docs/self-hosting.md.
+#   docker compose -f compose.yaml -f compose.prod.yaml --env-file .env.prod.local up --build --wait
+# Every secret is required here: the development defaults of compose.yaml are public.
+x-app-env: &app-env
+  APP_SECRET: ${APP_SECRET:?Set APP_SECRET, a long random string}
+  # Never "local": the local provider accepts any username (development only).
+  OAUTH_PROVIDERS: ${OAUTH_PROVIDERS:?Set OAUTH_PROVIDERS, e.g. github,google}
+  OAUTH_GOOGLE_CLIENT_ID: ${OAUTH_GOOGLE_CLIENT_ID:-}
+  OAUTH_GOOGLE_CLIENT_SECRET: ${OAUTH_GOOGLE_CLIENT_SECRET:-}
+  OAUTH_GITHUB_CLIENT_ID: ${OAUTH_GITHUB_CLIENT_ID:-}
+  OAUTH_GITHUB_CLIENT_SECRET: ${OAUTH_GITHUB_CLIENT_SECRET:-}
+  PATHE_CITIES: ${PATHE_CITIES:-paris,lyon,dijon}
+  SOURCE_CODE_URL: ${SOURCE_CODE_URL:-https://github.com/tdutrion/forumphp-2026-workshop-defensif}
+  MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:?Set CADDY_MERCURE_JWT_SECRET, a random string of 32 characters or more}
+
+services:
+  php:
+    build:
+      context: .
+      target: frankenphp_prod
+    environment:
+      <<: *app-env
+      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:?Set CADDY_MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:?Set CADDY_MERCURE_JWT_SECRET}
+
+  worker:
+    environment:
+      <<: *app-env
+      # Synchronizes the catalog with Pathé every 6 hours.
+      CATALOG_SCHEDULE_ENABLED: ${CATALOG_SCHEDULE_ENABLED:-1}
+
+  database:
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
