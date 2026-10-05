@@ -85,6 +85,30 @@ parameters:
 			path: src/Account/ApiTokenService.php
 
 		-
+			message: '#^Method App\\Account\\ExcludedCinemaService\:\:getExcludedCinemaSlugs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/ExcludedCinemaService.php
+
+		-
+			message: '#^Method App\\Account\\ExcludedCinemaService\:\:listExcludedCinemas\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/ExcludedCinemaService.php
+
+		-
+			message: '#^Method App\\Account\\Repository\\ExcludedCinemaRepository\:\:findCinemaSlugsByUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/Repository/ExcludedCinemaRepository.php
+
+		-
+			message: '#^Method App\\Account\\Repository\\ExcludedCinemaRepository\:\:findOneByUserAndCinema\(\) should return App\\Account\\Entity\\ExcludedCinema\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Account/Repository/ExcludedCinemaRepository.php
+
+		-
 			message: '#^Method App\\Account\\Repository\\SeenFilmRepository\:\:findFilmSlugsByUser\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -131,6 +155,18 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Account/UnwantedFilmService.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Api/Controller/ExcludedCinemaController.php
+
+		-
+			message: '#^Cannot access offset ''slug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Api/Controller/ExcludedCinemaController.php
 
 		-
 			message: '#^Cannot call method format\(\) on mixed\.$#'
@@ -380,6 +416,18 @@ parameters:
 
 		-
 			message: '#^Method App\\Catalog\\Repository\\CinemaRepository\:\:findByCity\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/CinemaRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\CinemaRepository\:\:findBySlugs\(\) has parameter \$slugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/CinemaRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\CinemaRepository\:\:findBySlugs\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Repository/CinemaRepository.php
@@ -1107,7 +1155,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''slug'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1663,6 +1711,18 @@ parameters:
 			path: src/Web/Controller/HomeController.php
 
 		-
+			message: '#^Cannot access offset ''cinemaName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Web/Controller/HomeController.php
+
+		-
 			message: '#^Cannot access offset ''filmSlug'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
@@ -1689,7 +1749,7 @@ parameters:
 		-
 			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
-			count: 1
+			count: 2
 			path: src/Web/Controller/HomeController.php
 
 		-
@@ -2419,9 +2479,15 @@ parameters:
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
+			message: '#^Parameter \#1 \$city of method App\\Tests\\Builder\\CinemaBuilder\:\:in\(\) expects App\\Catalog\\Entity\\City, App\\Catalog\\Entity\\City\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Planner/PlannerServiceTest.php
+
+		-
 			message: '#^Parameter \#1 \$result of method App\\Tests\\Integration\\Planner\\PlannerServiceTest\:\:filmSets\(\) expects array, array\|false given\.$#'
 			identifier: argument.type
-			count: 9
+			count: 10
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-

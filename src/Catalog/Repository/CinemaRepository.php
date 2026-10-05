@@ -47,4 +47,22 @@ class CinemaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    /**
+     * @return array list of ['slug' => ..., 'name' => ...] sorted by name
+     */
+    public function findBySlugs(array $slugs): array
+    {
+        if ([] === $slugs) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('c')
+            ->select('c.slug', 'c.name')
+            ->where('c.slug IN (:slugs)')
+            ->setParameter('slugs', $slugs)
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

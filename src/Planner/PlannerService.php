@@ -2,6 +2,7 @@
 
 namespace App\Planner;
 
+use App\Account\ExcludedCinemaService;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Repository\CinemaRepository;
@@ -19,6 +20,7 @@ class PlannerService
         private ShowtimeRepository $showtimeRepository,
         private SeenFilmService $seenFilmService,
         private UnwantedFilmService $unwantedFilmService,
+        private ExcludedCinemaService $excludedCinemaService,
         private ChainBuilder $chainBuilder,
         private ProgrammeSelector $programmeSelector,
         private LocationResolver $locationResolver,
@@ -43,7 +45,11 @@ class PlannerService
         $films = $criteria['films'] ?? 3;
 
         $cinemaSlugs = [];
+        $excludedCinemas = $this->excludedCinemaService->getExcludedCinemaSlugs($userId);
         foreach ($this->cinemaRepository->findOpenWithCoordinates() as $cinema) {
+            if (in_array($cinema['slug'], $excludedCinemas, true)) {
+                continue;
+            }
             if (Geo::distanceKm($criteria['latitude'], $criteria['longitude'], $cinema['latitude'], $cinema['longitude']) <= $radius) {
                 $cinemaSlugs[] = $cinema['slug'];
             }

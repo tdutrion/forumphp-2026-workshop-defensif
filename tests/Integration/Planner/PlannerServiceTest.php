@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Planner;
 
+use App\Account\ExcludedCinemaService;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Entity\Cinema;
@@ -199,6 +200,23 @@ final class PlannerServiceTest extends KernelTestCase
         self::assertNotEmpty($afternoon['programmes']);
         self::assertNotContains('f4', array_merge(...$this->filmSets($beforeDinner)), 'ends after 18:45');
         self::assertNotEmpty($beforeDinner['programmes']);
+    }
+
+    public function testNeverUsesACinemaTheUserExcluded(): void
+    {
+        // Arrange: a second cinema next to Pathé Dijon, which the user excludes.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        $other = CinemaBuilder::aCinema()->withSlug('cinema-cine-cap-vert')->in($this->dijon->getCity())->at(47.312465, 5.091471)->build();
+        $film = FilmBuilder::aFilm()->withSlug('f8')->lasting(100)->build();
+        $this->store($other, $film, ShowtimeBuilder::aShowtime()->of($film)->at($other)->startingAt(self::DAY.' 20:00:00')->build());
+        self::getContainer()->get(ExcludedCinemaService::class)->exclude($userId, 'cinema-pathe-dijon');
+
+        // Act
+        $result = $this->planner()->plan($this->criteria(['films' => 1]), $userId);
+
+        // Assert
+        self::assertSame([['f8']], $this->filmSets($result), 'only the other cinema is used');
     }
 
     public function testKeepsOnlyCinemasWithinTheRadiusAndTheChosenVersion(): void

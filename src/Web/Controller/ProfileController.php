@@ -5,6 +5,7 @@ namespace App\Web\Controller;
 use App\Account\AccountService;
 use App\Account\ApiTokenService;
 use App\Account\Entity\User;
+use App\Account\ExcludedCinemaService;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Security\OAuthProviders;
@@ -24,6 +25,7 @@ class ProfileController extends AbstractController
         private ApiTokenService $apiTokenService,
         private OAuthProviders $oauthProviders,
         private UnwantedFilmService $unwantedFilmService,
+        private ExcludedCinemaService $excludedCinemaService,
         private TranslatorInterface $translator,
     ) {
     }
@@ -92,6 +94,7 @@ class ProfileController extends AbstractController
             'user' => $user,
             'seenFilms' => $this->seenFilmService->listSeenFilms($user->getUserIdentifier()),
             'unwantedFilms' => $this->unwantedFilmService->listUnwantedFilms($user->getUserIdentifier()),
+            'excludedCinemas' => $this->excludedCinemaService->listExcludedCinemas($user->getUserIdentifier()),
             'providersToLink' => array_values(array_diff($this->oauthProviders->enabled(), $linkedProviders)),
             'tokens' => $this->apiTokenService->listForUser($user),
             'newToken' => $newToken,

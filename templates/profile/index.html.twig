@@ -32,6 +32,18 @@
         {% endfor %}
     </twig:Card>
 
+    <twig:Card id="excluded-cinemas">
+        <h2 class="mb-4 text-xl font-semibold">{{ 'Excluded cinemas'|trans }}</h2>
+        {% for cinema in excludedCinemas %}
+            <div class="flex items-center justify-between gap-4 border-b border-line py-2 last:border-0">
+                <span class="font-medium">{{ cinema.name }}</span>
+                {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: true}) }}
+            </div>
+        {% else %}
+            <p class="text-ink-muted">{{ 'No cinema excluded.'|trans }}</p>
+        {% endfor %}
+    </twig:Card>
+
     <twig:Card id="connections">
         <h2 class="mb-4 text-xl font-semibold">{{ 'Connections'|trans }}</h2>
         <ul class="mb-4">

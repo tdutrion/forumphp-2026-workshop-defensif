@@ -56,6 +56,29 @@ final class SeenFilmApiTest extends WebTestCase
         self::assertSame([], $this->api('GET', '/api/me/unwanted-films'));
     }
 
+    public function testAnExcludedCinemaLeavesThePlansUntilIncludedAgain(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+        $criteria = ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2];
+
+        // Act
+        $this->api('PUT', '/api/me/excluded-cinemas/cinema-pathe-dijon');
+        $excluded = $this->client->getResponse()->getStatusCode();
+        $list = $this->api('GET', '/api/me/excluded-cinemas');
+        $plan = $this->api('GET', '/api/plans', $criteria);
+        $this->api('DELETE', '/api/me/excluded-cinemas/cinema-pathe-dijon');
+        $included = $this->client->getResponse()->getStatusCode();
+        $planAgain = $this->api('GET', '/api/plans', $criteria);
+
+        // Assert
+        self::assertSame(204, $excluded);
+        self::assertSame([['slug' => 'cinema-pathe-dijon', 'name' => 'Pathé Dijon']], $list);
+        self::assertSame([], $plan['programmes']);
+        self::assertSame(204, $included);
+        self::assertNotEmpty($planAgain['programmes']);
+    }
+
     public function testAnUnknownFilmIsAProblemWithoutTechnicalDetails(): void
     {
         // Arrange

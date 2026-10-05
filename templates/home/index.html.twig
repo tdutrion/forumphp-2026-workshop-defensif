@@ -89,6 +89,39 @@
             </twig:Card>
         {% endif %}
 
+        {% if proposedCinemas is not empty %}
+            <twig:Card id="proposed-cinemas">
+                <details class="group" open>
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
+                        <h2>{{ 'Cinemas in these programmes (%count%)'|trans({'%count%': proposedCinemas|length}) }}</h2>
+                        <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
+                    </summary>
+                    <div class="mt-2">
+                        <table class="w-full text-sm">
+                            <thead class="sr-only">
+                                <tr>
+                                    <th scope="col">{{ 'Cinema'|trans }}</th>
+                                    <th scope="col">{{ 'Cinema actions'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-line">
+                                {% for cinema in proposedCinemas %}
+                                    <tr data-proposed-cinema="{{ cinema.slug }}">
+                                        <td class="py-2 pr-4 font-medium">{{ cinema.name }}</td>
+                                        <td class="py-2 text-right">
+                                            <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'Cinema actions'|trans }}">
+                                                {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: false, return_to: app.request.queryString}) }}
+                                            </twig:ButtonGroup>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </twig:Card>
+        {% endif %}
+
         <div class="grid gap-6 lg:grid-cols-3">
             {% for programme in result.programmes %}
                 {{ include('home/_programme.html.twig', {programme: programme, number: loop.index}) }}

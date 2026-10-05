@@ -262,6 +262,13 @@ A showtime is a candidate if it meets all these conditions:
 - Those films are never offered by the planner, like the films already seen.
 - List managed from the profile ("Films I don't want to see").
 
+### Excluded cinemas
+
+- Under the proposed films, the list of every cinema of the programmes, with an
+  "Exclude" button (Post/Redirect/Get back to the same search). The planner
+  never uses an excluded cinema.
+- List managed from the profile ("Excluded cinemas").
+
 ### Accounts and sign-in
 
 - A `User` (UUID v7) has one or more linked connections (`provider`,
@@ -301,6 +308,9 @@ A showtime is a candidate if it meets all these conditions:
 | GET     | `/api/me/unwanted-films`   | list the films the user does not want to see |
 | PUT     | `/api/me/unwanted-films/{slug}` | never offer this film again |
 | DELETE  | `/api/me/unwanted-films/{slug}` | offer this film again |
+| GET     | `/api/me/excluded-cinemas` | list the cinemas the user excluded |
+| PUT     | `/api/me/excluded-cinemas/{slug}` | never use this cinema again |
+| DELETE  | `/api/me/excluded-cinemas/{slug}` | use this cinema again |
 
 - Authentication: a personal token, generated from the profile, shown only
   once. Stored as a SHA-256 hash, revocable, with an expiration
