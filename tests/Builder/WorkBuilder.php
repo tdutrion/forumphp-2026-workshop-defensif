@@ -11,6 +11,8 @@ final class WorkBuilder
     private ?int $year = 2026;
     private ?array $directors = null;
     private ?array $link = null;
+    private ?string $id = null;
+    private ?WorkLinkStatus $status = null;
 
     public static function aWork(): self
     {
@@ -49,11 +51,33 @@ final class WorkBuilder
         return $clone;
     }
 
+    /**
+     * A given id, e.g. one of the UUIDs the migration made for the films that existed before works.
+     */
+    public function withId(string $id): self
+    {
+        $clone = clone $this;
+        $clone->id = $id;
+
+        return $clone;
+    }
+
+    public function linkedByHandTo(string $wikidataId): self
+    {
+        $clone = $this->linkedTo($wikidataId);
+        $clone->status = WorkLinkStatus::Manual;
+
+        return $clone;
+    }
+
     public function build(): Work
     {
         $work = (new Work())->describe($this->title, $this->year, $this->directors);
         if (null !== $this->link) {
-            $work->setExternalIds($this->link[0], $this->link[1], $this->link[2], WorkLinkStatus::Wikidata);
+            $work->setExternalIds($this->link[0], $this->link[1], $this->link[2], $this->status ?? WorkLinkStatus::Wikidata);
+        }
+        if (null !== $this->id) {
+            (new \ReflectionProperty(Work::class, 'id'))->setValue($work, \Symfony\Component\Uid\Uuid::fromString($this->id));
         }
 
         return $work;

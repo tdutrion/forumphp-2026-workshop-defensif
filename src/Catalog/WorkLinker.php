@@ -146,7 +146,10 @@ class WorkLinker
         if (null !== $owner && !$owner->getId()->equals($work->getId())) {
             $work = $this->workMerger->merge($owner, $work);
         }
-        $work->setExternalIds($wikidataId, $film['imdbId'], $film['tmdbId'], $status);
+        // A link made by hand is never downgraded by an automatic one (the ids are the same anyway).
+        if (WorkLinkStatus::Manual !== $work->getLinkStatus() || WorkLinkStatus::Manual === $status) {
+            $work->setExternalIds($wikidataId, $film['imdbId'], $film['tmdbId'], $status);
+        }
         $this->em->flush();
     }
 }

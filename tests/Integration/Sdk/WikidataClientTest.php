@@ -64,4 +64,23 @@ final class WikidataClientTest extends KernelTestCase
         self::assertNull($films['Q182153']['imdbId']);
         self::assertNull($films['Q182153']['tmdbId']);
     }
+
+    public function testReadsEveryCandidateNotOnlyTheFirstFifty(): void
+    {
+        // Arrange: Wikidata reads at most 50 items per request.
+        $api = WikidataApiBuilder::aWikidataApi();
+        $ids = [];
+        for ($i = 1; $i <= 60; ++$i) {
+            $api = $api->withFilm('Q'.(1000 + $i), 'Film '.$i, 2026, ['Director '.$i]);
+            $ids[] = 'Q'.(1000 + $i);
+        }
+        $client = $this->client($api);
+
+        // Act
+        $films = $client->getFilms($ids);
+
+        // Assert
+        self::assertCount(60, $films);
+        self::assertSame(['Director 60'], $films['Q1060']['directors']);
+    }
 }

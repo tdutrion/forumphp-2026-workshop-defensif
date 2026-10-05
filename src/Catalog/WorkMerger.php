@@ -12,6 +12,9 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class WorkMerger
 {
+    /** Which status wins when two works merge: a decision by hand, then evidence, then guesses. */
+    private const STRENGTH = ['manual' => 4, 'wikidata' => 3, 'no_match' => 2, 'fingerprint' => 1, 'unlinked' => 0];
+
     public function __construct(private EntityManagerInterface $em)
     {
     }
@@ -50,6 +53,15 @@ class WorkMerger
             }
         }
         $this->em->detach($absorbed);
+
+        // The identity found for either work survives: its ids, and the strongest status.
+        if (null === $kept->getWikidataId() && null !== $absorbed->getWikidataId()) {
+            $kept->setExternalIds((string) $absorbed->getWikidataId(), $absorbed->getImdbId(), $absorbed->getTmdbId(), $absorbed->getLinkStatus());
+        }
+        if (self::STRENGTH[$absorbed->getLinkStatus()->value] > self::STRENGTH[$kept->getLinkStatus()->value]) {
+            $kept->setLinkStatus($absorbed->getLinkStatus());
+        }
+        $this->em->flush();
 
         return $kept;
     }

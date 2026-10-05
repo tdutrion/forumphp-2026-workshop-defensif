@@ -69,27 +69,29 @@ class WikidataClient
         if ([] === $ids) {
             return [];
         }
-        $raw = $this->get(['action' => 'wbgetentities', 'ids' => implode('|', array_slice($ids, 0, 50)), 'props' => 'claims']);
-        if (false === $raw) {
-            return false;
-        }
-
+        // Wikidata reads at most 50 items per request: every candidate is read, never a part of them.
         $films = [];
         $people = [];
-        foreach ($raw['entities'] ?? [] as $id => $entity) {
-            if (isset($entity['claims']) && is_array($entity['claims'])) {
-                $films[$id] = $this->mapper->film($entity);
-                $people = array_merge($people, $films[$id]['directorIds']);
+        foreach (array_chunk(array_values(array_unique($ids)), 50) as $chunk) {
+            $raw = $this->get(['action' => 'wbgetentities', 'ids' => implode('|', $chunk), 'props' => 'claims']);
+            if (false === $raw) {
+                return false;
+            }
+            foreach ($raw['entities'] ?? [] as $id => $entity) {
+                if (isset($entity['claims']) && is_array($entity['claims'])) {
+                    $films[$id] = $this->mapper->film($entity);
+                    $people = array_merge($people, $films[$id]['directorIds']);
+                }
             }
         }
 
         $labels = [];
-        if ([] !== $people) {
-            $rawPeople = $this->get(['action' => 'wbgetentities', 'ids' => implode('|', array_slice(array_unique($people), 0, 50)), 'props' => 'labels', 'languages' => 'en|fr']);
+        foreach (array_chunk(array_values(array_unique($people)), 50) as $chunk) {
+            $rawPeople = $this->get(['action' => 'wbgetentities', 'ids' => implode('|', $chunk), 'props' => 'labels', 'languages' => 'en|fr']);
             if (false === $rawPeople) {
                 return false;
             }
-            $labels = $this->mapper->labels($rawPeople);
+            $labels += $this->mapper->labels($rawPeople);
         }
 
         foreach ($films as $id => $film) {

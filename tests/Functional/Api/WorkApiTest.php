@@ -31,4 +31,19 @@ final class WorkApiTest extends WebTestCase
         self::assertSame('tt0317219', $found['imdbId']);
         self::assertSame([404, 404], [$malformed, $unknown]);
     }
+
+    public function testTheWorksMadeByTheMigrationAreReachableToo(): void
+    {
+        // Arrange: the migration gave existing films UUID_TO_BIN(UUID(), 1) ids, not v7 ones.
+        $this->arrangeDijonCatalogWithToken();
+        $work = WorkBuilder::aWork()->titled('Cars')->withId('11f1c100-47a7-2049-a1f0-7e4d5d03df0f')->build();
+        $this->store(FilmBuilder::aFilm()->withSlug('cars')->ofWork($work)->build());
+
+        // Act
+        $found = $this->api('GET', '/api/works/11f1c100-47a7-2049-a1f0-7e4d5d03df0f');
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSame('Cars', $found['originalTitle']);
+    }
 }

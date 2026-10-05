@@ -202,4 +202,39 @@ final class WorkLinkerTest extends KernelTestCase
         self::assertFalse($linker->link($work, $this->now()));
         self::assertSame(WorkLinkStatus::Unlinked, $this->reload($work)->getLinkStatus());
     }
+
+    public function testAFingerprintMergeKeepsTheLinkOfTheAbsorbedWork(): void
+    {
+        // Arrange: chain X's film (older work, directors unknown yet) and chain Y's film, linked by hand.
+        $linker = $this->linker(WikidataApiBuilder::aWikidataApi());
+        $older = FilmBuilder::aFilm()->withSlug('digger-51293')->titled('Digger')->build();
+        $linked = FilmBuilder::aFilm()->withSlug('other-digger')->ofWork(
+            WorkBuilder::aWork()->titled('Digger')->releasedIn(2026)->directedBy('Alejandro González Iñárritu')->linkedByHandTo('Q129677718')->build(),
+        )->build();
+        $linked->setChain('other');
+        $this->store($older, $linked);
+
+        // Act: chain X's film page now gives the same title, year and director.
+        $work = $linker->describe($older, 'Digger', 2026, ['Alejandro González Iñárritu']);
+
+        // Assert
+        self::assertSame(['Q129677718', WorkLinkStatus::Manual], [$work->getWikidataId(), $work->getLinkStatus()]);
+    }
+
+    public function testAnAutomaticLinkNeverDowngradesAManualOne(): void
+    {
+        // Arrange: a work linked by hand, and a new film of the same chain whose work Wikidata finds.
+        $linker = $this->linker(WikidataApiBuilder::aWikidataApi()->withFilm('Q182153', 'Cars', 2006, ['John Lasseter']));
+        $manual = FilmBuilder::aFilm()->withSlug('cars')->ofWork(WorkBuilder::aWork()->titled('Cars')->linkedByHandTo('Q182153')->build())->build();
+        $preview = FilmBuilder::aFilm()->withSlug('cars-preview')->ofWork(WorkBuilder::aWork()->titled('Cars')->releasedIn(2006)->directedBy('John Lasseter')->build())->build();
+        $this->store($manual, $preview);
+
+        // Act
+        $linker->link($preview->getWork(), $this->now());
+
+        // Assert
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+        self::assertSame(WorkLinkStatus::Manual, $em->find(Film::class, 'cars-preview')->getWork()->getLinkStatus());
+    }
 }
