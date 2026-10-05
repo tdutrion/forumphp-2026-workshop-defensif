@@ -9,7 +9,7 @@
 
     <twig:Card>
         {{ form_start(form, {attr: {
-            'class': 'grid gap-x-6 sm:grid-cols-2',
+            'class': 'grid items-start gap-x-6 sm:grid-cols-2',
             'data-controller': 'geolocation',
             'data-geolocation-unavailable-value': 'Geolocation is not available in this browser.'|trans,
             'data-geolocation-locating-value': 'Locating…'|trans,

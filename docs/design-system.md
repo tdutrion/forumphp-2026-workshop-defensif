@@ -29,7 +29,8 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 | `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
 | `<twig:Badge>` | `tone`: neutral, brand, warning (accent orange) | |
 
-Every form gets the theme `templates/form/theme.html.twig` automatically.
+Every form gets the theme `templates/form/theme.html.twig` automatically. The city autocomplete (Tom Select) is dressed like the
+other fields by unlayered rules at the end of `assets/styles/app.css` (its own stylesheet is unlayered too).
 
 ## Rules
 
