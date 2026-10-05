@@ -58,7 +58,7 @@ sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
 
 db-dump: ## Writes data/catalog-<today>.sql.gz (catalog data, no schema or users) and pins it
 	@mkdir -p data
-	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema film showtime' | gzip -9 > data/catalog-$$(date +%F).sql.gz
+	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema work film showtime' | gzip -9 > data/catalog-$$(date +%F).sql.gz
 	@sed "s/^CATALOG_DUMP_DATE ?= .*/CATALOG_DUMP_DATE ?= $$(date +%F)/" Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 	@echo "Pinned data/catalog-$$(date +%F).sql.gz: run make db-upload, then commit the Makefile."
 

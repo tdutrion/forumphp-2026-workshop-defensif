@@ -55,8 +55,9 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make phpstan-max` | PHPStan, max level against the baseline (workshop progress) |
 | `make cs` | PHP-CS-Fixer (`@Symfony`) |
 | `make css` / `make css-watch` | Build the Tailwind CSS once / on every change |
-| `make sync` | Sync the catalog from pathe.fr (network; `c="--city=dijon"`) |
-| `make db-dump` | Write `data/catalog-<today>.sql.gz` from the current catalog and pin it in the Makefile |
+| `make sync` | Sync the catalog from pathe.fr and link its works to Wikidata (network; `c="--city=dijon"`) |
+| `make console c="work:link <film> <Q-id>"` | Link the work of a film to a Wikidata item by hand (`--none`: stop looking for it) |
+| `make db-dump` | Write `data/catalog-<today>.sql.gz` from the current catalog (works included) and pin it in the Makefile |
 | `make db-download` | Download the pinned dump again from the `catalog` GitHub release |
 | `make db-upload` | Publish the pinned dump on the `catalog` GitHub release (`gh` CLI, signed in) |
 | `make sh` / `make console c="…"` | Shell / Symfony console in the PHP container |
@@ -78,3 +79,11 @@ guide is [`docs/self-hosting.md`](docs/self-hosting.md).
 
 [GNU AGPL-3.0](LICENSE) © TDUTRION SOLUTIONS. Every page of an instance links
 to its source code (`SOURCE_CODE_URL`), as the license requires.
+
+## Films and works
+
+Every film of a chain points to a *work*, the common identifier of the film across chains.
+Works are linked to [Wikidata](https://www.wikidata.org) (CC0 open data) during the
+synchronization, which also gives their IMDb and TMDB ids; a work not found yet is retried once
+a day. Catalog dumps made before works existed (`catalog-2026-10-05`) cannot be loaded any more:
+publish a new one with `make db-dump` then `make db-upload`.

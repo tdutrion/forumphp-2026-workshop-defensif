@@ -159,6 +159,9 @@ gunzip -c backup-2026-10-05.sql.gz | mm exec -T database sh -c 'mysql -u"$MYSQL_
   mandatory as soon as the instance is public).
 - **Name.** Your instance must not present itself as the official Movie
   Marathon service.
+- **Wikidata.** Works are linked to Wikidata (CC0) during the synchronization; the requests
+  name your instance by its `SOURCE_CODE_URL`, as Wikidata asks. A film can be linked by hand:
+  `docker compose -f compose.yaml -f compose.prod.yaml --env-file .env.prod.local exec php bin/console work:link <film> <Q-id>`.
 - **Pathé.** The catalog comes from the public website of Pathé. Keep the
   synchronization gentle (`PATHE_DELAY_MS`, one second between requests by
   default) and the booking links pointing to Pathé.

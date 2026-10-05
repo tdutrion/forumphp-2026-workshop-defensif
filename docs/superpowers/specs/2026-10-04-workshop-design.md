@@ -658,10 +658,10 @@ Before adding a second chain:
   identifiers are Pathé's. The primary keys must include the chain (or become
   UUIDs with a unique `(chain, external_id)` key) before another chain can
   collide with them.
-- **TODO: one film across chains.** The same film has a different slug in
-  each chain: matching (by title, year, running time, or an external id such
-  as TMDB) is needed so that "already seen" and "never the same film twice"
-  work across chains.
+- **Done (2026-10-05): one film across chains.** Every film points to a work,
+  linked to Wikidata or merged by fingerprint across chains; "already seen" and
+  "never the same film twice" hold for the work. See
+  `docs/superpowers/specs/2026-10-05-film-works-wikidata-design.md`.
 - **TODO: cities shared by several chains.** A city is currently a Pathé
   city. Cities of different chains (Lyon for Pathé and UGC) must be merged,
   or the planner must search by position only.
