@@ -23,7 +23,7 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 | Component | Props | Notes |
 |---|---|---|
 | `<twig:Button>` | `variant`: primary, secondary, danger, ghost, accent; `size`: sm, md; `tag`: button, a | pass `type`, `href`, `class` as attributes |
-| `<twig:ButtonGroup>` | | Flowbite-like group: joined buttons sharing their borders, rounded at both ends; mark the first one `data-primary`, toggles carry `aria-pressed` |
+| `<twig:ButtonGroup>` | | Flowbite-like group: joined buttons sharing their borders. Without a primary action: one row. With one (`data-primary`, first): it takes the first row, the others share the second row. Toggles carry `aria-pressed` |
 | `<twig:Icon>` | `name`: ticket, check, eye-slash | inline outline SVG, decorative (`aria-hidden`) |
 | `<twig:Card>` | | a `<section>` |
 | `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
