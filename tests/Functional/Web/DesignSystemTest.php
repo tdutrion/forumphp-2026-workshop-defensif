@@ -19,7 +19,8 @@ final class DesignSystemTest extends WebTestCase
         foreach (['Primary', 'Secondary', 'Danger', 'Ghost'] as $variant) {
             self::assertCount(1, $crawler->selectButton($variant), $variant.' button');
         }
-        self::assertSelectorExists('.button-group[role=group] a.bg-brand-600');
+        self::assertSelectorExists('.button-group[role=group] a[data-primary] svg');
+        self::assertSelectorExists('.button-group[role=group] button[aria-pressed=true]');
         self::assertSelectorExists('.flash-success');
         self::assertSelectorExists('.flash-error[role=alert]');
         self::assertSelectorExists('.flash-info');

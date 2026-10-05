@@ -27,11 +27,18 @@
                 <twig:Button tag="a" href="#" variant="secondary">Link styled as a button</twig:Button>
             </div>
             <h3 class="mb-2 mt-6 font-semibold">Button group (primary action first)</h3>
-            <twig:ButtonGroup aria-label="Film actions">
-                <twig:Button tag="a" href="#" size="sm">Book</twig:Button>
-                <twig:Button type="button" variant="secondary" size="sm">Already seen</twig:Button>
-                <twig:Button type="button" variant="secondary" size="sm">I don't want to see it</twig:Button>
-            </twig:ButtonGroup>
+            <div class="flex flex-wrap items-center gap-4">
+                <twig:ButtonGroup aria-label="Film actions">
+                    <twig:Button tag="a" href="#" size="sm" data-primary><twig:Icon name="ticket" />Book</twig:Button>
+                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="check" />Already seen</twig:Button>
+                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="eye-slash" />I don't want to see it</twig:Button>
+                </twig:ButtonGroup>
+                <twig:ButtonGroup aria-label="Film actions, both toggles on">
+                    <twig:Button tag="a" href="#" size="sm" data-primary><twig:Icon name="ticket" />Book</twig:Button>
+                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="check" />Seen ✓ (undo)</twig:Button>
+                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="eye-slash" />Hidden ✓ (undo)</twig:Button>
+                </twig:ButtonGroup>
+            </div>
         </twig:Card>
 
         <twig:Card>

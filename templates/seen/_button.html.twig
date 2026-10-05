@@ -1,6 +1,6 @@
 <span data-seen-film="{{ slug }}">
     <form method="post" action="{{ path(seen ? 'app_film_unseen' : 'app_film_seen', {slug: slug}) }}" class="inline">
         <input type="hidden" name="_token" value="{{ csrf_token('seen-film') }}">
-        <twig:Button type="submit" variant="secondary" size="sm">{{ (seen ? 'Seen ✓ (undo)' : 'Already seen')|trans }}</twig:Button>
+        <twig:Button type="submit" variant="secondary" size="sm" aria-pressed="{{ seen ? 'true' : 'false' }}"><twig:Icon name="check" />{{ (seen ? 'Seen ✓ (undo)' : 'Already seen')|trans }}</twig:Button>
     </form>
 </span>

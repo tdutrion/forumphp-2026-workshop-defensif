@@ -69,13 +69,14 @@
     }
 }
 
-@layer components {
-    /*
-     * <twig:ButtonGroup>: the wrappers of the buttons (the span of a toggle, its form) are
-     * transparent, so every button is an item of the group whatever its markup.
-     */
+/*
+ * <twig:ButtonGroup> (Flowbite-like): joined buttons sharing their borders, rounded at both ends,
+ * one shadow, the focus ring above the neighbours. The wrappers of a toggle (span, form) are
+ * transparent. In the utilities layer so that it wins over the classes of <twig:Button>.
+ */
+@layer utilities {
     .button-group {
-        @apply inline-flex isolate rounded-control shadow-sm;
+        @apply inline-flex rounded-control shadow-sm;
     }
 
     .button-group > span,
@@ -84,21 +85,31 @@
     }
 
     .button-group :is(a, button) {
-        @apply rounded-none shadow-none focus-visible:z-10;
+        @apply relative inline-flex items-center gap-1.5 rounded-none border border-line bg-surface px-3 py-2 text-sm leading-5 font-medium text-ink shadow-none ring-0 hover:bg-surface-muted hover:text-brand-700 focus:z-10 focus:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/30;
+    }
+
+    /* Primary action: always first. */
+    .button-group :is(a, button)[data-primary] {
+        @apply border-brand-600 bg-brand-600 text-white hover:border-brand-700 hover:bg-brand-700 hover:text-white;
+    }
+
+    /* A toggle that is on (Seen ✓, Hidden ✓). */
+    .button-group :is(a, button)[aria-pressed="true"] {
+        @apply bg-brand-50 text-brand-700;
     }
 
     .button-group > :not(:first-child):is(a, button),
     .button-group > :not(:first-child) :is(a, button) {
-        @apply -ml-px;
+        @apply -ms-px;
     }
 
     .button-group > :first-child:is(a, button),
     .button-group > :first-child :is(a, button) {
-        @apply rounded-l-control;
+        @apply rounded-s-control;
     }
 
     .button-group > :last-child:is(a, button),
     .button-group > :last-child :is(a, button) {
-        @apply rounded-r-control;
+        @apply rounded-e-control;
     }
 }

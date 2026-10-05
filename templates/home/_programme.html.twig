@@ -26,7 +26,7 @@
                     {% if showtime.lateMinutes > 0 %}<twig:Badge tone="warning">{{ 'arriving during the ads (%minutes% min)'|trans({'%minutes%': showtime.lateMinutes}) }}</twig:Badge>{% endif %}
                 </p>
                 <twig:ButtonGroup class="mt-2" aria-label="{{ 'Film actions'|trans }}">
-                    <twig:Button tag="a" size="sm" href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer">{{ 'Book'|trans }}</twig:Button>
+                    <twig:Button tag="a" size="sm" data-primary href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer"><twig:Icon name="ticket" />{{ 'Book'|trans }}</twig:Button>
                     {{ include('seen/_button.html.twig', {slug: showtime.filmSlug, seen: false}) }}
                     {{ include('unwanted/_button.html.twig', {slug: showtime.filmSlug, unwanted: false}) }}
                 </twig:ButtonGroup>
