@@ -29,6 +29,22 @@ final class LandingPageTest extends WebTestCase
         self::assertSelectorNotExists('form[name="plan"]', 'the planner is for signed-in users');
     }
 
+    public function testEveryPageCarriesTheNameAndTheLogoOfScreenRoute(): void
+    {
+        // Arrange
+        $client = self::createClient();
+
+        // Act
+        $crawler = $client->request('GET', '/legal/terms');
+
+        // Assert
+        self::assertStringEndsWith('· ScreenRoute', trim($crawler->filter('title')->text()));
+        self::assertSelectorExists('header a[href="/"] svg');
+        self::assertSelectorTextSame('header a[href="/"]', 'ScreenRoute');
+        self::assertMatchesRegularExpression('#^/assets/images/logo-[\w-]+\.svg$#', (string) $crawler->filter('link[rel="icon"]')->attr('href'));
+        self::assertStringNotContainsString('Movie Marathon', (string) $client->getResponse()->getContent());
+    }
+
     public function testSignedInUsersGetThePlannerAtTheSameAddress(): void
     {
         // Arrange

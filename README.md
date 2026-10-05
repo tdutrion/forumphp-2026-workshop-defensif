@@ -1,4 +1,4 @@
-# Movie Marathon — defensive PHP workshop
+# ScreenRoute — defensive PHP workshop
 
 A Symfony 8.1 application that plans movie marathons from Pathé showtimes. It
 is the starting point of a workshop on defensive programming in PHP: the code

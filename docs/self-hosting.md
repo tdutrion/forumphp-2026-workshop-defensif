@@ -1,6 +1,6 @@
-# Self-hosting Movie Marathon
+# Self-hosting ScreenRoute
 
-Movie Marathon is free software, published under the
+ScreenRoute is free software, published under the
 [GNU AGPL-3.0](../LICENSE): you can run your own instance, for yourself, your
 friends or your company. This guide takes a server with Docker to a working
 instance with HTTPS, sign-in and an up-to-date catalog.
@@ -22,13 +22,13 @@ catalog up to date, and MySQL.
 ## 1. Get the code
 
 ```bash
-git clone https://github.com/tdutrion/forumphp-2026-workshop-defensif.git movie-marathon
-cd movie-marathon
+git clone https://github.com/tdutrion/forumphp-2026-workshop-defensif.git screenroute
+cd screenroute
 ```
 
 ## 2. Create the sign-in apps
 
-Movie Marathon never stores passwords: people sign in with an existing account.
+ScreenRoute never stores passwords: people sign in with an existing account.
 Create one OAuth app per provider you want to offer, with this callback URL
 (replace the domain):
 

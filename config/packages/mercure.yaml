@@ -13,5 +13,5 @@ mercure:
                     iss: 'https://localhost'
                     aud: '%env(MERCURE_RESOURCE_IDENTIFIER)%'
                     # Required by RFC 9068 access tokens: the application publishes on its own behalf.
-                    sub: 'movie-marathon'
-                    client_id: 'movie-marathon'
+                    sub: 'screenroute'
+                    client_id: 'screenroute'

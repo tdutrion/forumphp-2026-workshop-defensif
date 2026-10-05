@@ -1,5 +1,15 @@
 {# Every component once, for one theme (see index.html.twig). Parameter: form, the example form. #}
 <twig:Card>
+    <h3 class="mb-4 font-semibold">Logo</h3>
+    {# Brand colours: the logo keeps them in both themes. Favicon: assets/images/logo.svg. #}
+    <div class="logo flex flex-wrap items-end gap-6">
+        <twig:Logo />
+        <twig:Logo :wordmark="false" class="[&_svg]:size-16" />
+        <twig:Logo :wordmark="false" class="[&_svg]:size-4" />
+    </div>
+</twig:Card>
+
+<twig:Card>
     <h3 class="mb-4 font-semibold">Colors</h3>
     <div class="grid grid-cols-4 gap-2 text-xs">
         {% for token in ['brand-50', 'brand-600', 'brand-900', 'accent-50', 'accent-500', 'accent-700', 'ink', 'ink-muted', 'canvas', 'surface-muted', 'line', 'success-600', 'danger-600'] %}
