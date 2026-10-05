@@ -69,9 +69,32 @@
  * The neutrals swap, the -50 tints become dark backgrounds and the -700 shades (text on tints) light
  * ones. Filled buttons hover with the -800 shades, which stay dark in both themes.
  * Chosen in the settings (data-theme on <html>); "auto" (no attribute) follows the system.
- * The two blocks must stay identical.
+ * Any element can carry data-theme too (the style guide shows both themes side by side), hence the
+ * light block, which repeats the @theme values of the swapped tokens for a light block in a dark page.
+ * The two dark blocks must stay identical, the light one must match @theme.
  */
-:root[data-theme="dark"] {
+[data-theme="light"] {
+    color-scheme: light;
+    --color-ink: oklch(21% 0.034 265);
+    --color-ink-muted: oklch(44.6% 0.03 257);
+    --color-canvas: oklch(98.5% 0.002 248);
+    --color-surface: oklch(100% 0 0);
+    --color-surface-muted: oklch(96.7% 0.003 265);
+    --color-line: oklch(92.8% 0.006 265);
+    --color-brand-50: #eef6fb;
+    --color-brand-700: #216897;
+    --color-accent-50: #fdf3ea;
+    --color-accent-700: #a35512;
+    --color-success-50: oklch(98.2% 0.018 156);
+    --color-success-700: oklch(52.7% 0.154 150);
+    --color-danger-50: oklch(97.1% 0.013 17);
+    --color-danger-700: oklch(50.5% 0.213 27);
+    --color-info-50: oklch(97% 0.014 254);
+    --color-info-700: oklch(48.8% 0.243 264);
+    --shadow-card: 0 1px 2px 0 oklch(0% 0 0 / 0.05), 0 1px 3px 0 oklch(0% 0 0 / 0.1);
+}
+
+[data-theme="dark"] {
     color-scheme: dark;
     --color-ink: oklch(93% 0.01 265);
     --color-ink-muted: oklch(72% 0.02 257);

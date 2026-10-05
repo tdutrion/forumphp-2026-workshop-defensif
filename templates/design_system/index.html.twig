@@ -3,61 +3,18 @@
 {% block title %}Design system · Movie Marathon{% endblock %}
 
 {% block body %}
-    <div class="mx-auto max-w-4xl space-y-8 p-6">
+    <header>
         <h1 class="text-3xl font-bold">Design system</h1>
+        <p class="text-ink-muted">Every component in the light and the dark theme. The tokens live in <code>assets/styles/app.css</code>.</p>
+    </header>
 
-        <twig:Card>
-            <h2 class="mb-4 text-xl font-semibold">Colors</h2>
-            <div class="grid grid-cols-5 gap-2 text-xs">
-                {% for token in ['brand-50', 'brand-600', 'brand-900', 'accent-50', 'accent-500', 'accent-700', 'ink', 'ink-muted', 'canvas', 'surface-muted', 'line', 'success-600', 'danger-600'] %}
-                    <div><div class="h-10 rounded-control ring-1 ring-line bg-{{ token }}"></div>{{ token }}</div>
-                {% endfor %}
-            </div>
-        </twig:Card>
-
-        <twig:Card>
-            <h2 class="mb-4 text-xl font-semibold">Buttons</h2>
-            <div class="flex flex-wrap gap-2">
-                <twig:Button type="button">Primary</twig:Button>
-                <twig:Button type="button" variant="secondary">Secondary</twig:Button>
-                <twig:Button type="button" variant="danger">Danger</twig:Button>
-                <twig:Button type="button" variant="ghost">Ghost</twig:Button>
-                <twig:Button type="button" variant="accent">Accent</twig:Button>
-                <twig:Button type="button" size="sm">Small</twig:Button>
-                <twig:Button tag="a" href="#" variant="secondary">Link styled as a button</twig:Button>
-            </div>
-            <h3 class="mb-2 mt-6 font-semibold">Button group (primary action first)</h3>
-            <div class="grid gap-4 sm:grid-cols-2">
-                <twig:ButtonGroup aria-label="Film actions">
-                    <twig:Button tag="a" href="#" size="sm" data-primary><twig:Icon name="ticket" />Book</twig:Button>
-                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="check" />Already seen</twig:Button>
-                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="eye-slash" />Not for me</twig:Button>
-                </twig:ButtonGroup>
-                <twig:ButtonGroup aria-label="Film actions, both toggles on">
-                    <twig:Button tag="a" href="#" size="sm" data-primary><twig:Icon name="ticket" />Book</twig:Button>
-                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="check" />Seen ✓ (undo)</twig:Button>
-                    <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="eye-slash" />Hidden ✓ (undo)</twig:Button>
-                </twig:ButtonGroup>
-            </div>
-        </twig:Card>
-
-        <twig:Card>
-            <h2 class="mb-4 text-xl font-semibold">Alerts and badges</h2>
-            <div class="space-y-2">
-                <twig:Alert type="success">Success message.</twig:Alert>
-                <twig:Alert type="error">Error message.</twig:Alert>
-                <twig:Alert type="info">Information message.</twig:Alert>
-            </div>
-            <div class="mt-4 flex gap-2">
-                <twig:Badge>VF</twig:Badge>
-                <twig:Badge tone="brand">VOST</twig:Badge>
-                <twig:Badge tone="warning">Late: 5 min</twig:Badge>
-            </div>
-        </twig:Card>
-
-        <twig:Card>
-            <h2 class="mb-4 text-xl font-semibold">Form</h2>
-            {{ form(form) }}
-        </twig:Card>
+    <div class="grid gap-6 lg:grid-cols-2">
+        {% for theme, form in forms %}
+            {# data-theme on a block: the tokens of that theme apply inside it, whatever the page theme. #}
+            <section class="style-guide space-y-6 rounded-card bg-canvas p-4 text-ink ring-1 ring-line" data-theme="{{ theme }}" aria-label="{{ theme|capitalize }} theme">
+                <h2 class="text-xl font-semibold">{{ theme|capitalize }} theme</h2>
+                {{ include('design_system/_gallery.html.twig', {form: form}) }}
+            </section>
+        {% endfor %}
     </div>
 {% endblock %}
