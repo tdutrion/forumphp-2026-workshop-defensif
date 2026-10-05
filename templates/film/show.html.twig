@@ -13,6 +13,7 @@
                 {% if film.genres %}<li>{{ 'film.genres'|trans({'%genres%': film.genres|join(', ')}) }}</li>{% endif %}
                 {% if film.contentRating %}<li>{{ 'film.rating'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
             </ul>
+            {% if film.synopsis %}<p id="synopsis" class="max-w-prose">{{ film.synopsis }}</p>{% endif %}
             <twig:ButtonGroup aria-label="{{ 'film.actions'|trans }}">
                 {{ include('seen/_button.html.twig', {slug: film.slug, seen: seen}) }}
                 {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: unwanted}) }}

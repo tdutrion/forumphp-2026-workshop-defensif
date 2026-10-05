@@ -69,6 +69,22 @@ class PatheMapper
     }
 
     /**
+     * Synopsis of a film as plain text: Pathé may send markup, and the text ends up in the pages.
+     *
+     * @param array $rawShow a film page (/show/{slug})
+     */
+    public function mapSynopsis(array $rawShow): ?string
+    {
+        $synopsis = $rawShow['synopsis'] ?? null;
+        if (!is_string($synopsis)) {
+            return null;
+        }
+        $text = trim(html_entity_decode(strip_tags($synopsis), \ENT_QUOTES | \ENT_HTML5, 'UTF-8'));
+
+        return '' === $text ? null : $text;
+    }
+
+    /**
      * @return array|false the film's fields, or false if it is an event (no usable showtimes)
      */
     public function mapFilm(array $raw): array|false

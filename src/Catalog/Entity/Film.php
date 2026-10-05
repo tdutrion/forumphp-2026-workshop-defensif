@@ -42,6 +42,10 @@ class Film
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $originalLanguage = null;
 
+    /** Plain text, read from the film page; null when Pathé gives none. */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $synopsis = null;
+
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -146,6 +150,18 @@ class Film
     public function setOriginalLanguage(?string $originalLanguage): static
     {
         $this->originalLanguage = $originalLanguage;
+
+        return $this;
+    }
+
+    public function getSynopsis(): ?string
+    {
+        return $this->synopsis;
+    }
+
+    public function setSynopsis(?string $synopsis): static
+    {
+        $this->synopsis = $synopsis;
 
         return $this;
     }

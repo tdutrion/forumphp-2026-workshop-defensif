@@ -174,17 +174,18 @@ class CatalogSynchronizer
             }
         }
 
-        // Original language of the films that play, read once from their film page (VOST/VO filter).
+        // Original language (VOST/VO filter) and synopsis of the films that play, read once from their film page.
         foreach ($playing as $showSlug => $film) {
-            if (null !== $film->getOriginalLanguage()) {
+            if (null !== $film->getOriginalLanguage() && null !== $film->getSynopsis()) {
                 continue;
             }
             $rawShow = $this->client->getShow($showSlug);
             if (false === $rawShow) {
-                $this->logger->warning('Film page unreadable, original language unknown', ['film' => $showSlug]);
+                $this->logger->warning('Film page unreadable, original language and synopsis unknown', ['film' => $showSlug]);
                 continue;
             }
             $film->setOriginalLanguage($this->mapper->mapOriginalLanguage($rawShow));
+            $film->setSynopsis($this->mapper->mapSynopsis($rawShow));
         }
         $this->em->flush();
 

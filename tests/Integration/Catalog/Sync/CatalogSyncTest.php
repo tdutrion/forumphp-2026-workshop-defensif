@@ -161,4 +161,18 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertSame('en', $this->em()->find(Film::class, 'digger-51293')->getOriginalLanguage());
         self::assertSame('fr', $this->em()->find(Cinema::class, 'cinema-pathe-dijon')->getLanguage(), 'the language of the chain');
     }
+
+    public function testTheSynopsisOfAFilmComesFromItsPageAsPlainText(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $api = $this->dijon()->withSynopsis('digger-51293', '<p>L\'homme le plus <b>puissant</b> du monde.</p>');
+
+        // Act
+        $this->synchronize($api);
+
+        // Assert
+        $this->em()->clear();
+        self::assertSame('L\'homme le plus puissant du monde.', $this->em()->find(Film::class, 'digger-51293')->getSynopsis());
+    }
 }

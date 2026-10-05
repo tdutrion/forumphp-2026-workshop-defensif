@@ -84,6 +84,17 @@ final class PatheApiBuilder
         return $clone;
     }
 
+    /**
+     * Synopsis of the film page (/show/{slug}), as Pathé sends it (it may hold markup).
+     */
+    public function withSynopsis(string $filmSlug, ?string $synopsis): self
+    {
+        $clone = clone $this;
+        $clone->details[$filmSlug]['synopsis'] = $synopsis;
+
+        return $clone;
+    }
+
     public function withEvent(string $slug, string $title): self
     {
         $clone = $this->withFilm($slug, $title, 40);

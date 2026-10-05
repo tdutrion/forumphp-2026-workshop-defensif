@@ -10,6 +10,7 @@ final class FilmBuilder
     private ?string $title = null;
     private int $duration = 100;
     private ?string $originalLanguage = null;
+    private ?string $synopsis = null;
 
     public static function aFilm(): self
     {
@@ -51,6 +52,14 @@ final class FilmBuilder
         return $clone;
     }
 
+    public function withSynopsis(?string $synopsis): self
+    {
+        $clone = clone $this;
+        $clone->synopsis = $synopsis;
+
+        return $clone;
+    }
+
     public function build(): Film
     {
         return (new Film())
@@ -58,6 +67,7 @@ final class FilmBuilder
             ->setTitle($this->title ?? 'Film '.$this->slug)
             ->setChain('pathe')
             ->setDuration($this->duration)
-            ->setOriginalLanguage($this->originalLanguage);
+            ->setOriginalLanguage($this->originalLanguage)
+            ->setSynopsis($this->synopsis);
     }
 }

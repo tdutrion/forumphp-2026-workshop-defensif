@@ -17,7 +17,7 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array|null ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating'] or null
+     * @return array|null ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis'] or null
      */
     public function findBySlug(string $slug): ?array
     {
@@ -42,7 +42,7 @@ class FilmRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('f')
-            ->select('f.slug', 'f.title', 'f.duration', 'f.releaseDate', 'f.genres', 'f.posterUrl', 'f.contentRating')
+            ->select('f.slug', 'f.title', 'f.duration', 'f.releaseDate', 'f.genres', 'f.posterUrl', 'f.contentRating', 'f.synopsis')
             ->where('f.slug IN (:slugs)')
             ->setParameter('slugs', $slugs)
             ->orderBy('f.title', $direction)
