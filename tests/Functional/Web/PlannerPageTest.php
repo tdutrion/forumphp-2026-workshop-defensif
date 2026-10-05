@@ -81,7 +81,7 @@ final class PlannerPageTest extends WebTestCase
         $listed = $crawler->filter('#proposed-films [data-proposed-film]')->each(static fn ($film) => $film->attr('data-proposed-film'));
         sort($listed);
         self::assertSame(['f1', 'f2', 'f3', 'f4'], $listed, 'each film once, whatever the number of programmes');
-        self::assertCount(1, $crawler->filter('#proposed-films details:not([open])'), 'collapsed by default');
+        self::assertCount(1, $crawler->filter('#proposed-films details[open]'), 'open by default, can be collapsed');
         self::assertSelectorTextContains('#proposed-films summary', 'Films in these programmes (4)');
         self::assertCount(1, $crawler->filter('#proposed-films [data-proposed-film="f3"] [data-seen-film] form'));
         self::assertCount(1, $crawler->filter('#proposed-films [data-proposed-film="f3"] [data-unwanted-film] form'));
