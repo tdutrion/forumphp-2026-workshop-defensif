@@ -150,4 +150,17 @@ final class FilmCatalogTest extends WebTestCase
         self::assertContains('garance', self::getContainer()->get(SeenFilmService::class)->getSeenFilmSlugs($this->user->getUserIdentifier()));
         self::assertSame('true', $card->filter('[data-unwanted-film] button')->attr('aria-pressed'), 'the button shows the new state');
     }
+
+    public function testTheEmptyFieldsOfTheFormMeanNoCriterion(): void
+    {
+        // Arrange
+        $client = $this->signedInWithCatalog();
+
+        // Act: what the form sends when only the checkbox is ticked.
+        $titles = $this->titles($client, '/films?q=&sort=title&genre=&city=&version=&hide_marked=1');
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSame(['Digger', 'Garance', 'Verity'], $titles);
+    }
 }

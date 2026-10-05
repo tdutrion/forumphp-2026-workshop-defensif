@@ -12,23 +12,47 @@ final readonly class FilmCatalogQuery
 {
     public const SORTS = ['title', 'showtimes', 'release', 'duration'];
 
+    #[Assert\Length(max: 100)]
+    public ?string $q;
+
+    #[Assert\Length(max: 100)]
+    public ?string $genre;
+
+    #[Assert\Regex(pattern: '/^[a-z0-9-]{1,100}$/')]
+    public ?string $city;
+
+    #[Assert\Choice(choices: ['vf', 'vost', 'vo', 'vfst'])]
+    public ?string $version;
+
+    #[Assert\Choice(choices: self::SORTS)]
+    public string $sort;
+
+    /** Leave out the films already seen and those not for the user. */
+    #[SerializedName('hide_marked')]
+    public bool $hideMarked;
+
+    #[Assert\Positive]
+    public int $page;
+
+    /**
+     * An empty field of the form ("version=") means no criterion: it becomes null, like a missing one.
+     */
     public function __construct(
-        #[Assert\Length(max: 100)]
-        public ?string $q = null,
-        #[Assert\Length(max: 100)]
-        public ?string $genre = null,
-        #[Assert\Regex(pattern: '/^[a-z0-9-]{1,100}$/')]
-        public ?string $city = null,
-        #[Assert\Choice(choices: ['vf', 'vost', 'vo', 'vfst'])]
-        public ?string $version = null,
-        #[Assert\Choice(choices: self::SORTS)]
-        public string $sort = 'title',
-        /** Leave out the films already seen and those not for the user. */
-        #[SerializedName('hide_marked')]
-        public bool $hideMarked = false,
-        #[Assert\Positive]
-        public int $page = 1,
+        ?string $q = null,
+        ?string $genre = null,
+        ?string $city = null,
+        ?string $version = null,
+        ?string $sort = null,
+        bool $hideMarked = false,
+        int $page = 1,
     ) {
+        $this->q = self::nullIfBlank($q);
+        $this->genre = self::nullIfBlank($genre);
+        $this->city = self::nullIfBlank($city);
+        $this->version = self::nullIfBlank($version);
+        $this->sort = self::nullIfBlank($sort) ?? 'title';
+        $this->hideMarked = $hideMarked;
+        $this->page = $page;
     }
 
     /**
@@ -44,5 +68,10 @@ final readonly class FilmCatalogQuery
             'sort' => 'title' === $this->sort ? null : $this->sort,
             'hide_marked' => $this->hideMarked ? 1 : null,
         ], static fn ($value) => null !== $value && '' !== $value);
+    }
+
+    private static function nullIfBlank(?string $value): ?string
+    {
+        return null === $value || '' === trim($value) ? null : $value;
     }
 }
