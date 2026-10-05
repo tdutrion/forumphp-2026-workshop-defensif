@@ -4,7 +4,7 @@
 
 {% block body %}
     <twig:Card class="flex flex-col gap-6 sm:flex-row">
-        {% if film.posterUrl %}<img src="{{ film.posterUrl }}" alt="{{ 'film.poster_alt'|trans({'%title%': film.title}) }}" width="200" class="rounded-card">{% endif %}
+        {% if film.posterUrl %}<img src="{{ film.posterUrl }}" alt="{{ 'film.poster_alt'|trans({'%title%': film.title}) }}" width="200" class="h-auto w-50 shrink-0 self-start rounded-card">{% endif %}
         <div class="space-y-4">
             <h1 class="text-3xl font-bold">{{ film.title }}</h1>
             <ul class="space-y-1 text-sm text-ink-muted">

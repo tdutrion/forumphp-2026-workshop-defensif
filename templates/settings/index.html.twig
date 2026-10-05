@@ -51,6 +51,10 @@
         {% else %}
             <p class="text-ink-muted">{{ 'settings.no_cinema'|trans }}</p>
         {% endfor %}
+        {{ form_start(excludeCinemaForm, {attr: {class: 'mt-4 flex flex-wrap items-end gap-3'}}) }}
+            <div class="min-w-64 grow">{{ form_row(excludeCinemaForm.cinema, {row_attr: {class: 'mb-0'}}) }}</div>
+            <twig:Button type="submit" variant="secondary"><twig:Icon name="eye-slash" />{{ 'settings.exclude_cinema.submit'|trans }}</twig:Button>
+        {{ form_end(excludeCinemaForm) }}
     </twig:Card>
 
     <twig:Card id="connections">

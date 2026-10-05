@@ -82,4 +82,43 @@ final class ExcludedCinemaTest extends WebTestCase
         self::assertSame('true', $withoutProgramme->filter('#nearby-cinemas [data-excluded-cinema="cinema-pathe-dijon"] button')->attr('aria-pressed'));
         self::assertSame(3, $reactivated->filter('.programme')->count());
     }
+
+    public function testACinemaIsExcludedFromMySettingsThroughItsName(): void
+    {
+        // Arrange: a second cinema, in another city, that no search has shown yet.
+        $client = $this->signedInWithDijonCatalog();
+        $lyon = CityBuilder::aCity()->withSlug('lyon')->named('Lyon')->build();
+        $this->store($lyon, CinemaBuilder::aCinema()->withSlug('cinema-pathe-bellecour')->named('Pathé Bellecour')->in($lyon)->build());
+        $settings = $client->request('GET', '/settings');
+        $offered = $settings->filter('#excluded-cinemas select option[value!=""]')->each(static fn ($option) => $option->text());
+        $form = $settings->filter('#excluded-cinemas form[name="exclude_cinema"]')->form();
+        $form->setValues(['exclude_cinema[cinema]' => 'cinema-pathe-bellecour']);
+
+        // Act
+        $client->submit($form);
+        $redirect = $client->getResponse();
+        $after = $client->followRedirect();
+
+        // Assert
+        self::assertSame(['Pathé Dijon', 'Pathé Bellecour'], $offered, 'every open cinema, grouped by city');
+        self::assertSame(303, $redirect->getStatusCode());
+        self::assertStringContainsString('Pathé Bellecour', $after->filter('#excluded-cinemas [data-excluded-cinema="cinema-pathe-bellecour"]')->closest('div')->text());
+        self::assertSame(['Pathé Dijon'], $after->filter('#excluded-cinemas select option[value!=""]')->each(static fn ($option) => $option->text()), 'an excluded cinema is no longer offered');
+    }
+
+    public function testAnUnknownCinemaIsRefused(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+        $form = $client->request('GET', '/settings')->filter('#excluded-cinemas form[name="exclude_cinema"]')->form();
+        $form->disableValidation()->setValues(['exclude_cinema[cinema]' => 'cinema-nowhere']);
+
+        // Act
+        $client->submit($form);
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('#excluded-cinemas', 'Choose a cinema from the list.');
+        self::assertSelectorTextContains('#excluded-cinemas', 'No cinema excluded.');
+    }
 }

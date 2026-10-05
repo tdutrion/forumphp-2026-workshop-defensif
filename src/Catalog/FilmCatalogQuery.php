@@ -27,9 +27,13 @@ final readonly class FilmCatalogQuery
     #[Assert\Choice(choices: self::SORTS)]
     public string $sort;
 
-    /** Leave out the films already seen and those not for the user. */
-    #[SerializedName('hide_marked')]
-    public bool $hideMarked;
+    /** Leave out the films the user has already seen. */
+    #[SerializedName('hide_seen')]
+    public bool $hideSeen;
+
+    /** Leave out the films the user said are not for them. */
+    #[SerializedName('hide_unwanted')]
+    public bool $hideUnwanted;
 
     #[Assert\Positive]
     public int $page;
@@ -43,7 +47,8 @@ final readonly class FilmCatalogQuery
         ?string $city = null,
         ?string $version = null,
         ?string $sort = null,
-        bool $hideMarked = false,
+        bool $hideSeen = false,
+        bool $hideUnwanted = false,
         int $page = 1,
     ) {
         $this->q = self::nullIfBlank($q);
@@ -51,7 +56,8 @@ final readonly class FilmCatalogQuery
         $this->city = self::nullIfBlank($city);
         $this->version = self::nullIfBlank($version);
         $this->sort = self::nullIfBlank($sort) ?? 'title';
-        $this->hideMarked = $hideMarked;
+        $this->hideSeen = $hideSeen;
+        $this->hideUnwanted = $hideUnwanted;
         $this->page = $page;
     }
 
@@ -66,7 +72,8 @@ final readonly class FilmCatalogQuery
             'city' => $this->city,
             'version' => $this->version,
             'sort' => 'title' === $this->sort ? null : $this->sort,
-            'hide_marked' => $this->hideMarked ? 1 : null,
+            'hide_seen' => $this->hideSeen ? 1 : null,
+            'hide_unwanted' => $this->hideUnwanted ? 1 : null,
         ], static fn ($value) => null !== $value && '' !== $value);
     }
 

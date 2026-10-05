@@ -65,4 +65,31 @@ class CinemaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    /**
+     * Open cinemas, except some, by city: the choices of a cinema picker.
+     *
+     * @param list<string> $exceptSlugs
+     *
+     * @return array<string, array<string, string>> city name => [cinema name => cinema slug], sorted by city then cinema
+     */
+    public function findOpenByCityName(array $exceptSlugs = []): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('c.slug', 'c.name', 'city.name AS cityName')
+            ->join('c.city', 'city')
+            ->where('c.open = true')
+            ->orderBy('city.name', 'ASC')
+            ->addOrderBy('c.name', 'ASC');
+        if ([] !== $exceptSlugs) {
+            $qb->andWhere('c.slug NOT IN (:except)')->setParameter('except', $exceptSlugs);
+        }
+
+        $byCity = [];
+        foreach ($qb->getQuery()->getArrayResult() as $cinema) {
+            $byCity[$cinema['cityName']][$cinema['name']] = $cinema['slug'];
+        }
+
+        return $byCity;
+    }
 }

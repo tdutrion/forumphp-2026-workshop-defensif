@@ -45,7 +45,7 @@ class DesignSystemController extends AbstractController
                 'autocomplete' => true,
             ])
             ->add('time', TimeType::class, ['label' => 'Time', 'widget' => 'single_text', 'required' => false])
-            ->add('agree', CheckboxType::class, ['label' => 'Checkbox', 'required' => false])
+            ->add('agree', CheckboxType::class, ['label' => 'Switch (a yes-or-no choice)', 'required' => false])
             ->getForm();
         $form->get('invalid')->addError(new FormError('Example of an error message.'));
 

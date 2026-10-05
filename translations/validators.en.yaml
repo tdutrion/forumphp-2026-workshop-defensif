@@ -3,3 +3,4 @@
 'planner.location.required': 'Choose a city or use your position.'
 'planner.seed.invalid': 'Invalid draw.'
 'planner.time_range.order': 'The end of the time range must be after its start.'
+'settings.exclude_cinema.invalid': 'Choose a cinema from the list.'

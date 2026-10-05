@@ -33,7 +33,8 @@
 {%- endblock choice_widget_collapsed -%}
 
 {%- block checkbox_widget -%}
-    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' size-4 rounded border-line accent-brand-600')|trim}) -%}
+    {#- A yes-or-no choice is a switch (see docs/design-system.md). -#}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' switch')|trim, role: 'switch'}) -%}
     {{- parent() -}}
 {%- endblock checkbox_widget -%}
 

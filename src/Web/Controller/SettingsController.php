@@ -8,9 +8,12 @@ use App\Account\Entity\User;
 use App\Account\ExcludedCinemaService;
 use App\Account\FilmPage;
 use App\Account\Theme;
+use App\Catalog\Repository\CinemaRepository;
 use App\Security\OAuthProviders;
+use App\Web\Form\ExcludeCinemaType;
 use App\Web\PostRedirectGet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -19,7 +22,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Settings of the account: excluded cinemas, connections, API tokens and colour theme.
+ * Settings of the account: excluded cinemas (excluded here, by name, or from a search), connections, API tokens and colour theme.
  */
 #[Route('/settings')]
 class SettingsController extends AbstractController
@@ -31,6 +34,7 @@ class SettingsController extends AbstractController
         private ExcludedCinemaService $excludedCinemaService,
         private TranslatorInterface $translator,
         private PostRedirectGet $postRedirectGet,
+        private CinemaRepository $cinemaRepository,
     ) {
     }
 
@@ -38,6 +42,19 @@ class SettingsController extends AbstractController
     public function index(#[CurrentUser] User $user): Response
     {
         return $this->renderSettings($user, null);
+    }
+
+    #[Route('/excluded-cinemas', name: 'app_settings_cinema_exclude', methods: ['POST'])]
+    public function excludeCinema(Request $request, #[CurrentUser] User $user): Response
+    {
+        $form = $this->excludeCinemaForm($user)->handleRequest($request);
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            return $this->renderSettings($user, null, $form)->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $this->excludedCinemaService->exclude($user->getUserIdentifier(), $form->get('cinema')->getData());
+
+        return $this->redirectToRoute('app_settings', ['_fragment' => 'excluded-cinemas'], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/connections/{id}/remove', name: 'app_settings_connection_remove', methods: ['POST'])]
@@ -119,7 +136,15 @@ class SettingsController extends AbstractController
         return $this->redirectToRoute('app_settings', [], Response::HTTP_SEE_OTHER);
     }
 
-    private function renderSettings(User $user, #[\SensitiveParameter] ?string $newToken): Response
+    private function excludeCinemaForm(User $user): FormInterface
+    {
+        return $this->createForm(ExcludeCinemaType::class, null, [
+            'action' => $this->generateUrl('app_settings_cinema_exclude'),
+            'cinemas' => $this->cinemaRepository->findOpenByCityName($this->excludedCinemaService->getExcludedCinemaSlugs($user->getUserIdentifier())),
+        ]);
+    }
+
+    private function renderSettings(User $user, #[\SensitiveParameter] ?string $newToken, ?FormInterface $excludeCinemaForm = null): Response
     {
         $linkedProviders = [];
         foreach ($user->getLinkedAccounts() as $linkedAccount) {
@@ -133,6 +158,7 @@ class SettingsController extends AbstractController
             'tokens' => $this->apiTokenService->listForUser($user),
             'newToken' => $newToken,
             'pageSizes' => FilmPage::PAGE_SIZES,
+            'excludeCinemaForm' => $excludeCinemaForm ?? $this->excludeCinemaForm($user),
         ]);
     }
 }

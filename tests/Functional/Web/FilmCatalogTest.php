@@ -4,6 +4,7 @@ namespace App\Tests\Functional\Web;
 
 use App\Account\Entity\User;
 use App\Account\SeenFilmService;
+use App\Account\UnwantedFilmService;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -89,19 +90,38 @@ final class FilmCatalogTest extends WebTestCase
         self::assertSame(['Garance'], $inVost);
     }
 
-    public function testHidesTheFilmsAlreadySeenOnDemand(): void
+    public function testHidesTheFilmsSeenAndThoseNotForMeSeparately(): void
     {
         // Arrange
         $client = $this->signedInWithCatalog();
-        self::getContainer()->get(SeenFilmService::class)->markSeen($this->user->getUserIdentifier(), 'garance');
+        $userId = $this->user->getUserIdentifier();
+        self::getContainer()->get(SeenFilmService::class)->markSeen($userId, 'garance');
+        self::getContainer()->get(UnwantedFilmService::class)->markUnwanted($userId, 'digger');
 
         // Act
         $all = $this->titles($client, '/films');
-        $notSeen = $this->titles($client, '/films?hide_marked=1');
+        $notSeen = $this->titles($client, '/films?hide_seen=1');
+        $forMe = $this->titles($client, '/films?hide_unwanted=1');
+        $neither = $this->titles($client, '/films?hide_seen=1&hide_unwanted=1');
 
         // Assert
         self::assertSame(['Digger', 'Garance', 'Verity'], $all);
         self::assertSame(['Digger', 'Verity'], $notSeen);
+        self::assertSame(['Garance', 'Verity'], $forMe);
+        self::assertSame(['Verity'], $neither);
+    }
+
+    public function testHidingTheMarkedFilmsIsTwoSwitches(): void
+    {
+        // Arrange
+        $client = $this->signedInWithCatalog();
+
+        // Act
+        $client->request('GET', '/films');
+
+        // Assert
+        self::assertSelectorExists('input[name=hide_seen][type=checkbox][role=switch].switch');
+        self::assertSelectorExists('input[name=hide_unwanted][type=checkbox][role=switch].switch');
     }
 
     public function testAnUnknownSortIsRefused(): void
@@ -156,8 +176,8 @@ final class FilmCatalogTest extends WebTestCase
         // Arrange
         $client = $this->signedInWithCatalog();
 
-        // Act: what the form sends when only the checkbox is ticked.
-        $titles = $this->titles($client, '/films?q=&sort=title&genre=&city=&version=&hide_marked=1');
+        // Act: what the form sends when only the switches are on.
+        $titles = $this->titles($client, '/films?q=&sort=title&genre=&city=&version=&hide_seen=1&hide_unwanted=1');
 
         // Assert
         self::assertResponseIsSuccessful();

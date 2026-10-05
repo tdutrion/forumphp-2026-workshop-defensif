@@ -60,6 +60,7 @@
 
     --radius-control: 0.5rem;
     --radius-card: 0.75rem;
+    --radius-pill: 9999px;
 
     --shadow-card: 0 1px 2px 0 oklch(0% 0 0 / 0.05), 0 1px 3px 0 oklch(0% 0 0 / 0.1);
 }
@@ -146,6 +147,32 @@
     /* The marker of <summary> (dropdowns): the chevron icon replaces it. */
     summary::-webkit-details-marker {
         display: none;
+    }
+}
+
+/*
+ * Switch: a native checkbox (class "switch", role="switch") drawn as an on/off toggle. Every
+ * yes-or-no choice is one; it still posts like a checkbox, without JavaScript.
+ */
+@layer components {
+    .switch {
+        @apply relative inline-flex h-5 w-9 shrink-0 cursor-pointer appearance-none rounded-pill bg-line transition-colors;
+    }
+    .switch::before {
+        @apply absolute top-0.5 left-0.5 size-4 rounded-pill bg-white shadow-sm transition-transform;
+        content: "";
+    }
+    .switch:checked {
+        @apply bg-brand-600;
+    }
+    .switch:checked::before {
+        @apply translate-x-4;
+    }
+    .switch:focus-visible {
+        @apply outline-2 outline-offset-2 outline-brand-600;
+    }
+    .switch:disabled {
+        @apply cursor-not-allowed opacity-50;
     }
 }
 

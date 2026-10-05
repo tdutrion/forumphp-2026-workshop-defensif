@@ -262,6 +262,18 @@ final class PlannerPageTest extends WebTestCase
         self::assertSame(['walking', 'cycling', 'transit', 'car'], $crawler->filter('#plan_travelMode option')->each(static fn ($o) => $o->attr('value')));
     }
 
+    public function testYesOrNoChoicesAreSwitches(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $client->request('GET', '/');
+
+        // Assert
+        self::assertSelectorExists('input#plan_acceptAds[type=checkbox][role=switch].switch');
+    }
+
     public function testATimeRangeThatEndsBeforeItStartsIsInvalid(): void
     {
         // Arrange

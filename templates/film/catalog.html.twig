@@ -10,40 +10,41 @@
 
     {# Selection and order: a GET form, so that the URL keeps them (and can be shared). #}
     <twig:Card>
-        <form method="get" action="{{ path('app_films') }}" id="film-filters" class="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {# Inline form: one field per row, its label on the left (above it on small screens). #}
+        <form method="get" action="{{ path('app_films') }}" id="film-filters" class="grid gap-x-4 gap-y-3 sm:grid-cols-[10rem_1fr] sm:items-center">
             {% set field = 'block w-full min-h-10.5 rounded-control border border-line bg-surface px-3 py-2 leading-6 text-ink shadow-sm focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30' %}
-            <label class="grid gap-1 text-sm font-medium lg:col-span-2">{{ 'films.filter.search'|trans }}
-                <input type="search" name="q" value="{{ query.q }}" maxlength="100" placeholder="{{ 'films.filter.search_placeholder'|trans }}" class="{{ field }} font-normal">
+            {% set label = 'text-sm font-medium' %}
+            <label for="filter-q" class="{{ label }}">{{ 'films.filter.search'|trans }}</label>
+            <input id="filter-q" type="search" name="q" value="{{ query.q }}" maxlength="100" placeholder="{{ 'films.filter.search_placeholder'|trans }}" class="{{ field }}">
+            <label for="filter-sort" class="{{ label }}">{{ 'films.filter.sort'|trans }}</label>
+            <select id="filter-sort" name="sort" class="{{ field }}">
+                {% for sort in sorts %}<option value="{{ sort }}"{% if query.sort == sort %} selected{% endif %}>{{ ('films.sort.' ~ sort)|trans }}</option>{% endfor %}
+            </select>
+            <label for="filter-genre" class="{{ label }}">{{ 'films.filter.genre'|trans }}</label>
+            <select id="filter-genre" name="genre" class="{{ field }}">
+                <option value="">{{ 'films.filter.all'|trans }}</option>
+                {% for genre in genres %}<option value="{{ genre }}"{% if query.genre == genre %} selected{% endif %}>{{ genre }}</option>{% endfor %}
+            </select>
+            <label for="filter-city" class="{{ label }}">{{ 'planner.form.city'|trans }}</label>
+            <select id="filter-city" name="city" class="{{ field }}">
+                <option value="">{{ 'films.filter.all'|trans }}</option>
+                {% for city in cities %}<option value="{{ city.slug }}"{% if query.city == city.slug %} selected{% endif %}>{{ city.name }}</option>{% endfor %}
+            </select>
+            <label for="filter-version" class="{{ label }}">{{ 'planner.form.version'|trans }}</label>
+            <select id="filter-version" name="version" class="{{ field }}">
+                <option value="">{{ 'planner.form.version_any'|trans }}</option>
+                {% for version in ['vf', 'vost', 'vo', 'vfst'] %}<option value="{{ version }}"{% if query.version == version %} selected{% endif %}>{{ ('planner.form.version.' ~ version)|trans }}</option>{% endfor %}
+            </select>
+            <label class="flex items-center gap-2 text-sm sm:col-start-2">
+                <input type="checkbox" role="switch" name="hide_seen" value="1" class="switch"{% if query.hideSeen %} checked{% endif %}>
+                {{ 'films.filter.hide_seen'|trans }}
             </label>
-            <label class="grid gap-1 text-sm font-medium">{{ 'films.filter.sort'|trans }}
-                <select name="sort" class="{{ field }} font-normal">
-                    {% for sort in sorts %}<option value="{{ sort }}"{% if query.sort == sort %} selected{% endif %}>{{ ('films.sort.' ~ sort)|trans }}</option>{% endfor %}
-                </select>
+            <label class="flex items-center gap-2 text-sm sm:col-start-2">
+                <input type="checkbox" role="switch" name="hide_unwanted" value="1" class="switch"{% if query.hideUnwanted %} checked{% endif %}>
+                {{ 'films.filter.hide_unwanted'|trans }}
             </label>
-            <label class="grid gap-1 text-sm font-medium">{{ 'films.filter.genre'|trans }}
-                <select name="genre" class="{{ field }} font-normal">
-                    <option value="">{{ 'films.filter.all'|trans }}</option>
-                    {% for genre in genres %}<option value="{{ genre }}"{% if query.genre == genre %} selected{% endif %}>{{ genre }}</option>{% endfor %}
-                </select>
-            </label>
-            <label class="grid gap-1 text-sm font-medium">{{ 'planner.form.city'|trans }}
-                <select name="city" class="{{ field }} font-normal">
-                    <option value="">{{ 'films.filter.all'|trans }}</option>
-                    {% for city in cities %}<option value="{{ city.slug }}"{% if query.city == city.slug %} selected{% endif %}>{{ city.name }}</option>{% endfor %}
-                </select>
-            </label>
-            <label class="grid gap-1 text-sm font-medium">{{ 'planner.form.version'|trans }}
-                <select name="version" class="{{ field }} font-normal">
-                    <option value="">{{ 'planner.form.version_any'|trans }}</option>
-                    {% for version in ['vf', 'vost', 'vo', 'vfst'] %}<option value="{{ version }}"{% if query.version == version %} selected{% endif %}>{{ ('planner.form.version.' ~ version)|trans }}</option>{% endfor %}
-                </select>
-            </label>
-            <label class="flex items-center gap-2 self-center text-sm">
-                <input type="checkbox" name="hide_marked" value="1" class="size-4 accent-brand-600"{% if query.hideMarked %} checked{% endif %}>
-                {{ 'films.filter.hide_marked'|trans }}
-            </label>
-            <div class="flex gap-2">
-                <twig:Button type="submit">{{ 'films.filter.apply'|trans }}</twig:Button>
+            <div class="mt-2 grid gap-2 sm:col-span-2 sm:grid-cols-[1fr_auto]">
+                <twig:Button type="submit" class="w-full">{{ 'films.filter.apply'|trans }}</twig:Button>
                 <twig:Button tag="a" href="{{ path('app_films') }}" variant="ghost">{{ 'films.filter.reset'|trans }}</twig:Button>
             </div>
         </form>

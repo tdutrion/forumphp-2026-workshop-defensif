@@ -30,7 +30,7 @@ class FilmCatalog
         $now = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
         $seen = $this->seenFilmService->getSeenFilmSlugs($userId);
         $unwanted = $this->unwantedFilmService->getUnwantedFilmSlugs($userId);
-        $excluded = $query->hideMarked ? array_merge($seen, $unwanted) : [];
+        $excluded = array_merge($query->hideSeen ? $seen : [], $query->hideUnwanted ? $unwanted : []);
 
         $films = FilmPage::load(
             $this->filmRepository->countShowing($query, $excluded, $now),

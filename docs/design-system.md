@@ -15,7 +15,7 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 | `ink`, `ink-muted` | `text-ink`, `text-ink-muted` | text |
 | `canvas`, `surface`, `surface-muted`, `line` | `bg-canvas`, `bg-surface`, `ring-line`… | page, cards, borders |
 | `success-*`, `danger-*`, `info-*` | `bg-danger-50`, `text-danger-700`… | feedback |
-| `rounded-control`, `rounded-card` | | radii of controls and cards |
+| `rounded-control`, `rounded-card`, `rounded-pill` | | radii of controls, cards, and switches and other fully rounded shapes |
 | `shadow-card` | | elevation of cards |
 
 ## Components
@@ -31,6 +31,7 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 | `<twig:Card>` | | a `<section>` |
 | `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
 | `<twig:Badge>` | `tone`: neutral, brand, warning (accent orange) | |
+| Switch (`class="switch"`) | on `<input type="checkbox" role="switch">` | a native checkbox drawn as an on/off toggle (CSS only, `assets/styles/app.css`): it posts like a checkbox, without JavaScript. Every `CheckboxType` gets it from the form theme |
 
 Themes: the tokens are redefined for the dark theme on any element carrying `data-theme="dark"`
 (`<html>` follows the setting of the user; "auto" follows the system). The style guide renders
@@ -41,6 +42,8 @@ other fields by unlayered rules at the end of `assets/styles/app.css` (its own s
 
 ## Rules
 
+- A yes-or-no choice is a switch, never a bare checkbox. Checkboxes remain only for picking
+  several items of a list.
 - Templates use the components and the token utilities only. A new color, radius or shadow is a
   new token: add it to `@theme` and to this page.
 - Classes such as `flash-error`, `programme` or `plan-message` are hooks for tests and scripts.

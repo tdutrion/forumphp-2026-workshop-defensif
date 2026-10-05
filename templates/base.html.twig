@@ -20,22 +20,20 @@
         <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
             <a href="{{ path('app_home') }}" class="rounded-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600"><twig:Logo /></a>
             <div class="flex items-center gap-4">
-            {# Language switch, for everyone: a plain form, back to this page (Post/Redirect/Get). #}
-            <div id="language-switch">
-                <form method="post" action="{{ path('app_locale') }}" class="flex rounded-control text-xs font-semibold ring-1 ring-line" aria-label="{{ 'layout.language'|trans }}">
-                    <input type="hidden" name="_return_route" value="{{ app.request.attributes.get('_route') }}">
-                    <input type="hidden" name="_return_params" value="{{ app.request.attributes.get('_route_params')|default({})|filter((value, key) => key != '_locale')|url_encode }}">
-                    <input type="hidden" name="_return" value="{{ app.request.queryString }}">
-                    {% for locale in ['fr', 'en'] %}
-                        <button type="submit" name="locale" value="{{ locale }}" lang="{{ locale }}" aria-pressed="{{ app.request.locale == locale ? 'true' : 'false' }}"
-                                class="px-2 py-1 text-ink-muted first:rounded-s-control last:rounded-e-control hover:text-ink aria-pressed:bg-brand-600 aria-pressed:text-white">{{ locale|upper }}</button>
-                    {% endfor %}
-                </form>
-            </div>
             {% if app.user %}
                 <nav class="flex items-center gap-4">
                     <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.plan'|trans }}</a>
                     <a href="{{ path('app_films') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.films'|trans }}</a>
+                    <twig:Dropdown id="profile-menu" :label="'layout.my_profile'|trans">
+                        <a href="{{ path('app_settings') }}">{{ 'layout.settings'|trans }}</a>
+                        <a href="{{ path('app_history') }}">{{ 'layout.history'|trans }}</a>
+                        <a href="{{ path('app_unwanted_films') }}">{{ 'layout.unwanted_films'|trans }}</a>
+                        <hr class="my-1 border-line">
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button type="submit">{{ 'layout.log_out'|trans }}</button>
+                        </form>
+                    </twig:Dropdown>
                     {#
                         Light/dark switch, saved on the account like the choice of the settings, back to this page.
                         With the automatic theme, the controller reads the system to offer the other one
@@ -54,20 +52,22 @@
                             </button>
                         </form>
                     </div>
-                    <twig:Dropdown id="profile-menu" :label="'layout.my_profile'|trans">
-                        <a href="{{ path('app_settings') }}">{{ 'layout.settings'|trans }}</a>
-                        <a href="{{ path('app_history') }}">{{ 'layout.history'|trans }}</a>
-                        <a href="{{ path('app_unwanted_films') }}">{{ 'layout.unwanted_films'|trans }}</a>
-                        <hr class="my-1 border-line">
-                        <form method="post" action="{{ path('app_logout') }}">
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                            <button type="submit">{{ 'layout.log_out'|trans }}</button>
-                        </form>
-                    </twig:Dropdown>
                 </nav>
             {% elseif app.request.attributes.get('_route') != 'app_login' %}
                 <twig:Button tag="a" href="{{ path('app_login') }}" variant="secondary" size="sm">{{ 'security.sign_in'|trans }}</twig:Button>
             {% endif %}
+            {# Language switch, for everyone: a plain form, back to this page (Post/Redirect/Get). #}
+            <div id="language-switch">
+                <form method="post" action="{{ path('app_locale') }}" class="flex rounded-control text-xs font-semibold ring-1 ring-line" aria-label="{{ 'layout.language'|trans }}">
+                    <input type="hidden" name="_return_route" value="{{ app.request.attributes.get('_route') }}">
+                    <input type="hidden" name="_return_params" value="{{ app.request.attributes.get('_route_params')|default({})|filter((value, key) => key != '_locale')|url_encode }}">
+                    <input type="hidden" name="_return" value="{{ app.request.queryString }}">
+                    {% for locale in ['fr', 'en'] %}
+                        <button type="submit" name="locale" value="{{ locale }}" lang="{{ locale }}" aria-pressed="{{ app.request.locale == locale ? 'true' : 'false' }}"
+                                class="px-2 py-1 text-ink-muted first-of-type:rounded-s-control last-of-type:rounded-e-control hover:text-ink aria-pressed:bg-brand-600 aria-pressed:text-white">{{ locale|upper }}</button>
+                    {% endfor %}
+                </form>
+            </div>
             </div>
         </div>
     </header>

@@ -108,6 +108,16 @@
 </twig:Card>
 
 <twig:Card>
+    <h3 class="mb-4 font-semibold">Switch</h3>
+    <div class="flex flex-wrap gap-6 text-sm">
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch"> Off</label>
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch" checked> On</label>
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch" disabled> Disabled</label>
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch" checked disabled> On, disabled</label>
+    </div>
+</twig:Card>
+
+<twig:Card>
     <h3 class="mb-4 font-semibold">Form</h3>
     {{ form(form) }}
 </twig:Card>
