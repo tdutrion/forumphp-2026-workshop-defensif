@@ -20,4 +20,41 @@
             </twig:ButtonGroup>
         </div>
     </twig:Card>
+
+    <twig:Card id="showtimes">
+        <h2 class="mb-4 text-xl font-semibold">{{ 'film.showtimes.title'|trans({'%count%': cinemas|length}) }}</h2>
+        {% for cinema in cinemas %}
+            {# One block per cinema, closed by default: the days and times of its showtimes. #}
+            <details class="group border-b border-line last:border-0">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-3">
+                    <span>
+                        <span class="font-medium">{{ cinema.name }}</span>
+                        <span class="text-sm text-ink-muted">· {{ cinema.city }}</span>
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <twig:Badge>{{ 'film.showtimes.count'|trans({'%count%': cinema.count}) }}</twig:Badge>
+                        <twig:Icon name="chevron-down" class="transition-transform group-open:rotate-180" />
+                    </span>
+                </summary>
+                <ul class="space-y-3 pb-4">
+                    {% for day in cinema.days %}
+                        <li data-day="{{ day.date }}" class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-4">
+                            <span class="w-48 shrink-0 text-sm font-medium first-letter:uppercase">{{ day.date|format_date(pattern: 'EEEE d MMMM', locale=app.request.locale) }}</span>
+                            <span class="flex flex-wrap gap-2">
+                                {% for showtime in day.showtimes %}
+                                    <a href="{{ showtime.bookingUrl }}" data-time="{{ showtime.time }}" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center gap-1.5 rounded-control px-2.5 py-1 text-sm font-medium ring-1 ring-line hover:bg-surface-muted hover:text-brand-700"
+                                       title="{{ 'film.showtimes.book'|trans({'%time%': showtime.time}) }}">
+                                        {{ showtime.time }}<span class="text-xs text-ink-muted">{{ showtime.version|upper }}</span>
+                                    </a>
+                                {% endfor %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </details>
+        {% else %}
+            <p class="text-ink-muted">{{ 'film.showtimes.none'|trans }}</p>
+        {% endfor %}
+    </twig:Card>
 {% endblock %}

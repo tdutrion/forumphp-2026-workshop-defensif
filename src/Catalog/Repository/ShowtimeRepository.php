@@ -72,6 +72,34 @@ class ShowtimeRepository extends ServiceEntityRepository
     }
 
     /**
+     * Showtimes of a film that can still be booked, in open cinemas: by city, cinema, then time.
+     *
+     * @param string $now UTC instant ('Y-m-d H:i:s')
+     *
+     * @return array rows ['cinemaSlug', 'cinemaName', 'cityName', 'timezone', 'startsAt' (UTC), 'localDate',
+     *               'version', 'bookingUrl']
+     */
+    public function findBookableForFilm(string $filmSlug, string $now): array
+    {
+        $sql = 'SELECT s.cinema_slug AS cinemaSlug, c.name AS cinemaName, city.name AS cityName, c.timezone,
+                       s.starts_at AS startsAt, s.local_date AS localDate, s.version, s.booking_url AS bookingUrl
+                FROM showtime s
+                INNER JOIN cinema c ON c.slug = s.cinema_slug
+                INNER JOIN city ON city.slug = c.city_slug
+                WHERE s.film_slug = :film
+                  AND c.open = 1
+                  AND s.status = :status
+                  AND (s.reservable_until IS NULL OR s.reservable_until > :now)
+                ORDER BY city.name, c.name, s.starts_at, s.id';
+
+        return $this->getEntityManager()->getConnection()->fetchAllAssociative($sql, [
+            'film' => $filmSlug,
+            'status' => 'available',
+            'now' => $now,
+        ]);
+    }
+
+    /**
      * Deletes the showtimes of the given cinemas whose local day is between $from and $to (inclusive),
      * except those whose identifier is kept.
      *
