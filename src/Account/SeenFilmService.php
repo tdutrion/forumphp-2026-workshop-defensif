@@ -73,13 +73,15 @@ class SeenFilmService
     }
 
     /**
-     * @param int $page from 1; a page after the last one gives the last one
+     * @param int $page     from 1; a page after the last one gives the last one
+     * @param int $pageSize one of FilmPage::PAGE_SIZES
      */
-    public function pageOfSeenFilms(string $userId, int $page): FilmPage
+    public function pageOfSeenFilms(string $userId, int $page, int $pageSize): FilmPage
     {
         return FilmPage::load(
             $this->seenFilmRepository->countByUser($userId),
             $page,
+            $pageSize,
             fn (int $offset, int $limit): array => $this->seenFilmRepository->findPageByUser($userId, $offset, $limit),
         );
     }

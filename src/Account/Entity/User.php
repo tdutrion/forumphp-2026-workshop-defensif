@@ -33,6 +33,10 @@ class User implements UserInterface
     #[ORM\Column(length: 5, enumType: Theme::class, options: ['default' => 'auto'])]
     private Theme $theme = Theme::Auto;
 
+    /** Number of films per page in the film lists: one of FilmPage::PAGE_SIZES. */
+    #[ORM\Column(options: ['default' => 20])]
+    private int $pageSize = 20;
+
     /** @var Collection<int, LinkedAccount> */
     #[ORM\OneToMany(targetEntity: LinkedAccount::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     private Collection $linkedAccounts;
@@ -119,6 +123,18 @@ class User implements UserInterface
     public function setTheme(Theme $theme): static
     {
         $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function getPageSize(): int
+    {
+        return $this->pageSize;
+    }
+
+    public function setPageSize(int $pageSize): static
+    {
+        $this->pageSize = $pageSize;
 
         return $this;
     }

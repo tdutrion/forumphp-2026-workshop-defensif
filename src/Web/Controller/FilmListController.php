@@ -27,7 +27,7 @@ class FilmListController extends AbstractController
     public function history(#[CurrentUser] User $user, #[MapQueryParameter(options: ['min_range' => 1])] int $page = 1): Response
     {
         return $this->render('film_list/history.html.twig', [
-            'films' => $this->seenFilmService->pageOfSeenFilms($user->getUserIdentifier(), $page),
+            'films' => $this->seenFilmService->pageOfSeenFilms($user->getUserIdentifier(), $page, $user->getPageSize()),
         ]);
     }
 
@@ -35,7 +35,7 @@ class FilmListController extends AbstractController
     public function unwanted(#[CurrentUser] User $user, #[MapQueryParameter(options: ['min_range' => 1])] int $page = 1): Response
     {
         return $this->render('film_list/unwanted.html.twig', [
-            'films' => $this->unwantedFilmService->pageOfUnwantedFilms($user->getUserIdentifier(), $page),
+            'films' => $this->unwantedFilmService->pageOfUnwantedFilms($user->getUserIdentifier(), $page, $user->getPageSize()),
         ]);
     }
 }

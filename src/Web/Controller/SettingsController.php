@@ -6,6 +6,7 @@ use App\Account\AccountService;
 use App\Account\ApiTokenService;
 use App\Account\Entity\User;
 use App\Account\ExcludedCinemaService;
+use App\Account\FilmPage;
 use App\Account\Theme;
 use App\Security\OAuthProviders;
 use App\Web\PostRedirectGet;
@@ -103,6 +104,21 @@ class SettingsController extends AbstractController
         return $this->postRedirectGet->back($request) ?? $this->redirectToRoute('app_settings', [], Response::HTTP_SEE_OTHER);
     }
 
+    #[Route('/page-size', name: 'app_settings_page_size', methods: ['POST'])]
+    public function changePageSize(Request $request, #[CurrentUser] User $user): Response
+    {
+        if (!$this->isCsrfTokenValid('settings-page-size', $request->request->getString('_token'))) {
+            throw $this->createAccessDeniedException('error.csrf_invalid');
+        }
+
+        $pageSize = $request->request->getString('pageSize');
+        if (1 !== preg_match('/^\d{1,3}$/', $pageSize) || !$this->accountService->changePageSize($user, (int) $pageSize)) {
+            throw new UnprocessableEntityHttpException('error.page_size_invalid');
+        }
+
+        return $this->redirectToRoute('app_settings', [], Response::HTTP_SEE_OTHER);
+    }
+
     private function renderSettings(User $user, #[\SensitiveParameter] ?string $newToken): Response
     {
         $linkedProviders = [];
@@ -116,6 +132,7 @@ class SettingsController extends AbstractController
             'providersToLink' => array_values(array_diff($this->oauthProviders->enabled(), $linkedProviders)),
             'tokens' => $this->apiTokenService->listForUser($user),
             'newToken' => $newToken,
+            'pageSizes' => FilmPage::PAGE_SIZES,
         ]);
     }
 }

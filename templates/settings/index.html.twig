@@ -25,6 +25,22 @@
         </form>
     </twig:Card>
 
+    <twig:Card id="page-size">
+        <h2 class="mb-4 text-xl font-semibold">{{ 'settings.page_size'|trans }}</h2>
+        <form method="post" action="{{ path('app_settings_page_size') }}" class="flex flex-wrap items-end gap-4">
+            <input type="hidden" name="_token" value="{{ csrf_token('settings-page-size') }}">
+            <div class="grid gap-1">
+                <label for="page-size-select" class="text-sm font-medium">{{ 'settings.page_size.label'|trans }}</label>
+                <select id="page-size-select" name="pageSize" class="rounded-control border border-line bg-surface px-3 py-2 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/30">
+                    {% for size in pageSizes %}
+                        <option value="{{ size }}"{% if user.pageSize == size %} selected{% endif %}>{{ size }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <twig:Button type="submit" size="sm">{{ 'settings.save'|trans }}</twig:Button>
+        </form>
+    </twig:Card>
+
     <twig:Card id="excluded-cinemas">
         <h2 class="mb-4 text-xl font-semibold">{{ 'settings.excluded_cinemas'|trans }}</h2>
         {% for cinema in excludedCinemas %}

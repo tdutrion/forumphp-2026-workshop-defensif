@@ -70,13 +70,15 @@ class UnwantedFilmService
     }
 
     /**
-     * @param int $page from 1; a page after the last one gives the last one
+     * @param int $page     from 1; a page after the last one gives the last one
+     * @param int $pageSize one of FilmPage::PAGE_SIZES
      */
-    public function pageOfUnwantedFilms(string $userId, int $page): FilmPage
+    public function pageOfUnwantedFilms(string $userId, int $page, int $pageSize): FilmPage
     {
         return FilmPage::load(
             $this->unwantedFilmRepository->countByUser($userId),
             $page,
+            $pageSize,
             fn (int $offset, int $limit): array => $this->unwantedFilmRepository->findPageByUser($userId, $offset, $limit),
         );
     }

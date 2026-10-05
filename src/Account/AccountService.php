@@ -100,6 +100,20 @@ class AccountService
         $this->em->flush();
     }
 
+    /**
+     * @return bool false if the number is not one of FilmPage::PAGE_SIZES
+     */
+    public function changePageSize(User $user, int $pageSize): bool
+    {
+        if (!in_array($pageSize, FilmPage::PAGE_SIZES, true)) {
+            return false;
+        }
+        $user->setPageSize($pageSize);
+        $this->em->flush();
+
+        return true;
+    }
+
     private function newLinkedAccount(string $provider, array $userInfo): LinkedAccount
     {
         return (new LinkedAccount())

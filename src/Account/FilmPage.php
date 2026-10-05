@@ -7,7 +7,8 @@ namespace App\Account;
  */
 final readonly class FilmPage
 {
-    public const PER_PAGE = 20;
+    /** The numbers of films per page a user can choose in their settings. */
+    public const PAGE_SIZES = [10, 15, 20, 30];
 
     /**
      * @param array $films rows: 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt' (UTC), latest first
@@ -23,13 +24,17 @@ final readonly class FilmPage
     }
 
     /**
-     * @param callable(int $offset, int $limit): array $fetch reads one page of rows
+     * @param int                                      $pageSize number of films per page, one of PAGE_SIZES
+     * @param callable(int $offset, int $limit): array $fetch    reads one page of rows
      */
-    public static function load(int $total, int $page, callable $fetch): self
+    public static function load(int $total, int $page, int $pageSize, callable $fetch): self
     {
-        $pages = max(1, (int) ceil($total / self::PER_PAGE));
+        if (!in_array($pageSize, self::PAGE_SIZES, true)) {
+            throw new \InvalidArgumentException('Unsupported page size: '.$pageSize);
+        }
+        $pages = max(1, (int) ceil($total / $pageSize));
         $page = min(max(1, $page), $pages);
 
-        return new self($fetch(($page - 1) * self::PER_PAGE, self::PER_PAGE), $page, $pages, $total);
+        return new self($fetch(($page - 1) * $pageSize, $pageSize), $page, $pages, $total);
     }
 }

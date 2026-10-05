@@ -58,6 +58,37 @@ final class FilmHistoryTest extends WebTestCase
         self::assertStringContainsString('Film 01', $secondPage->last()->text());
     }
 
+    public function testTheNumberOfFilmsPerPageComesFromTheSettings(): void
+    {
+        // Arrange
+        $client = $this->signedInHavingSeen(25);
+        $form = $client->request('GET', '/settings')->filter('#page-size form')->form(['pageSize' => '10']);
+
+        // Act
+        $client->submit($form);
+        $redirect = $client->getResponse();
+        $crawler = $client->request('GET', '/history');
+
+        // Assert
+        self::assertSame(303, $redirect->getStatusCode());
+        self::assertSame('/settings', $redirect->headers->get('Location'));
+        self::assertCount(10, $crawler->filter('#film-history tbody tr'));
+        self::assertCount(3, $crawler->filter('.pagination a:not([rel]), .pagination [aria-current]'), 'three pages');
+    }
+
+    public function testANumberOfFilmsPerPageThatIsNotOfferedIsRefused(): void
+    {
+        // Arrange
+        $client = $this->signedInHavingSeen(1);
+        $token = $client->request('GET', '/settings')->filter('#page-size input[name="_token"]')->attr('value');
+
+        // Act
+        $client->request('POST', '/settings/page-size', ['pageSize' => '1000', '_token' => $token]);
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+    }
+
     public function testRemovingAFilmFromTheHistoryComesBackToTheSamePage(): void
     {
         // Arrange
