@@ -9,6 +9,7 @@ final class FilmBuilder
     private string $slug = 'digger-51293';
     private ?string $title = null;
     private int $duration = 100;
+    private ?string $originalLanguage = null;
 
     public static function aFilm(): self
     {
@@ -42,12 +43,21 @@ final class FilmBuilder
         return $clone;
     }
 
+    public function inOriginalLanguage(?string $language): self
+    {
+        $clone = clone $this;
+        $clone->originalLanguage = $language;
+
+        return $clone;
+    }
+
     public function build(): Film
     {
         return (new Film())
             ->setSlug($this->slug)
             ->setTitle($this->title ?? 'Film '.$this->slug)
             ->setChain('pathe')
-            ->setDuration($this->duration);
+            ->setDuration($this->duration)
+            ->setOriginalLanguage($this->originalLanguage);
     }
 }

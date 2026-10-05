@@ -142,4 +142,23 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertGreaterThanOrEqual(1, $stats['deleted']);
         self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85501'), 'today\'s showtimes stay');
     }
+
+    public function testTheOriginalLanguageOfAFilmComesFromItsNationality(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $api = $this->dijon()
+            ->withFilm('la-bataille-1', 'La Bataille', 120, null, 'France')
+            ->withFilm('digger-51293', 'Digger', 129, null, 'Etats-Unis')
+            ->withShowtime('la-bataille-1', 'cinema-pathe-dijon', '2026-10-04 18:00:00', 'V3345S90001');
+
+        // Act
+        $this->synchronize($api);
+
+        // Assert
+        $this->em()->clear();
+        self::assertSame('fr', $this->em()->find(Film::class, 'la-bataille-1')->getOriginalLanguage());
+        self::assertSame('en', $this->em()->find(Film::class, 'digger-51293')->getOriginalLanguage());
+        self::assertSame('fr', $this->em()->find(Cinema::class, 'cinema-pathe-dijon')->getLanguage(), 'the language of the chain');
+    }
 }

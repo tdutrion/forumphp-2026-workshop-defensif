@@ -38,6 +38,10 @@ class Film
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $contentRating = null;
 
+    /** ISO 639-1 original language, e.g. 'fr'; null when unknown. */
+    #[ORM\Column(length: 2, nullable: true)]
+    private ?string $originalLanguage = null;
+
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -130,6 +134,18 @@ class Film
     public function setChain(string $chain): static
     {
         $this->chain = $chain;
+
+        return $this;
+    }
+
+    public function getOriginalLanguage(): ?string
+    {
+        return $this->originalLanguage;
+    }
+
+    public function setOriginalLanguage(?string $originalLanguage): static
+    {
+        $this->originalLanguage = $originalLanguage;
 
         return $this;
     }

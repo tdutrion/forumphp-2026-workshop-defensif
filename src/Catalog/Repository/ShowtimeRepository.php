@@ -58,7 +58,12 @@ class ShowtimeRepository extends ServiceEntityRepository
             $params['excluded'] = $excludedFilmSlugs;
             $types['excluded'] = ArrayParameterType::STRING;
         }
-        if (null !== $version) {
+        if ('vost' === $version || 'vo' === $version) {
+            // Original version: also a film made in the language of the cinema (its chain), whatever the
+            // version tag of the showtime: a French film in VF at Pathé, an English film at Cineworld UK.
+            $sql .= ' AND (s.version = :version OR f.original_language = c.language)';
+            $params['version'] = $version;
+        } elseif (null !== $version) {
             $sql .= ' AND s.version = :version';
             $params['version'] = $version;
         }

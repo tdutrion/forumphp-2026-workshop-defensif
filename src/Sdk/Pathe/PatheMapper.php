@@ -35,6 +35,40 @@ class PatheMapper
     }
 
     /**
+     * Languages of the countries Pathé writes in "nationality" (in French), first country first.
+     */
+    private const LANGUAGE_BY_NATIONALITY = [
+        'France' => 'fr',
+        'Etats-Unis' => 'en',
+        'Royaume-Uni' => 'en',
+        'Irlande' => 'en',
+        'Australie' => 'en',
+        'Nouvelle-Zélande' => 'en',
+        'Espagne' => 'es',
+        'Italie' => 'it',
+        'Allemagne' => 'de',
+        'Japon' => 'ja',
+        'Corée du Sud' => 'ko',
+    ];
+
+    /**
+     * Original language of a film, guessed from the first country of its nationality
+     * ("France, Belgique" gives 'fr'). Null when unknown or ambiguous (Belgique, Canada, Suisse...).
+     *
+     * @param array $rawShow a film page (/show/{slug})
+     */
+    public function mapOriginalLanguage(array $rawShow): ?string
+    {
+        $nationality = $rawShow['nationality'] ?? null;
+        if (!is_string($nationality) || '' === trim($nationality)) {
+            return null;
+        }
+        $firstCountry = trim(explode(',', $nationality)[0]);
+
+        return self::LANGUAGE_BY_NATIONALITY[$firstCountry] ?? null;
+    }
+
+    /**
      * @return array|false the film's fields, or false if it is an event (no usable showtimes)
      */
     public function mapFilm(array $raw): array|false

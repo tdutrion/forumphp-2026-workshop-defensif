@@ -79,6 +79,7 @@ class PlanType extends AbstractType
                 'choices' => self::VERSIONS,
                 'required' => false,
                 'placeholder' => 'Any',
+                'help' => 'VOST and VO also include the films made in the language of the cinema.',
             ])
             ->add('acceptAds', CheckboxType::class, [
                 'label' => 'I accept arriving during the ads (15 minutes)',

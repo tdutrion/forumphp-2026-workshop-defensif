@@ -1,8 +1,12 @@
 parameters:
     # Supported cinema chains. Instants are stored in UTC; each chain's time zone converts
     # its local times (input from its API, display) and gives the country of its cinemas.
+    # language: ISO 639-1 language of the chain's audience. With the VOST or VO filter, a film
+    # made in that language also counts as original version (a French film in VF at Pathé,
+    # an English film at a chain such as Cineworld UK).
     app.chains:
         pathe:
             name: 'Pathé'
             country: 'FR'
             timezone: 'Europe/Paris'
+            language: 'fr'

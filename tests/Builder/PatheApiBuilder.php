@@ -14,6 +14,7 @@ final class PatheApiBuilder
     private array $shows = [];
     private array $programmes = [];
     private array $showtimes = [];
+    private array $details = [];
     /** @var array<string, array{0: string, 1: int}> */
     private array $overrides = [];
 
@@ -63,9 +64,11 @@ final class PatheApiBuilder
         return $clone;
     }
 
-    public function withFilm(string $slug, string $title, int $duration, ?string $posterUrl = null): self
+    public function withFilm(string $slug, string $title, int $duration, ?string $posterUrl = null, ?string $nationality = null): self
     {
         $clone = clone $this;
+        // Film page (/show/{slug}): the only place where Pathé gives the nationality.
+        $clone->details[$slug] = ['slug' => $slug, 'title' => $title, 'nationality' => $nationality, 'originalTitle' => $title];
         $clone->shows[$slug] = [
             'slug' => $slug,
             'title' => $title,
@@ -139,6 +142,9 @@ final class PatheApiBuilder
             'cinemas' => [json_encode($this->cinemas, \JSON_THROW_ON_ERROR), 200],
             'shows' => [json_encode(['shows' => array_values($this->shows), 'labels' => [], 'contentratings' => []], \JSON_THROW_ON_ERROR), 200],
         ];
+        foreach ($this->details as $slug => $detail) {
+            $responses['show/'.$slug] = [json_encode($detail, \JSON_THROW_ON_ERROR), 200];
+        }
         foreach ($this->programmes as $cinemaSlug => $programme) {
             $responses['cinema/'.$cinemaSlug.'/shows'] = [json_encode($programme, \JSON_THROW_ON_ERROR), 200];
         }

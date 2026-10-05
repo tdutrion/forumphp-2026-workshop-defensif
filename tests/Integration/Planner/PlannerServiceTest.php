@@ -5,6 +5,7 @@ namespace App\Tests\Integration\Planner;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Entity\Cinema;
+use App\Catalog\Entity\Film;
 use App\Planner\PlannerService;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
@@ -12,6 +13,7 @@ use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\ShowtimeBuilder;
 use App\Tests\Builder\UserBuilder;
 use App\Tests\StoresEntities;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class PlannerServiceTest extends KernelTestCase
@@ -138,6 +140,48 @@ final class PlannerServiceTest extends KernelTestCase
 
         // Assert
         self::assertNotContains('f4', array_merge(...$this->filmSets($result)));
+    }
+
+    public function testTheOriginalVersionAlsoKeepsFilmsMadeInTheLanguageOfTheCinema(): void
+    {
+        // Arrange: in Dijon (a French cinema), f3 is a French film shown in VF, f1 an American film in VF.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->find(Film::class, 'f3')->setOriginalLanguage('fr');
+        $em->find(Film::class, 'f1')->setOriginalLanguage('en');
+        $em->flush();
+
+        // Act
+        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => 'vost']), $userId);
+
+        // Assert
+        $films = array_merge(...$this->filmSets($result));
+        self::assertContains('f2', $films, 'shown in VOST');
+        self::assertContains('f3', $films, 'French film: its VF is its original version');
+        self::assertNotContains('f1', $films, 'dubbed into French');
+    }
+
+    public function testTheLanguageOfTheCinemaDecidesWhatIsAnOriginalVersion(): void
+    {
+        // Arrange: an English-speaking cinema (a Cineworld-like chain) at the same place.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        $london = CinemaBuilder::aCinema()->withSlug('cinema-in-english')->in(CityBuilder::aCity()->withSlug('elsewhere')->named('Elsewhere')->build())->inTimezone('Europe/London')->speaking('en')->build();
+        $english = FilmBuilder::aFilm()->withSlug('english-film')->lasting(100)->inOriginalLanguage('en')->build();
+        $french = FilmBuilder::aFilm()->withSlug('french-film')->lasting(100)->inOriginalLanguage('fr')->build();
+        $this->store($london->getCity(), $london, $english, $french,
+            ShowtimeBuilder::aShowtime()->of($english)->at($london)->startingAt(self::DAY.' 12:00:00')->build(),
+            ShowtimeBuilder::aShowtime()->of($french)->at($london)->startingAt(self::DAY.' 12:00:00')->build(),
+        );
+
+        // Act
+        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => 'vo']), $userId);
+
+        // Assert
+        $films = array_merge(...$this->filmSets($result));
+        self::assertContains('english-film', $films, 'English film in an English cinema: original version');
+        self::assertNotContains('french-film', $films, 'not in its original language there');
     }
 
     public function testKeepsOnlyCinemasWithinTheRadiusAndTheChosenVersion(): void

@@ -44,3 +44,9 @@
         </ul>
     {%- endif -%}
 {%- endblock form_errors -%}
+
+{%- block form_help -%}
+    {%- if help is not empty -%}
+        <p id="{{ id }}_help" class="text-xs text-ink-muted">{{ help|trans(help_translation_parameters, translation_domain) }}</p>
+    {%- endif -%}
+{%- endblock form_help -%}

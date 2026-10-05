@@ -30,7 +30,7 @@ class PlanController extends AbstractController
     #[OA\Parameter(name: 'position', in: 'query', required: false, description: 'JSON position, e.g. {"lat": 47.32, "lng": 5.04}', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'radius', in: 'query', required: false, description: 'Radius in km (1 to 50, default 10)', schema: new OA\Schema(type: 'integer'))]
     #[OA\Parameter(name: 'films', in: 'query', required: false, description: 'Number of films (2 to 5, default 3)', schema: new OA\Schema(type: 'integer'))]
-    #[OA\Parameter(name: 'version', in: 'query', required: false, description: 'vf, vost, vo or vfst', schema: new OA\Schema(type: 'string'))]
+    #[OA\Parameter(name: 'version', in: 'query', required: false, description: 'vf, vost, vo or vfst; vost and vo also include the films made in the language of the cinema (French films at Pathé)', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'travelMode', in: 'query', required: false, description: 'walking, cycling, transit (default) or car: sets the travel time between two cinemas', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'acceptAds', in: 'query', required: false, description: '1 to accept arriving during the ads (15 minutes)', schema: new OA\Schema(type: 'string'))]
     #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), and the reason if there are fewer')]

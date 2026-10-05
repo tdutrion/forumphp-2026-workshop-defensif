@@ -13,6 +13,7 @@ final class CinemaBuilder
     private float $latitude = 47.318031;
     private float $longitude = 5.029935;
     private string $timezone = 'Europe/Paris';
+    private string $language = 'fr';
     private bool $open = true;
 
     public static function aCinema(): self
@@ -61,6 +62,14 @@ final class CinemaBuilder
         return $clone;
     }
 
+    public function speaking(string $language): self
+    {
+        $clone = clone $this;
+        $clone->language = $language;
+
+        return $clone;
+    }
+
     public function closed(): self
     {
         $clone = clone $this;
@@ -81,6 +90,7 @@ final class CinemaBuilder
             ->setChain('pathe')
             ->setCountry('FR')
             ->setTimezone($this->timezone)
+            ->setLanguage($this->language)
             ->setCity($this->city)
             ->setLatitude($this->latitude)
             ->setLongitude($this->longitude)

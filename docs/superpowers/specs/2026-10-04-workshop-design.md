@@ -181,7 +181,7 @@ Only the sync command calls Pathé. The site only reads the database.
 | Place    | a Pathé city (autocomplete on the synchronized cities) or the browser position                            |
 | Radius   | 1 to 50 km, 10 km by default                                                                              |
 | Films    | 2 to 5                                                                                                    |
-| Version  | optional: VF, VOST, VO, VFST                                                                              |
+| Version  | optional: VF, VOST, VO, VFST. VOST and VO also keep the films made in the language of the cinema's chain (`language` in `app.chains`: a French film in VF at Pathé, an English film at Cineworld UK); the original language comes from the film's nationality (`/show/{slug}`), read once per film |
 | Ads      | checkbox "I accept arriving during the ads (15 minutes)"                                                  |
 
 The last bookable time of each day is computed by the import (`catalog:sync`,

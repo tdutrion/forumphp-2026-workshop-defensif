@@ -66,6 +66,14 @@ class PatheClient
     /**
      * @return array|false the list of films and events, or false on failure
      */
+    /**
+     * Detail page of a film: the only place where Pathé gives its nationality. Cached like the reference data.
+     */
+    public function getShow(string $showSlug): array|false
+    {
+        return $this->get('show/'.rawurlencode($showSlug), true);
+    }
+
     public function getShows(): array|false
     {
         $data = $this->get('shows', true);

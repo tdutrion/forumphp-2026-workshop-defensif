@@ -27,6 +27,10 @@ class Cinema
     #[ORM\Column(length: 64)]
     private ?string $timezone = null;
 
+    /** ISO 639-1 language of the chain, e.g. 'fr': a film made in this language plays in its original version. */
+    #[ORM\Column(length: 2)]
+    private ?string $language = null;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'city_slug', referencedColumnName: 'slug', nullable: false)]
     private ?City $city = null;
@@ -204,6 +208,18 @@ class Cinema
     public function setTimezone(string $timezone): static
     {
         $this->timezone = $timezone;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): static
+    {
+        $this->language = $language;
 
         return $this;
     }

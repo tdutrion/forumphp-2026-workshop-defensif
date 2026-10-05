@@ -77,6 +77,7 @@ class CatalogSynchronizer
                 ->setChain(self::CHAIN)
                 ->setCountry($chain['country'])
                 ->setTimezone($chain['timezone'])
+                ->setLanguage($chain['language'])
                 ->setCity($cities[$data['citySlug']])
                 ->setAddress($data['address'])
                 ->setPostalCode($data['postalCode'])
@@ -113,6 +114,7 @@ class CatalogSynchronizer
 
         $lastDay = date('Y-m-d', strtotime($today.' +'.($days - 1).' days'));
 
+        $playing = [];
         foreach ($cinemas as $cinemaSlug => $cinema) {
             if (!$cinema->isOpen()) {
                 $stats['deleted'] += $this->showtimeRepository->deleteForCinemasBetween([$cinemaSlug], $today, $lastDay, []);
@@ -132,6 +134,7 @@ class CatalogSynchronizer
                     continue;
                 }
 
+                $playing[$showSlug] = $films[$showSlug];
                 $rawShowtimes = $this->client->getShowtimes($showSlug, $cinemaSlug);
                 if (false === $rawShowtimes) {
                     ++$stats['errors'];
@@ -170,6 +173,20 @@ class CatalogSynchronizer
                 $this->logger->warning('Incomplete schedule, no showtime deleted', ['cinema' => $cinemaSlug]);
             }
         }
+
+        // Original language of the films that play, read once from their film page (VOST/VO filter).
+        foreach ($playing as $showSlug => $film) {
+            if (null !== $film->getOriginalLanguage()) {
+                continue;
+            }
+            $rawShow = $this->client->getShow($showSlug);
+            if (false === $rawShow) {
+                $this->logger->warning('Film page unreadable, original language unknown', ['film' => $showSlug]);
+                continue;
+            }
+            $film->setOriginalLanguage($this->mapper->mapOriginalLanguage($rawShow));
+        }
+        $this->em->flush();
 
         // Showtimes of past days are of no use to anyone: the catalog must not grow forever.
         $stats['deleted'] += $this->showtimeRepository->deleteBefore($today);

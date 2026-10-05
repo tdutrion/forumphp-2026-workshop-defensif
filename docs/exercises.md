@@ -31,7 +31,8 @@ order.
 
 - **Starting point**: `Showtime::$version` (`'vf'`, `'vost'`…), `PlanType::VERSIONS`,
   the travel mode strings (`'walking'`, `'transit'`…) and `ChainBuilder::TRAVEL_MODES`,
-  whose `?? self::TRAVEL_MODES['transit']` silently hides an unknown mode,
+  whose `?? self::TRAVEL_MODES['transit']` silently hides an unknown mode, the language codes
+  (`Cinema::$language`, `Film::$originalLanguage`) and the nationality → language table of `PatheMapper`,
   the `'available'` status tested in `ShowtimeRepository::findCandidates()`, and the raw Pathé
   status strings that `PatheMapper::mapShowtimes()` copies as they are.
 - **Goal**: `enum ShowtimeVersion: string` (with `label()`), `enum TravelMode: string`
