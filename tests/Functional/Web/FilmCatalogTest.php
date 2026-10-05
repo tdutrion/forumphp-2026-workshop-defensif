@@ -115,4 +115,21 @@ final class FilmCatalogTest extends WebTestCase
         // Assert
         self::assertResponseStatusCodeSame(400);
     }
+
+    public function testTheLanguageAndThemeSwitchesStayOnThePageWithItsCriteria(): void
+    {
+        // Arrange
+        $client = $this->signedInWithCatalog();
+        $crawler = $client->request('GET', '/films?sort=showtimes&city=dijon');
+
+        // Act
+        $client->submit($crawler->filter('#language-switch button[value="fr"]')->form());
+        $afterLanguage = $client->getResponse()->headers->get('Location');
+        $client->submit($client->request('GET', '/films?sort=showtimes&city=dijon')->filter('#theme-switch form')->form());
+        $afterTheme = $client->getResponse()->headers->get('Location');
+
+        // Assert (the query string is normalized: its parameters come sorted)
+        self::assertSame('/films?city=dijon&sort=showtimes', $afterLanguage);
+        self::assertSame('/films?city=dijon&sort=showtimes', $afterTheme);
+    }
 }

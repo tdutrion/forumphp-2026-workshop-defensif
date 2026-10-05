@@ -7,23 +7,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Post/Redirect/Get back to the page a form was posted from, with its query (search, page...).
  *
  * The form sends the route ("_return_route", the planner by default), its parameters ("_return_params",
- * e.g. "slug=digger-51293") and the query ("_return"). Only the routes listed here are accepted, and
- * their parameters must match the route requirements: never a URL chosen by the client.
+ * e.g. "slug=digger-51293") and the query ("_return"). Any page of the application answering GET is
+ * accepted: the URL is always generated from a route name, never taken from the client, and the
+ * parameters must match the route requirements.
  */
 final class PostRedirectGet
 {
-    private const ROUTES = [
-        'app_home', 'app_history', 'app_unwanted_films', 'app_settings', 'app_film_show',
-        'app_login', 'app_legal_notice', 'app_legal_terms', 'app_legal_privacy', 'app_design_system',
-    ];
-
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private RouterInterface $router,
+    ) {
     }
 
     /**
@@ -36,7 +35,7 @@ final class PostRedirectGet
         if ('' === $route && '' === $return) {
             return null;
         }
-        if (!in_array($route, self::ROUTES, true)) {
+        if (!$this->isPage($route)) {
             $route = 'app_home';
         }
         parse_str($return, $query);
@@ -51,5 +50,15 @@ final class PostRedirectGet
         }
 
         return new RedirectResponse($url, Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * A route of the application that can be displayed (answers GET), excluding the internal ones.
+     */
+    private function isPage(string $route): bool
+    {
+        $definition = '' === $route || str_starts_with($route, '_') ? null : $this->router->getRouteCollection()->get($route);
+
+        return null !== $definition && ([] === $definition->getMethods() || in_array('GET', $definition->getMethods(), true));
     }
 }
