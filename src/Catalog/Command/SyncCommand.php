@@ -42,8 +42,8 @@ class SyncCommand extends Command
         }
 
         $io->writeln(sprintf(
-            '%d cities, %d cinemas, %d films, %d showtimes saved, %d deleted, %d errors.',
-            $stats['cities'], $stats['cinemas'], $stats['films'], $stats['showtimes'], $stats['deleted'], $stats['errors'],
+            '%d cities, %d cinemas, %d films, %d showtimes saved, %d deleted, %d works linked, %d errors.',
+            $stats['cities'], $stats['cinemas'], $stats['films'], $stats['showtimes'], $stats['deleted'], $stats['linked'], $stats['errors'],
         ));
 
         if ($stats['errors'] > 0) {

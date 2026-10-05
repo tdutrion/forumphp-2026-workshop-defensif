@@ -95,6 +95,19 @@ final class PatheApiBuilder
         return $clone;
     }
 
+    /**
+     * What the film page (/show/{slug}) says of the film as a work: original title, release date, directors.
+     */
+    public function withDetails(string $filmSlug, string $originalTitle, int $year, string $directors): self
+    {
+        $clone = clone $this;
+        $clone->details[$filmSlug]['originalTitle'] = $originalTitle;
+        $clone->details[$filmSlug]['releaseAt'] = ['FR_FR' => $year.'-01-01'];
+        $clone->details[$filmSlug]['directors'] = $directors;
+
+        return $clone;
+    }
+
     public function withEvent(string $slug, string $title): self
     {
         $clone = $this->withFilm($slug, $title, 40);

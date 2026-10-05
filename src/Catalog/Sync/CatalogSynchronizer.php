@@ -8,6 +8,8 @@ use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Showtime;
 use App\Catalog\Entity\Work;
 use App\Catalog\Repository\ShowtimeRepository;
+use App\Catalog\Repository\WorkRepository;
+use App\Catalog\WorkLinker;
 use App\Sdk\Pathe\PatheClient;
 use App\Sdk\Pathe\PatheMapper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +28,8 @@ class CatalogSynchronizer
         private PatheMapper $mapper,
         private EntityManagerInterface $em,
         private ShowtimeRepository $showtimeRepository,
+        private WorkRepository $workRepository,
+        private WorkLinker $workLinker,
         private LoggerInterface $logger,
         #[Autowire('%app.chains%')]
         private array $chains,
@@ -37,14 +41,14 @@ class CatalogSynchronizer
      * @param string|null $today     first local day synchronized ('Y-m-d'); null = today in the chain's time zone
      * @param int         $days      number of days synchronized
      *
-     * @return array|false ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors'],
+     * @return array|false ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors', 'linked' (works linked to Wikidata)],
      *                     or false if the Pathé reference data is unreachable
      */
     public function synchronize(array $citySlugs, ?string $today = null, int $days = 7): array|false
     {
         $chain = $this->chains[self::CHAIN];
         $today ??= (new \DateTimeImmutable('now', new \DateTimeZone($chain['timezone'])))->format('Y-m-d');
-        $stats = ['cities' => 0, 'cinemas' => 0, 'films' => 0, 'showtimes' => 0, 'deleted' => 0, 'errors' => 0];
+        $stats = ['cities' => 0, 'cinemas' => 0, 'films' => 0, 'showtimes' => 0, 'deleted' => 0, 'errors' => 0, 'linked' => 0];
 
         $rawCities = $this->client->getCities();
         $rawCinemas = $this->client->getCinemas();
@@ -180,20 +184,28 @@ class CatalogSynchronizer
             }
         }
 
-        // Original language (VOST/VO filter) and synopsis of the films that play, read once from their film page.
+        // Original language (VOST/VO filter), synopsis and work of the films that play, read once from their film page.
         foreach ($playing as $showSlug => $film) {
-            if (null !== $film->getOriginalLanguage() && null !== $film->getSynopsis()) {
+            if (null !== $film->getOriginalLanguage() && null !== $film->getSynopsis() && null !== $film->getWork()->getDirectors()) {
                 continue;
             }
             $rawShow = $this->client->getShow($showSlug);
             if (false === $rawShow) {
-                $this->logger->warning('Film page unreadable, original language and synopsis unknown', ['film' => $showSlug]);
+                $this->logger->warning('Film page unreadable, original language, synopsis and work unknown', ['film' => $showSlug]);
                 continue;
             }
             $film->setOriginalLanguage($this->mapper->mapOriginalLanguage($rawShow));
             $film->setSynopsis($this->mapper->mapSynopsis($rawShow));
+            $details = $this->mapper->mapFilmDetails($rawShow);
+            $this->workLinker->describe($film, $details['originalTitle'] ?? (string) $film->getTitle(), $details['year'], $details['directors']);
         }
         $this->em->flush();
+
+        // Works not linked yet are looked up in Wikidata, at most once a day each; Wikidata failing never stops the sync.
+        $stats['linked'] = $this->workLinker->linkDue(
+            $this->workRepository->findWorksOfFilms(array_keys($playing)),
+            new \DateTimeImmutable('now', new \DateTimeZone('UTC')),
+        );
 
         // Showtimes of past days are of no use to anyone: the catalog must not grow forever.
         $stats['deleted'] += $this->showtimeRepository->deleteBefore($today);

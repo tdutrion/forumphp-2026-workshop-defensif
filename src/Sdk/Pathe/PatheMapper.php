@@ -85,6 +85,27 @@ class PatheMapper
     }
 
     /**
+     * What identifies the film as a work, from its film page: original title, release year and
+     * directors (Pathé gives them as one comma-separated string).
+     *
+     * @param array $rawShow a film page (/show/{slug})
+     *
+     * @return array ['originalTitle' => ?string, 'year' => ?int, 'directors' => list of names]
+     */
+    public function mapFilmDetails(array $rawShow): array
+    {
+        $title = $rawShow['originalTitle'] ?? $rawShow['title'] ?? null;
+        $date = $rawShow['releaseAt']['FR_FR'] ?? null;
+        $directors = is_string($rawShow['directors'] ?? null) ? $rawShow['directors'] : '';
+
+        return [
+            'originalTitle' => is_string($title) && '' !== trim($title) ? trim($title) : null,
+            'year' => is_string($date) && 1 === preg_match('/^(\d{4})-/', $date, $matches) ? (int) $matches[1] : null,
+            'directors' => array_values(array_filter(array_map('trim', explode(',', $directors)))),
+        ];
+    }
+
+    /**
      * @return array|false the film's fields, or false if it is an event (no usable showtimes)
      */
     public function mapFilm(array $raw): array|false

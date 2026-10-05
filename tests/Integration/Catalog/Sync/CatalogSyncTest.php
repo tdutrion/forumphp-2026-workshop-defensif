@@ -9,7 +9,9 @@ use App\Catalog\Entity\Showtime;
 use App\Catalog\Sync\CatalogSynchronizer;
 use App\Tests\Builder\PatheApiBuilder;
 use App\Tests\Builder\ShowtimeBuilder;
+use App\Tests\Builder\WikidataApiBuilder;
 use App\Tests\Fake\FakePatheApi;
+use App\Tests\Fake\FakeWikidataApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -190,5 +192,39 @@ final class CatalogSyncTest extends KernelTestCase
         $verity = $this->em()->find(Film::class, 'verity-50815');
         self::assertSame('Digger', $digger->getWork()->getOriginalTitle());
         self::assertNotEquals($digger->getWork()->getId(), $verity->getWork()->getId());
+    }
+
+    public function testTheWorksOfThePlayingFilmsAreDescribedAndLinked(): void
+    {
+        // Arrange
+        self::bootKernel();
+        self::getContainer()->get(FakeWikidataApi::class)->serve(WikidataApiBuilder::aWikidataApi()
+            ->withFilm('Q130000001', 'Digger', 2026, ['Alejandro González Iñárritu'], 'tt30000001'));
+        $api = $this->dijon()->withDetails('digger-51293', 'Digger', 2026, 'Alejandro González Iñárritu');
+
+        // Act
+        $stats = $this->synchronize($api);
+
+        // Assert
+        $this->em()->clear();
+        $work = $this->em()->find(Film::class, 'digger-51293')->getWork();
+        self::assertSame(['Alejandro González Iñárritu'], $work->getDirectors());
+        self::assertSame('tt30000001', $work->getImdbId());
+        self::assertSame(1, $stats['linked']);
+    }
+
+    public function testAnUnavailableWikidataDoesNotStopTheSynchronization(): void
+    {
+        // Arrange
+        self::bootKernel();
+        self::getContainer()->get(FakeWikidataApi::class)->serve(WikidataApiBuilder::aWikidataApi()->failing());
+
+        // Act
+        $stats = $this->synchronize($this->dijon());
+
+        // Assert
+        self::assertNotFalse($stats);
+        self::assertSame(0, $stats['linked']);
+        self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85501'));
     }
 }
