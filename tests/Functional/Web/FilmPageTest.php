@@ -7,6 +7,7 @@ use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\ShowtimeBuilder;
 use App\Tests\Builder\UserBuilder;
+use App\Tests\Builder\WorkBuilder;
 use App\Tests\StoresEntities;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -69,5 +70,21 @@ final class FilmPageTest extends WebTestCase
 
         // Assert
         self::assertSelectorTextContains('#showtimes', 'Aucune séance');
+    }
+
+    public function testLinksTheFilmToItsWorkElsewhere(): void
+    {
+        // Arrange
+        $client = $this->signedIn();
+        $this->store(FilmBuilder::aFilm()->withSlug('cars')->titled('Cars')->ofWork(WorkBuilder::aWork()->titled('Cars')->linkedTo('Q182153', 'tt0317219', '920')->build())->build());
+
+        // Act
+        $crawler = $client->request('GET', '/films/cars');
+
+        // Assert
+        self::assertSame(
+            ['https://www.wikidata.org/wiki/Q182153', 'https://www.imdb.com/title/tt0317219/', 'https://www.themoviedb.org/movie/920'],
+            $crawler->filter('#external-links a')->each(static fn ($link) => $link->attr('href')),
+        );
     }
 }

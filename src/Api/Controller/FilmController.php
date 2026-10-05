@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class FilmController extends AbstractController
 {
     #[Route('/api/films/{slug}', name: 'api_film', methods: ['GET'])]
-    #[OA\Response(response: 200, description: 'Film details, with seen = already seen by the user')]
+    #[OA\Response(response: 200, description: 'Film details, with seen = already seen by the user, and its work (common to every chain) with its Wikidata, IMDb and TMDB ids')]
     #[OA\Response(response: 404, description: 'Unknown film')]
     public function show(string $slug, FilmRepository $filmRepository, SeenFilmService $seenFilmService, UnwantedFilmService $unwantedFilmService, #[CurrentUser] User $user): JsonResponse
     {
@@ -36,6 +36,8 @@ class FilmController extends AbstractController
             'contentRating' => $film['contentRating'],
             'seen' => in_array($slug, $seenFilmService->getSeenFilmSlugs($user->getUserIdentifier()), true),
             'unwanted' => in_array($slug, $unwantedFilmService->getUnwantedFilmSlugs($user->getUserIdentifier()), true),
+            // The work, common to every chain, and its open data ids (null when unknown).
+            'work' => ['id' => $film['workId'], 'wikidataId' => $film['wikidataId'], 'imdbId' => $film['imdbId'], 'tmdbId' => $film['tmdbId']],
         ]);
     }
 }

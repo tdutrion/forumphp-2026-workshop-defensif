@@ -17,6 +17,7 @@
 'error.page_size_invalid': 'Ce nombre de films par page n''est pas proposé.'
 'error.theme_invalid': 'Thème inconnu.'
 'error.token_invalid': 'Jeton invalide, expiré ou révoqué.'
+'error.work_not_found': 'Œuvre inconnue.'
 'film.actions': 'Actions du film'
 'film.genres': 'Genres : %genres%'
 'film.poster_alt': 'Affiche de %title%'

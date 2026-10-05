@@ -17,6 +17,7 @@
 'error.page_size_invalid': 'This number of films per page is not offered.'
 'error.theme_invalid': 'Unknown theme.'
 'error.token_invalid': 'Invalid, expired or revoked token.'
+'error.work_not_found': 'Unknown work.'
 'film.actions': 'Film actions'
 'film.genres': 'Genres: %genres%'
 'film.poster_alt': 'Poster of %title%'

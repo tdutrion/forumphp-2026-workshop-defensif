@@ -19,7 +19,7 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array|null ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis'] or null
+     * @return array|null ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis', 'workId', 'wikidataId', 'imdbId', 'tmdbId'] or null
      */
     public function findBySlug(string $slug): ?array
     {
@@ -43,13 +43,17 @@ class FilmRepository extends ServiceEntityRepository
             throw new \InvalidArgumentException('Invalid sort direction: '.$direction);
         }
 
-        return $this->createQueryBuilder('f')
-            ->select('f.slug', 'f.title', 'f.duration', 'f.releaseDate', 'f.genres', 'f.posterUrl', 'f.contentRating', 'f.synopsis')
+        $rows = $this->createQueryBuilder('f')
+            ->select('f.slug', 'f.title', 'f.duration', 'f.releaseDate', 'f.genres', 'f.posterUrl', 'f.contentRating', 'f.synopsis',
+                'w.id AS workId', 'w.wikidataId', 'w.imdbId', 'w.tmdbId')
+            ->join('f.work', 'w')
             ->where('f.slug IN (:slugs)')
             ->setParameter('slugs', $slugs)
             ->orderBy('f.title', $direction)
             ->getQuery()
             ->getArrayResult();
+
+        return array_map(static fn (array $row): array => ['workId' => $row['workId']->toRfc4122()] + $row, $rows);
     }
 
     /**
