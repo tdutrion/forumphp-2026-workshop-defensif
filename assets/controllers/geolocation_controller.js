@@ -3,9 +3,10 @@ import { Controller } from '@hotwired/stimulus';
 /*
  * Fills the hidden "position" field of the form with the browser position, as JSON.
  *
- * When the visitor has already allowed geolocation, the empty city field is also prefilled with the
- * nearest city (within PREFILL_RADIUS_KM of the centre of its cinemas). The browser is never asked
- * for the permission on its own: only "use my position" does that.
+ * The city field follows the position: it selects the nearest city (within PREFILL_RADIUS_KM of the
+ * centre of its cinemas), on load when the visitor has already allowed geolocation (an empty field
+ * only), and after "use my position". The browser is never asked for the permission on its own:
+ * only "use my position" does that.
  */
 const PREFILL_RADIUS_KM = 30;
 
@@ -36,7 +37,8 @@ export default class extends Controller {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.savePosition(position.coords);
-                this.statusTarget.textContent = this.savedValue;
+                // Asked for: the nearest city replaces the one chosen, if there is one near enough.
+                this.statusTarget.textContent = this.selectCity(position.coords) ? this.prefilledValue : this.savedValue;
             },
             () => {
                 this.statusTarget.textContent = this.deniedValue;
@@ -50,12 +52,21 @@ export default class extends Controller {
 
     prefillCity(coords) {
         // The visitor may have chosen a city in the meantime: never overwrite it.
-        if ('' !== this.cityTarget.value) {
+        if ('' !== this.cityTarget.value || !this.selectCity(coords)) {
             return;
+        }
+        this.savePosition(coords);
+        this.statusTarget.textContent = this.prefilledValue;
+    }
+
+    /** Selects the city nearest to the position; false if none is near enough. */
+    selectCity(coords) {
+        if (!this.hasCityTarget) {
+            return false;
         }
         const nearest = this.nearestCity(coords.latitude, coords.longitude);
         if (null === nearest) {
-            return;
+            return false;
         }
         // The autocomplete (Tom Select) keeps its own state: go through it when it is there.
         if (this.cityTarget.tomselect) {
@@ -63,8 +74,8 @@ export default class extends Controller {
         } else {
             this.cityTarget.value = nearest.slug;
         }
-        this.savePosition(coords);
-        this.statusTarget.textContent = this.prefilledValue;
+
+        return true;
     }
 
     nearestCity(latitude, longitude) {
