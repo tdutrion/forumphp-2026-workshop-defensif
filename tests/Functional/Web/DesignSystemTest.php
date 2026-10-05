@@ -22,7 +22,8 @@ final class DesignSystemTest extends WebTestCase
             foreach (['Primary', 'Secondary', 'Danger', 'Ghost'] as $variant) {
                 self::assertCount(1, $preview->selectButton($variant), $theme.': '.$variant.' button');
             }
-            self::assertCount(3, $preview->filter('.logo svg'), $theme.': logo');
+            self::assertCount(2, $preview->filter('.logo svg'), $theme.': logo, with and without its name');
+            self::assertCount(2, $preview->filter('.logo img[src$=".svg"]'), $theme.': app icon and favicon');
             self::assertCount(2, $preview->filter('.button-group[role=group] a[data-primary] svg'), $theme.': button groups, toggles off and on');
             self::assertCount(1, $preview->filter('.button-group.button-group-sm'), $theme.': compact button group');
             self::assertGreaterThan(0, $preview->filter('.button-group button[aria-pressed=true]')->count(), $theme.': pressed toggle');

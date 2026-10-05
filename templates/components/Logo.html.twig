@@ -1,24 +1,19 @@
 {% props wordmark = true %}
 {#
-    The ScreenRoute logo: a film strip winding like a road, to the play button of the cinema.
-    Brand colours on purpose (blue #2980b9, orange #e67e22): the logo does not follow the theme.
-    The same drawing is assets/images/logo.svg (favicon): keep both in line.
-    With wordmark, the name follows the icon; the icon alone is decorative (aria-hidden).
+    The ScreenRoute logo: a route in S (the S of ScreenRoute) from a start ring to a play arrowhead,
+    the cinema at the end of the road. Brand colours on purpose (blue #2980b9, orange #e67e22): the
+    symbol does not change with the theme; the ring is hollow, so it shows any background.
+    The app icon and favicon (assets/images/logo.svg) are the same symbol in white on a blue tile:
+    keep both drawings in line. With wordmark, the name follows the symbol, which is then decorative.
 #}
-{% set clip = 'screenroute-tile-' ~ random() %}
 <span {{ attributes.defaults({class: 'inline-flex items-center gap-2'}) }}>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" class="size-8 shrink-0">
-        <defs><clipPath id="{{ clip }}"><rect width="64" height="64" rx="14"/></clipPath></defs>
-        <rect width="64" height="64" rx="14" fill="#2980b9"/>
-        <g clip-path="url(#{{ clip }})" fill="none">
-            <path d="M17 66V49C17 34 46 38 46 22" stroke="#fff" stroke-width="20"/>
-            <path d="M17 66V49C17 34 46 38 46 22" stroke="#2980b9" stroke-width="15" stroke-dasharray="2.4 2.6"/>
-            <path d="M17 66V49C17 34 46 38 46 22" stroke="#fff" stroke-width="9"/>
-        </g>
-        <circle cx="46" cy="22" r="10" fill="#fff"/>
-        <path d="M42.5 16.5v11l9.5-5.5z" fill="#e67e22" stroke="#e67e22" stroke-width="2" stroke-linejoin="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" class="size-9 shrink-0">
+        <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H42" fill="none" stroke="#2980b9" stroke-width="10"/>
+        <circle cx="16" cy="51" r="5.5" fill="none" stroke="#2980b9" stroke-width="4.5"/>
+        <path d="M40 6.5v17l14.5-8.5z" fill="#e67e22" stroke="#e67e22" stroke-width="3" stroke-linejoin="round"/>
     </svg>
     {%- if wordmark -%}
-        <span class="text-xl font-bold tracking-tight"><span class="text-brand-700">Screen</span><span class="text-accent-700">Route</span></span>
+        {# Part of the logo, hence the brand orange whatever the contrast rules for text. #}
+        <span class="text-xl font-bold tracking-tight text-ink">Screen<span class="text-accent-500">Route</span></span>
     {%- endif -%}
 </span>

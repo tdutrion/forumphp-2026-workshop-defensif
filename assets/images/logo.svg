@@ -1,14 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- ScreenRoute: a film strip winding like a road, to the play button of the cinema. Keep in line with templates/components/Logo.html.twig. -->
-  <defs>
-    <clipPath id="tile"><rect width="64" height="64" rx="14"/></clipPath>
-  </defs>
-  <rect width="64" height="64" rx="14" fill="#2980b9"/>
-  <g clip-path="url(#tile)" fill="none">
-    <path d="M17 66V49C17 34 46 38 46 22" stroke="#fff" stroke-width="20"/>
-    <path d="M17 66V49C17 34 46 38 46 22" stroke="#2980b9" stroke-width="15" stroke-dasharray="2.4 2.6"/>
-    <path d="M17 66V49C17 34 46 38 46 22" stroke="#fff" stroke-width="9"/>
+  <!--
+    ScreenRoute app icon and favicon: the symbol of templates/components/Logo.html.twig, in white on
+    the brand blue tile. The symbol: a route in S (the S of ScreenRoute) from a start ring to a play
+    arrowhead, the cinema at the end of the road. Keep both drawings in line.
+  -->
+  <rect width="64" height="64" rx="15" fill="#2980b9"/>
+  <g transform="translate(6.4 6.4) scale(0.8)">
+    <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H42" fill="none" stroke="#fff" stroke-width="10"/>
+    <circle cx="16" cy="51" r="5.5" fill="none" stroke="#fff" stroke-width="4.5"/>
+    <path d="M40 6.5v17l14.5-8.5z" fill="#e67e22" stroke="#e67e22" stroke-width="3" stroke-linejoin="round"/>
   </g>
-  <circle cx="46" cy="22" r="10" fill="#fff"/>
-  <path d="M42.5 16.5v11l9.5-5.5z" fill="#e67e22" stroke="#e67e22" stroke-width="2" stroke-linejoin="round"/>
 </svg>

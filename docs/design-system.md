@@ -22,12 +22,19 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 
 | Component | Props | Notes |
 |---|---|---|
-| `<twig:Button>` | `variant`: primary, secondary, danger, ghost, accent; `size`: sm, md; `tag`: button, a | pass `type`, `href`, `class` as attributes |
+| `<twig:Button>` | `variant`: primary, secondary, danger, ghost, accent; `size`: sm, md, lg; `tag`: button, a | pass `type`, `href`, `class` as attributes |
 | `<twig:ButtonGroup>` | | Flowbite-like group: joined buttons sharing their borders. Without a primary action: one row. With one (`data-primary`, first): the buttons are stacked, full width, the primary action on top. Toggles carry `aria-pressed`. Add `button-group-sm` for a compact group (tables) |
-| `<twig:Icon>` | `name`: ticket, check, eye-slash | inline outline SVG, decorative (`aria-hidden`) |
+| `<twig:Icon>` | `name`: ticket, check, eye-slash, link, film, sun, moon, chevron-down, ellipsis-vertical, map-pin, clock, language, arrow-path, code-bracket, server-stack, shield-check | inline outline SVG, decorative (`aria-hidden`) |
+| `<twig:Logo>` | `wordmark`: true (default) or false | the ScreenRoute symbol, a route in S from a start ring to a play arrowhead, in the brand colours whatever the theme; the app icon and favicon are `assets/images/logo.svg` (same symbol, white on a blue tile) |
+| `<twig:Dropdown>` | `label`; `align`: start, end; `compact` (a "⋮" button) | a `<details>` menu, closed by the `dropdown` Stimulus controller on a click outside or Escape; its links and buttons are dressed as menu items |
+| `<twig:Pagination>` | `page`, `pages`, `route`, `query` | GET links that keep the page in the URL; nothing when there is one page |
 | `<twig:Card>` | | a `<section>` |
 | `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
 | `<twig:Badge>` | `tone`: neutral, brand, warning (accent orange) | |
+
+Themes: the tokens are redefined for the dark theme on any element carrying `data-theme="dark"`
+(`<html>` follows the setting of the user; "auto" follows the system). The style guide renders
+every component in both themes, side by side.
 
 Every form gets the theme `templates/form/theme.html.twig` automatically. The city autocomplete (Tom Select) is dressed like the
 other fields by unlayered rules at the end of `assets/styles/app.css` (its own stylesheet is unlayered too).

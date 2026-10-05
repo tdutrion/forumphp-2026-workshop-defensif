@@ -1,11 +1,12 @@
 {# Every component once, for one theme (see index.html.twig). Parameter: form, the example form. #}
 <twig:Card>
     <h3 class="mb-4 font-semibold">Logo</h3>
-    {# Brand colours: the logo keeps them in both themes. Favicon: assets/images/logo.svg. #}
+    {# Brand colours in both themes. The app icon is the favicon, assets/images/logo.svg. #}
     <div class="logo flex flex-wrap items-end gap-6">
         <twig:Logo />
-        <twig:Logo :wordmark="false" class="[&_svg]:size-16" />
-        <twig:Logo :wordmark="false" class="[&_svg]:size-4" />
+        <twig:Logo :wordmark="false" class="[&_svg]:size-20" />
+        <img src="{{ asset('images/logo.svg') }}" alt="App icon" width="64" height="64">
+        <img src="{{ asset('images/logo.svg') }}" alt="Favicon" width="16" height="16">
     </div>
 </twig:Card>
 
