@@ -65,6 +65,7 @@ when@test:
         App\Account\ExcludedCinemaService: { autowire: true, public: true }
         App\Account\ApiTokenService: { autowire: true, public: true }
         App\Planner\PlannerService: { autowire: true, public: true }
+        App\Catalog\WorkLinker: { autowire: true, public: true }
         App\Planner\LocationResolver: { autowire: true, public: true }
         App\Tests\Fake\FakePatheApi:
             public: true
