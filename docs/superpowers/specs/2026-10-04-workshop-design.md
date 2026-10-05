@@ -263,8 +263,9 @@ A showtime is a candidate if it meets all these conditions:
 
 ### Excluded cinemas
 
-- With the results, a table of every open cinema within 10 km of the place of
-  the search, closed by default, excluded cinemas included: each one has an
+- With the results, a "Nearby cinemas" table (every open cinema within the
+  fixed 10 km radius of the search, with its distance), closed by default,
+  excluded cinemas included: each one has an
   "Exclude" or "Excluded ✓ (undo)" button (Post/Redirect/Get back to the same
   search) and a badge when the programmes use it. A cinema excluded by mistake
   can be reactivated from there, even when nothing can be planned without it.

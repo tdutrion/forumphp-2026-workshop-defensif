@@ -83,6 +83,6 @@
 'No cinema excluded.': 'Aucun cinéma exclu.'
 'No marathon of %requested% films is possible: here are films on their own.': "Aucun marathon de %requested% films n'est possible : voici des films seuls."
 'No programme: no showtime fits these criteria. Try another time range, another version or the ads option.': "Aucun programme : aucune séance ne correspond à ces critères. Essayez une autre plage horaire, une autre version ou l'option « pubs »."
-'Cinemas within %km% km (%count%)': 'Cinémas à moins de %km% km (%count%)'
 '%km% km': '%km% km'
 'In the programmes': 'Dans les programmes'
+'Nearby cinemas (%count%)': 'Cinémas à proximité (%count%)'
