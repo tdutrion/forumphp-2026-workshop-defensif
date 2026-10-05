@@ -210,20 +210,34 @@
  * "City" lines up with "Getting around". Unlayered and scoped to forms on purpose:
  * tom-select.default.css is not in a cascade layer either, and unlayered rules beat layered ones.
  */
+/* The wrapper gets the classes of a field from the form theme: only the inner control is the field. */
+form .ts-wrapper {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
 form .ts-wrapper .ts-control,
 form .ts-wrapper.single.input-active .ts-control {
     border: 1px solid var(--color-line);
     border-radius: var(--radius-control);
-    /* The shorthand also drops the light gradient of the single select (tom-select.default.css). */
     background: var(--color-surface);
     box-shadow: 0 1px 2px 0 oklch(0% 0 0 / 0.05);
     padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
     color: var(--color-ink);
 }
 
-/* Room for the caret of a single select. */
+/*
+ * Room for the caret of a single select. tom-select.default.css paints a light gradient on the
+ * single select with a more specific selector (.ts-wrapper.single .ts-control): drop it here,
+ * at least as specific, so the field follows the theme.
+ */
 form .ts-wrapper.single .ts-control {
     padding-right: calc(var(--spacing) * 8);
+    border-color: var(--color-line);
+    background-image: none;
+    box-shadow: 0 1px 2px 0 oklch(0% 0 0 / 0.05);
 }
 
 form .ts-wrapper .ts-control,

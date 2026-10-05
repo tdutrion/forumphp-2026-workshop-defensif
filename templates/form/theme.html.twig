@@ -23,12 +23,12 @@
 {%- endblock form_label -%}
 
 {%- block form_widget_simple -%}
-    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-control border bg-surface px-3 py-2 text-ink shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600/30 ' ~ (errors|length > 0 ? 'border-danger-600' : 'border-line focus:border-brand-600'))|trim}) -%}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-control border bg-surface min-h-10.5 px-3 py-2 leading-6 text-ink shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600/30 ' ~ (errors|length > 0 ? 'border-danger-600' : 'border-line focus:border-brand-600'))|trim}) -%}
     {{- parent() -}}
 {%- endblock form_widget_simple -%}
 
 {%- block choice_widget_collapsed -%}
-    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-control border bg-surface px-3 py-2 text-ink shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600/30 ' ~ (errors|length > 0 ? 'border-danger-600' : 'border-line focus:border-brand-600'))|trim}) -%}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-control border bg-surface min-h-10.5 px-3 py-2 leading-6 text-ink shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600/30 ' ~ (errors|length > 0 ? 'border-danger-600' : 'border-line focus:border-brand-600'))|trim}) -%}
     {{- parent() -}}
 {%- endblock choice_widget_collapsed -%}
 
