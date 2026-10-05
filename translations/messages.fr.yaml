@@ -75,7 +75,6 @@
 'VOST and VO also include the films made in the language of the cinema.': 'La VOST et la VO incluent aussi les films tournés dans la langue du cinéma.'
 'From': 'De'
 'Until': "Jusqu'à"
-'No programme: no sequence of showtimes chains together, even with two films. Try another time range, another way of getting around or the ads option.': "Aucun programme : aucune suite de séances ne s'enchaîne, même avec deux films. Essayez une autre plage horaire, un autre moyen de déplacement ou l'option « pubs »."
 'Cinemas in these programmes (%count%)': 'Cinémas de ces programmes (%count%)'
 'Cinema': 'Cinéma'
 'Cinema actions': 'Actions du cinéma'
@@ -83,3 +82,5 @@
 'Excluded ✓ (undo)': 'Exclu ✓ (annuler)'
 'Excluded cinemas': 'Cinémas exclus'
 'No cinema excluded.': 'Aucun cinéma exclu.'
+'No marathon of %requested% films is possible: here are films on their own.': "Aucun marathon de %requested% films n'est possible : voici des films seuls."
+'No programme: no showtime fits these criteria. Try another time range, another version or the ads option.': "Aucun programme : aucune séance ne correspond à ces critères. Essayez une autre plage horaire, une autre version ou l'option « pubs »."

@@ -270,7 +270,7 @@ final class PlannerServiceTest extends KernelTestCase
         self::assertFalse($anotherDay, 'no showtime at all on that day');
     }
 
-    public function testFallsBackToTwoFilmsAtLeast(): void
+    public function testFallsBackToSingleFilmsWhenNothingChains(): void
     {
         // Arrange: only f4 remains in Dijon, so not even two films can chain.
         self::bootKernel();
@@ -283,7 +283,26 @@ final class PlannerServiceTest extends KernelTestCase
         $result = $this->planner()->plan($this->criteria(['films' => 3]), $userId);
 
         // Assert
-        self::assertSame('no_programme', $result['reason']);
-        self::assertSame([], $result['programmes']);
+        self::assertSame('fewer_films', $result['reason']);
+        self::assertSame(1, $result['films']);
+        self::assertSame([['f4']], $this->filmSets($result));
+    }
+
+    public function testAsksForTwoFilmsByDefaultAndAcceptsOne(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        $criteria = $this->criteria();
+        unset($criteria['films']);
+
+        // Act
+        $byDefault = $this->planner()->plan($criteria, $userId);
+        $single = $this->planner()->plan($this->criteria(['films' => 1]), $userId);
+
+        // Assert
+        self::assertSame(2, $byDefault['films']);
+        self::assertNull($single['reason']);
+        self::assertSame(1, $single['films']);
     }
 }

@@ -28,7 +28,7 @@ class PlannerService
     }
 
     /**
-     * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number),
+     * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number, 1 to 5; 2 by default),
      *                         'version' (or null), 'acceptAds' (bool),
      *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default),
      *                         'from' and 'until' (local 'H:i' time range, each optional)
@@ -42,7 +42,7 @@ class PlannerService
     {
         // Fixed search radius around the city or the position (the form has no radius field).
         $radius = $criteria['radius'] ?? self::DEFAULT_RADIUS_KM;
-        $films = $criteria['films'] ?? 3;
+        $films = $criteria['films'] ?? 2;
 
         $cinemaSlugs = [];
         $excludedCinemas = $this->excludedCinemaService->getExcludedCinemaSlugs($userId);
@@ -79,14 +79,14 @@ class PlannerService
             }
         }
 
-        // No marathon with that many films: offer programmes with fewer films, down to two.
+        // No marathon with that many films: offer programmes with fewer films, down to single films.
         $requestedFilms = $films;
         do {
             $programmes = $this->programmeSelector->select(
                 $this->chainBuilder->build($showtimes, $films, $criteria['acceptAds'] ?? false, $criteria['travelMode'] ?? 'transit'),
             );
-        } while ([] === $programmes && --$films >= 2);
-        $films = max($films, 2);
+        } while ([] === $programmes && --$films >= 1);
+        $films = max($films, 1);
 
         $reason = null;
         if ([] === $programmes) {

@@ -45,9 +45,13 @@
         {% if result.reason == 'unknown_location' %}
             <twig:Alert type="error" class="plan-message">{{ 'Unknown place: choose a city from the list or allow geolocation.'|trans }}</twig:Alert>
         {% elseif result.reason == 'no_programme' %}
-            <twig:Alert type="info" class="plan-message">{{ 'No programme: no sequence of showtimes chains together, even with two films. Try another time range, another way of getting around or the ads option.'|trans }}</twig:Alert>
+            <twig:Alert type="info" class="plan-message">{{ 'No programme: no showtime fits these criteria. Try another time range, another version or the ads option.'|trans }}</twig:Alert>
         {% elseif result.reason == 'fewer_films' %}
-            <twig:Alert type="info" class="plan-message">{{ 'No marathon of %requested% films is possible: here are programmes of %count% films.'|trans({'%requested%': form.vars.value.films, '%count%': result.films}) }}</twig:Alert>
+            {% if result.films == 1 %}
+                <twig:Alert type="info" class="plan-message">{{ 'No marathon of %requested% films is possible: here are films on their own.'|trans({'%requested%': form.vars.value.films}) }}</twig:Alert>
+            {% else %}
+                <twig:Alert type="info" class="plan-message">{{ 'No marathon of %requested% films is possible: here are programmes of %count% films.'|trans({'%requested%': form.vars.value.films, '%count%': result.films}) }}</twig:Alert>
+            {% endif %}
         {% elseif result.reason == 'not_enough_programmes' %}
             <twig:Alert type="info" class="plan-message">{{ 'Only %count% programme(s) possible with these criteria.'|trans({'%count%': result.programmes|length}) }}</twig:Alert>
         {% endif %}
