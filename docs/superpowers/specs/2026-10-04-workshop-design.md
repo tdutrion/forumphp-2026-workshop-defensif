@@ -181,7 +181,7 @@ Only the sync command calls Pathé. The site only reads the database.
 | Time range | optional "from" and "until" (local time of the cinema): the first showtime starts at or after "from", the last one ends at or before "until", on the same day; an "until" at or before "from" makes the search invalid (form error, 422 in the API) |
 | Place    | a Pathé city (autocomplete on the synchronized cities) or the browser position                            |
 | Radius   | none in the form: fixed at 10 km around the city or the position (`PlannerService::DEFAULT_RADIUS_KM`)   |
-| Films    | 1 to 5, 2 by default                                                                                      |
+| Films    | 1 to 8, 2 by default (8 can fit in a long day)                                                            |
 | Version  | optional: VF, VOST, VO, VFST. VOST and VO also keep the films made in the language of the cinema's chain (`language` in `app.chains`: a French film in VF at Pathé, an English film at Cineworld UK); the original language comes from the film's nationality (`/show/{slug}`), read once per film |
 | Ads      | checkbox "I accept arriving during the ads (15 minutes)"                                                  |
 
@@ -488,7 +488,7 @@ not executable on PHP 8.5.
 | URI extension: reading a received URL | 8.5 | `preg_match` on the `refCmd` booking link | `Uri\Rfc3986\Uri::parse()` then reading the host and the path | 15 |
 | `array_first`/`array_last` | 8.5 | `reset()`/`end()` on the showtimes | native functions | 12 |
 | `final` promoted properties | 8.5 | — | `final` on promoted properties | 8 |
-| `clamp()` | 8.6 (polyfill) | the 1–5 range of the number of films | `clamp()` in `FilmCount` | 4 |
+| `clamp()` | 8.6 (polyfill) | the 1–8 range of the number of films | `clamp()` in `FilmCount` | 4 |
 | `SortDirection` enum | 8.6 (polyfill) | `'asc'`/`'desc'` as strings in lists | `\SortDirection` | 16 |
 | `Time\Duration` | 8.6 (polyfill-time) | durations in whole minutes | `Time\Duration` | 3 |
 | `readonly` default values, partial application | 8.6 | — | — | shown (slide) |

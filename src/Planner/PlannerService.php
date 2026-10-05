@@ -28,7 +28,7 @@ class PlannerService
     }
 
     /**
-     * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number, 1 to 5; 2 by default),
+     * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number, 1 to 8; 2 by default),
      *                         'version' (or null), 'acceptAds' (bool),
      *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default),
      *                         'from' and 'until' (local 'H:i' time range, each optional)

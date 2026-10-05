@@ -82,7 +82,7 @@ class PlanType extends AbstractType
             ->add('films', IntegerType::class, [
                 'label' => 'Number of films',
                 'data' => 2,
-                'constraints' => [new Range(min: 1, max: 5, notInRangeMessage: 'Choose between {{ min }} and {{ max }} films.')],
+                'constraints' => [new Range(min: 1, max: 8, notInRangeMessage: 'Choose between {{ min }} and {{ max }} films.')],
             ])
             ->add('version', ChoiceType::class, [
                 'label' => 'Version',

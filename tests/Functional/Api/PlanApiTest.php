@@ -104,7 +104,7 @@ final class PlanApiTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
         self::assertResponseHeaderSame('content-type', 'application/problem+json');
         self::assertSame('Invalid parameters', $body['title']);
-        self::assertContains(['field' => 'films', 'message' => 'Choose between 1 and 5 films.'], $body['errors']);
+        self::assertContains(['field' => 'films', 'message' => 'Choose between 1 and 8 films.'], $body['errors']);
         self::assertContains(['field' => 'city', 'message' => 'Choose a city or use your position.'], $body['errors']);
     }
 

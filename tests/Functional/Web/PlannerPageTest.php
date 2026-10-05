@@ -242,7 +242,7 @@ final class PlannerPageTest extends WebTestCase
         // Assert
         self::assertResponseStatusCodeSame(422);
         self::assertSelectorTextContains('form[name=plan]', 'Choose a city or use your position.');
-        self::assertSelectorTextContains('form[name=plan]', 'Choose between 1 and 5 films.');
+        self::assertSelectorTextContains('form[name=plan]', 'Choose between 1 and 8 films.');
         self::assertSelectorNotExists('#plan_radius', 'the radius is fixed (10 km)');
     }
 
@@ -258,7 +258,7 @@ final class PlannerPageTest extends WebTestCase
         // Assert
         self::assertSelectorTextContains('html', 'Planifier un marathon');
         self::assertSelectorTextContains('label[for=plan_acceptAds]', "J'accepte d'arriver pendant les pubs (15 minutes)");
-        self::assertSelectorTextContains('form[name=plan]', 'Choisissez entre 1 et 5 films.');
+        self::assertSelectorTextContains('form[name=plan]', 'Choisissez entre 1 et 8 films.');
         self::assertSelectorTextContains('header', 'Se déconnecter');
         self::assertSelectorTextContains('#plan_travelMode', 'En transports en commun');
     }
