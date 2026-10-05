@@ -51,30 +51,38 @@
 
         {% if proposedFilms is not empty %}
             <twig:Card id="proposed-films">
-                <h2 class="mb-2 text-base font-semibold">{{ 'Films in these programmes'|trans }}</h2>
-                <table class="w-full text-sm">
-                    <thead class="sr-only">
-                        <tr>
-                            <th scope="col">{{ 'Film'|trans }}</th>
-                            <th scope="col">{{ 'Film actions'|trans }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-line">
-                        {% for film in proposedFilms %}
-                            <tr data-proposed-film="{{ film.slug }}">
-                                <td class="py-2 pr-4">
-                                    <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
-                                </td>
-                                <td class="py-2 text-right">
-                                    <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'Film actions'|trans }}">
-                                        {{ include('seen/_button.html.twig', {slug: film.slug, seen: false, return_to: app.request.queryString}) }}
-                                        {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false, return_to: app.request.queryString}) }}
-                                    </twig:ButtonGroup>
-                                </td>
+                {# Collapsed by default: the programmes come first; open it to mark films. #}
+                <details class="group">
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
+                        <h2>{{ 'Films in these programmes (%count%)'|trans({'%count%': proposedFilms|length}) }}</h2>
+                        <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
+                    </summary>
+                    <div class="mt-2">
+                    <table class="w-full text-sm">
+                        <thead class="sr-only">
+                            <tr>
+                                <th scope="col">{{ 'Film'|trans }}</th>
+                                <th scope="col">{{ 'Film actions'|trans }}</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-line">
+                            {% for film in proposedFilms %}
+                                <tr data-proposed-film="{{ film.slug }}">
+                                    <td class="py-2 pr-4">
+                                        <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
+                                    </td>
+                                    <td class="py-2 text-right">
+                                        <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'Film actions'|trans }}">
+                                            {{ include('seen/_button.html.twig', {slug: film.slug, seen: false, return_to: app.request.queryString}) }}
+                                            {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false, return_to: app.request.queryString}) }}
+                                        </twig:ButtonGroup>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </details>
             </twig:Card>
         {% endif %}
 
