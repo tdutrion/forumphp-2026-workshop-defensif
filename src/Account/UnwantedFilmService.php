@@ -30,13 +30,13 @@ class UnwantedFilmService
             return false;
         }
 
-        // INSERT IGNORE: two clicks at the same time must not hit the (user, film) unique key.
+        // INSERT IGNORE: two clicks at the same time must not hit the (user, work) unique key.
         $this->em->getConnection()->executeStatement(
-            'INSERT IGNORE INTO unwanted_film (id, user_id, film_slug, created_at) VALUES (:id, :user, :film, :createdAt)',
+            'INSERT IGNORE INTO unwanted_film (id, user_id, work_id, created_at) VALUES (:id, :user, :work, :createdAt)',
             [
                 'id' => Uuid::v7()->toBinary(),
                 'user' => Uuid::fromString($userId)->toBinary(),
-                'film' => $film->getSlug(),
+                'work' => $film->getWork()->getId()->toBinary(),
                 'createdAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
             ],
         );
@@ -46,7 +46,8 @@ class UnwantedFilmService
 
     public function unmarkUnwanted(string $userId, string $filmSlug): void
     {
-        $unwantedFilm = $this->unwantedFilmRepository->findOneByUserAndFilm($userId, $filmSlug);
+        $film = $this->em->find(Film::class, $filmSlug);
+        $unwantedFilm = null === $film ? null : $this->unwantedFilmRepository->findOneByUserAndWork($userId, $film->getWork());
         if (null !== $unwantedFilm) {
             $this->em->remove($unwantedFilm);
             $this->em->flush();

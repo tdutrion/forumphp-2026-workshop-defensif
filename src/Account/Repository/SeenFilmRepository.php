@@ -3,8 +3,11 @@
 namespace App\Account\Repository;
 
 use App\Account\Entity\SeenFilm;
+use App\Catalog\Entity\Film;
+use App\Catalog\Entity\Work;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<SeenFilm>
@@ -17,12 +20,14 @@ class SeenFilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array slugs of the films seen by the user
+     * @return array slugs of every film, any chain, whose work the user marked (latest first)
      */
     public function findFilmSlugsByUser(string $userId): array
     {
-        return $this->createQueryBuilder('s')
-            ->select('IDENTITY(s.film) AS slug')
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('f.slug')
+            ->from(SeenFilm::class, 's')
+            ->join(Film::class, 'f', 'WITH', 'f.work = s.work')
             ->where('s.user = :user')
             ->setParameter('user', $userId, 'uuid')
             ->orderBy('s.seenAt', 'DESC')
@@ -41,32 +46,26 @@ class SeenFilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array rows 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt', latest first
+     * @return array rows 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt': one per work (its first film), latest first
      */
     public function findPageByUser(string $userId, int $offset, int $limit): array
     {
-        return $this->createQueryBuilder('s')
-            ->select('f.slug', 'f.title', 'f.posterUrl', 'f.synopsis', 's.seenAt AS markedAt')
-            ->join('s.film', 'f')
-            ->where('s.user = :user')
-            ->setParameter('user', $userId, 'uuid')
-            // UUID v7: the identifier breaks the ties of a same second in the order of creation.
-            ->orderBy('s.seenAt', 'DESC')
-            ->addOrderBy('s.id', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getArrayResult();
+        return $this->getEntityManager()->getConnection()->fetchAllAssociative(
+            'SELECT slug, title, posterUrl, synopsis, markedAt FROM (
+                 SELECT f.slug, f.title, f.poster_url AS posterUrl, f.synopsis, m.seen_at AS markedAt, m.id AS markId,
+                        ROW_NUMBER() OVER (PARTITION BY m.id ORDER BY f.slug) AS position
+                 FROM seen_film m INNER JOIN film f ON f.work_id = m.work_id
+                 WHERE m.user_id = :user
+             ) marks
+             WHERE position = 1
+             ORDER BY markedAt DESC, markId DESC
+             LIMIT '.$limit.' OFFSET '.$offset,
+            ['user' => Uuid::fromString($userId)->toBinary()],
+        );
     }
 
-    public function findOneByUserAndFilm(string $userId, string $filmSlug): ?SeenFilm
+    public function findOneByUserAndWork(string $userId, Work $work): ?SeenFilm
     {
-        return $this->createQueryBuilder('s')
-            ->where('s.user = :user')
-            ->andWhere('IDENTITY(s.film) = :film')
-            ->setParameter('user', $userId, 'uuid')
-            ->setParameter('film', $filmSlug)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findOneBy(['user' => Uuid::fromString($userId), 'work' => $work]);
     }
 }

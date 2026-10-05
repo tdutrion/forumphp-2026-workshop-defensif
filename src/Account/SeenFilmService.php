@@ -31,13 +31,13 @@ class SeenFilmService
             return false;
         }
 
-        // INSERT IGNORE: two clicks at the same time must not hit the (user, film) unique key.
+        // INSERT IGNORE: two clicks at the same time must not hit the (user, work) unique key.
         $this->em->getConnection()->executeStatement(
-            'INSERT IGNORE INTO seen_film (id, user_id, film_slug, seen_at) VALUES (:id, :user, :film, :seenAt)',
+            'INSERT IGNORE INTO seen_film (id, user_id, work_id, seen_at) VALUES (:id, :user, :work, :seenAt)',
             [
                 'id' => Uuid::v7()->toBinary(),
                 'user' => Uuid::fromString($userId)->toBinary(),
-                'film' => $film->getSlug(),
+                'work' => $film->getWork()->getId()->toBinary(),
                 'seenAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
             ],
         );
@@ -47,7 +47,8 @@ class SeenFilmService
 
     public function unmarkSeen(string $userId, string $filmSlug): void
     {
-        $seenFilm = $this->seenFilmRepository->findOneByUserAndFilm($userId, $filmSlug);
+        $film = $this->em->find(Film::class, $filmSlug);
+        $seenFilm = null === $film ? null : $this->seenFilmRepository->findOneByUserAndWork($userId, $film->getWork());
         if (null !== $seenFilm) {
             $this->em->remove($seenFilm);
             $this->em->flush();

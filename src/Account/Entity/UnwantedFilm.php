@@ -3,7 +3,7 @@
 namespace App\Account\Entity;
 
 use App\Account\Repository\UnwantedFilmRepository;
-use App\Catalog\Entity\Film;
+use App\Catalog\Entity\Work;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -13,7 +13,7 @@ use Symfony\Component\Uid\Uuid;
  * A film the user does not want to see: never proposed by the planner.
  */
 #[ORM\Entity(repositoryClass: UnwantedFilmRepository::class)]
-#[ORM\UniqueConstraint(columns: ['user_id', 'film_slug'])]
+#[ORM\UniqueConstraint(columns: ['user_id', 'work_id'])]
 class UnwantedFilm
 {
     #[ORM\Id]
@@ -24,9 +24,10 @@ class UnwantedFilm
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
+    /** The work, so that the mark holds for the films of every chain. */
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: 'film_slug', referencedColumnName: 'slug', nullable: false, onDelete: 'CASCADE')]
-    private ?Film $film = null;
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?Work $work = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -54,14 +55,14 @@ class UnwantedFilm
         return $this;
     }
 
-    public function getFilm(): ?Film
+    public function getWork(): ?Work
     {
-        return $this->film;
+        return $this->work;
     }
 
-    public function setFilm(?Film $film): static
+    public function setWork(Work $work): static
     {
-        $this->film = $film;
+        $this->work = $work;
 
         return $this;
     }

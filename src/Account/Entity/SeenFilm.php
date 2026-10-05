@@ -3,14 +3,14 @@
 namespace App\Account\Entity;
 
 use App\Account\Repository\SeenFilmRepository;
-use App\Catalog\Entity\Film;
+use App\Catalog\Entity\Work;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: SeenFilmRepository::class)]
-#[ORM\UniqueConstraint(columns: ['user_id', 'film_slug'])]
+#[ORM\UniqueConstraint(columns: ['user_id', 'work_id'])]
 class SeenFilm
 {
     #[ORM\Id]
@@ -21,9 +21,10 @@ class SeenFilm
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
+    /** The work, so that the mark holds for the films of every chain. */
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: 'film_slug', referencedColumnName: 'slug', nullable: false, onDelete: 'CASCADE')]
-    private ?Film $film = null;
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?Work $work = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $seenAt;
@@ -51,14 +52,14 @@ class SeenFilm
         return $this;
     }
 
-    public function getFilm(): ?Film
+    public function getWork(): ?Work
     {
-        return $this->film;
+        return $this->work;
     }
 
-    public function setFilm(?Film $film): static
+    public function setWork(Work $work): static
     {
-        $this->film = $film;
+        $this->work = $work;
 
         return $this;
     }
