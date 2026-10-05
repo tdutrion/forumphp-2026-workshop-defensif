@@ -29,7 +29,7 @@ class SeenFilmController extends AbstractController
     {
         $order = $request->query->getString('order', 'asc');
         if ('asc' !== $order && 'desc' !== $order) {
-            throw new BadRequestHttpException('The order parameter must be asc or desc.');
+            throw new BadRequestHttpException('error.order_invalid');
         }
 
         $films = [];
@@ -46,7 +46,7 @@ class SeenFilmController extends AbstractController
     public function markSeen(string $slug, #[CurrentUser] User $user): Response
     {
         if (!$this->seenFilmService->markSeen($user->getUserIdentifier(), $slug)) {
-            throw new NotFoundHttpException('Unknown film.');
+            throw new NotFoundHttpException('error.film_not_found');
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);

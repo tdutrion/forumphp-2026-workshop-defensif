@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[OA\Tag(name: 'Planning')]
 class PlanController extends AbstractController
@@ -21,6 +22,7 @@ class PlanController extends AbstractController
         private PlannerService $plannerService,
         private CityRepository $cityRepository,
         private CatalogCalendar $calendar,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -52,7 +54,7 @@ class PlanController extends AbstractController
             }
 
             return new JsonResponse(
-                ['type' => 'about:blank', 'title' => 'Invalid parameters', 'status' => 422, 'errors' => $errors],
+                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => $errors],
                 422,
                 ['Content-Type' => 'application/problem+json'],
             );
@@ -63,7 +65,7 @@ class PlanController extends AbstractController
         if (false !== $result && 'unknown_location' === $result['reason'] && empty($data['city'])) {
             // The position could not be read: invalid input, like the other parameters.
             return new JsonResponse(
-                ['type' => 'about:blank', 'title' => 'Invalid parameters', 'status' => 422, 'errors' => [['field' => 'position', 'message' => 'Unknown place: choose a city from the list or allow geolocation.']]],
+                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => [['field' => 'position', 'message' => $this->translator->trans('planner.result.unknown_place')]]],
                 422,
                 ['Content-Type' => 'application/problem+json'],
             );

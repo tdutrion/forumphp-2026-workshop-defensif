@@ -23,7 +23,7 @@ class FilmController extends AbstractController
     {
         $film = $filmRepository->findBySlug($slug);
         if (null === $film) {
-            throw new NotFoundHttpException('Unknown film.');
+            throw new NotFoundHttpException('error.film_not_found');
         }
 
         return new JsonResponse([

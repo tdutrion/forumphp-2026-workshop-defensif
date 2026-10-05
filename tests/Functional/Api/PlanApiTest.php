@@ -155,6 +155,26 @@ final class PlanApiTest extends WebTestCase
         self::assertContains('travelMode', array_column($body['errors'], 'field'));
     }
 
+    public function testErrorsSpeakTheLanguageOfTheClient(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+        $this->client->setServerParameter('HTTP_ACCEPT_LANGUAGE', 'fr');
+
+        // Act
+        $invalid = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'films' => 9]);
+        $notFound = $this->api('PUT', '/api/me/seen-films/unknown-film');
+        $this->client->request('GET', '/api/cities', [], [], ['HTTP_AUTHORIZATION' => 'Bearer mm_fake']);
+        $rejected = json_decode((string) $this->client->getResponse()->getContent(), true);
+
+        // Assert
+        self::assertSame('Paramètres invalides', $invalid['title']);
+        self::assertSame('Introuvable', $notFound['title']);
+        self::assertSame('Film inconnu.', $notFound['detail']);
+        self::assertSame('Non authentifié', $rejected['title']);
+        self::assertSame('Jeton invalide, expiré ou révoqué.', $rejected['detail']);
+    }
+
     public function testTheDocumentationIsPublic(): void
     {
         // Arrange

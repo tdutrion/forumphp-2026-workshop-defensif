@@ -30,7 +30,7 @@ class ConnectController extends AbstractController
     public function start(string $provider, Request $request): Response
     {
         if (!in_array($provider, $this->providers->enabled(), true)) {
-            throw $this->createNotFoundException('Unknown sign-in provider.');
+            throw $this->createNotFoundException('security.unknown_provider');
         }
 
         if ($request->query->getBoolean('link') && null !== $this->getUser()) {
@@ -53,7 +53,7 @@ class ConnectController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         if (!in_array($provider, $this->providers->enabled(), true)) {
-            throw $this->createNotFoundException('Unknown sign-in provider.');
+            throw $this->createNotFoundException('security.unknown_provider');
         }
 
         $client = $this->clientRegistry->getClient($provider);

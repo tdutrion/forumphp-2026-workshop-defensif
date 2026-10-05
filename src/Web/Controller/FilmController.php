@@ -18,7 +18,7 @@ class FilmController extends AbstractController
     {
         $film = $filmRepository->findBySlug($slug);
         if (null === $film) {
-            throw $this->createNotFoundException('Unknown film.');
+            throw $this->createNotFoundException('error.film_not_found');
         }
 
         return $this->render('film/show.html.twig', [

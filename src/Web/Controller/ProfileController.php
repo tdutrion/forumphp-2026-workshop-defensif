@@ -40,7 +40,7 @@ class ProfileController extends AbstractController
     public function removeConnection(string $id, Request $request, #[CurrentUser] User $user): Response
     {
         if (!$this->isCsrfTokenValid('profile-connection', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
+            throw $this->createAccessDeniedException('error.csrf_invalid');
         }
 
         if (!$this->accountService->removeLinkedAccount($user, $id)) {
@@ -54,7 +54,7 @@ class ProfileController extends AbstractController
     public function createToken(Request $request, #[CurrentUser] User $user): Response
     {
         if (!$this->isCsrfTokenValid('api-token', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
+            throw $this->createAccessDeniedException('error.csrf_invalid');
         }
 
         $name = trim($request->request->getString('name'));
@@ -73,7 +73,7 @@ class ProfileController extends AbstractController
     public function revokeToken(string $id, Request $request, #[CurrentUser] User $user): Response
     {
         if (!$this->isCsrfTokenValid('api-token', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
+            throw $this->createAccessDeniedException('error.csrf_invalid');
         }
 
         if (!$this->apiTokenService->revoke($user, $id)) {

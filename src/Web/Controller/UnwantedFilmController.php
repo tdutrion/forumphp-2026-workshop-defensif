@@ -22,7 +22,7 @@ class UnwantedFilmController extends AbstractController
     {
         $this->denyUnlessValidToken($request);
         if (!$this->unwantedFilmService->markUnwanted($user->getUserIdentifier(), $slug)) {
-            throw $this->createNotFoundException('Unknown film.');
+            throw $this->createNotFoundException('error.film_not_found');
         }
 
         return $this->respond($request, $slug, true);
@@ -40,7 +40,7 @@ class UnwantedFilmController extends AbstractController
     private function denyUnlessValidToken(Request $request): void
     {
         if (!$this->isCsrfTokenValid('unwanted-film', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
+            throw $this->createAccessDeniedException('error.csrf_invalid');
         }
     }
 

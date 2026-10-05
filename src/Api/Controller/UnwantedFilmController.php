@@ -37,7 +37,7 @@ class UnwantedFilmController extends AbstractController
     public function markUnwanted(string $slug, #[CurrentUser] User $user): Response
     {
         if (!$this->unwantedFilmService->markUnwanted($user->getUserIdentifier(), $slug)) {
-            throw new NotFoundHttpException('Unknown film.');
+            throw new NotFoundHttpException('error.film_not_found');
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);

@@ -20,7 +20,7 @@ class ApiTokenHandler implements AccessTokenHandlerInterface
     {
         $user = $this->apiTokenService->findUserByToken($accessToken);
         if (null === $user) {
-            throw new BadCredentialsException('Invalid, expired or revoked token.');
+            throw new BadCredentialsException('error.token_invalid');
         }
 
         return new UserBadge($user->getUserIdentifier(), static fn () => $user);

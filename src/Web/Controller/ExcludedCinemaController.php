@@ -21,7 +21,7 @@ class ExcludedCinemaController extends AbstractController
     {
         $this->denyUnlessValidToken($request);
         if (!$this->excludedCinemaService->exclude($user->getUserIdentifier(), $slug)) {
-            throw $this->createNotFoundException('Unknown cinema.');
+            throw $this->createNotFoundException('error.cinema_not_found');
         }
 
         return $this->respond($request);
@@ -39,7 +39,7 @@ class ExcludedCinemaController extends AbstractController
     private function denyUnlessValidToken(Request $request): void
     {
         if (!$this->isCsrfTokenValid('excluded-cinema', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
+            throw $this->createAccessDeniedException('error.csrf_invalid');
         }
     }
 

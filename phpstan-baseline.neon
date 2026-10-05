@@ -2017,6 +2017,12 @@ parameters:
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
+			message: '#^Cannot access offset ''detail'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
 			message: '#^Cannot access offset ''endsAt'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -2048,6 +2054,12 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Functional/Api/PlanApiTest.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Functional/Api/PlanApiTest.php

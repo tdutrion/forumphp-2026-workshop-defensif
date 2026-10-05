@@ -37,7 +37,7 @@ class ExcludedCinemaController extends AbstractController
     public function exclude(string $slug, #[CurrentUser] User $user): Response
     {
         if (!$this->excludedCinemaService->exclude($user->getUserIdentifier(), $slug)) {
-            throw new NotFoundHttpException('Unknown cinema.');
+            throw new NotFoundHttpException('error.cinema_not_found');
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);

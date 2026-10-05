@@ -34,6 +34,8 @@ console: ## Runs the Symfony console, e.g. make console c="cache:clear"
 	$(CONSOLE) $(c)
 
 test: ## Runs PHPUnit, e.g. make test c="--filter Planner"
+	@# The production-like kernel of the error page tests (debug off) never rebuilds its cache by itself.
+	$(CONSOLE) cache:clear --env=test --no-warmup
 	$(CONSOLE) doctrine:database:create --env=test --if-not-exists
 	$(CONSOLE) doctrine:migrations:migrate --env=test --no-interaction --allow-no-migration
 	$(PHP) bin/phpunit $(c)
