@@ -184,6 +184,40 @@ final class PlannerServiceTest extends KernelTestCase
         self::assertNotContains('french-film', $films, 'not in its original language there');
     }
 
+    public function testKeepsOnlyShowtimesWithinTheTimeRange(): void
+    {
+        // Arrange: f1 14:00–16:00, f2 16:30–18:30, f3 16:40–18:40, f4 19:00–21:00 (local time).
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+
+        // Act
+        $afternoon = $this->planner()->plan($this->criteria(['from' => '16:00']), $userId);
+        $beforeDinner = $this->planner()->plan($this->criteria(['until' => '18:45']), $userId);
+
+        // Assert
+        self::assertNotContains('f1', array_merge(...$this->filmSets($afternoon)), 'starts before 16:00');
+        self::assertNotEmpty($afternoon['programmes']);
+        self::assertNotContains('f4', array_merge(...$this->filmSets($beforeDinner)), 'ends after 18:45');
+        self::assertNotEmpty($beforeDinner['programmes']);
+    }
+
+    public function testATimeRangeCanEndAfterMidnight(): void
+    {
+        // Arrange: a late showtime from 22:30 to 00:30.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        $late = FilmBuilder::aFilm()->withSlug('late-1')->lasting(100)->build();
+        $this->store($late, ShowtimeBuilder::aShowtime()->of($late)->at($this->dijon)->startingAt(self::DAY.' 22:30:00')->build());
+
+        // Act
+        $untilOne = $this->planner()->plan($this->criteria(['films' => 1, 'from' => '20:00', 'until' => '01:00']), $userId);
+        $untilMidnight = $this->planner()->plan($this->criteria(['films' => 1, 'from' => '20:00', 'until' => '00:00']), $userId);
+
+        // Assert
+        self::assertContains(['late-1'], $this->filmSets($untilOne));
+        self::assertNotContains(['late-1'], $this->filmSets($untilMidnight));
+    }
+
     public function testKeepsOnlyCinemasWithinTheRadiusAndTheChosenVersion(): void
     {
         // Arrange

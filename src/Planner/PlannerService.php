@@ -26,7 +26,8 @@ class PlannerService
     /**
      * @param array  $criteria 'date' (Y-m-d, local day of the cinemas), 'latitude', 'longitude', 'radius' (km), 'films' (number),
      *                         'version' (or null), 'acceptAds' (bool),
-     *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default)
+     *                         'travelMode' ('walking', 'cycling', 'transit' or 'car'; 'transit' by default),
+     *                         'from' and 'until' (local 'H:i' time range, each optional)
      * @param string $userId   user identifier (the films they have already seen are excluded)
      *
      * @return array|false ['programmes' => [...], 'reason' => null|'not_enough_programmes'|'fewer_films'|'no_programme',
@@ -63,7 +64,9 @@ class PlannerService
             // The database stores UTC instants: the planner only compares timestamps.
             $row['start'] = (new \DateTimeImmutable($row['startsAt'], new \DateTimeZone('UTC')))->getTimestamp();
             $row['end'] = (new \DateTimeImmutable($row['endsAt'], new \DateTimeZone('UTC')))->getTimestamp();
-            $showtimes[] = $row;
+            if ($this->isWithinTimeRange($row, $criteria['date'], $criteria['from'] ?? null, $criteria['until'] ?? null)) {
+                $showtimes[] = $row;
+            }
         }
 
         // No marathon with that many films: offer programmes with fewer films, down to two.
@@ -94,7 +97,7 @@ class PlannerService
     /**
      * Plans from the PlanType form data (website or API).
      *
-     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds', 'travelMode'
+     * @param array $data 'date', 'city' (slug or null), 'position' (JSON or null), 'radius', 'films', 'version', 'acceptAds', 'travelMode', 'from', 'until'
      *
      * @return array|false like plan(), with the additional reason 'unknown_location'
      */
@@ -120,7 +123,39 @@ class PlannerService
             'version' => $data['version'] ?? null,
             'acceptAds' => $data['acceptAds'] ?? false,
             'travelMode' => $data['travelMode'] ?? null,
+            'from' => $data['from'] ?? null,
+            'until' => $data['until'] ?? null,
         ], $userId);
+    }
+
+    /**
+     * Time range of the search, in the local time of the cinema: the showtime starts at or after $from
+     * and ends at or before $until ('H:i', each optional). An $until earlier than $from is on the next
+     * day (20:00 → 01:00), as a film can end after midnight.
+     */
+    private function isWithinTimeRange(array $row, string $date, ?string $from, ?string $until): bool
+    {
+        if (null === $from && null === $until) {
+            return true;
+        }
+
+        $midnight = (new \DateTimeImmutable($date.' 00:00:00', new \DateTimeZone($row['timezone'])))->getTimestamp();
+        $toMinutes = static fn (string $time): int => (int) substr($time, 0, 2) * 60 + (int) substr($time, 3, 2);
+        $fromMinutes = null === $from ? 0 : $toMinutes($from);
+        $startMinutes = intdiv($row['start'] - $midnight, 60);
+        if ($startMinutes < $fromMinutes) {
+            return false;
+        }
+        if (null === $until) {
+            return true;
+        }
+
+        $untilMinutes = $toMinutes($until);
+        if ($untilMinutes <= $fromMinutes) {
+            $untilMinutes += 24 * 60;
+        }
+
+        return intdiv($row['end'] - $midnight, 60) <= $untilMinutes;
     }
 
     /**

@@ -17,6 +17,10 @@
             'data-geolocation-denied-value': 'Position denied or unavailable: choose a city.'|trans,
         }}) }}
             {{ form_row(form.date) }}
+            <div class="grid grid-cols-2 gap-x-4">
+                {{ form_row(form.from) }}
+                {{ form_row(form.until) }}
+            </div>
             <div>
                 {{ form_row(form.city) }}
                 <p class="-mt-2 mb-4 flex items-center gap-2 text-sm text-ink-muted">

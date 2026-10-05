@@ -114,6 +114,23 @@ final class PlannerPageTest extends WebTestCase
         self::assertNotContains('f4', $listed);
     }
 
+    public function testTheSearchCanBeLimitedToATimeRange(): void
+    {
+        // Arrange
+        $client = $this->signedInWithDijonCatalog();
+
+        // Act
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'dijon', 'from' => '16:00', 'until' => '21:00']));
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('input#plan_from[type=time]');
+        self::assertSelectorExists('input#plan_until[type=time]');
+        $films = $crawler->filter('.programme [data-film-slug]')->each(static fn ($showtime) => $showtime->attr('data-film-slug'));
+        self::assertNotEmpty($films);
+        self::assertNotContains('f1', $films, 'f1 starts at 14:00');
+    }
+
     public function testPlansAroundTheBrowserPosition(): void
     {
         // Arrange

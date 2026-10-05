@@ -7,6 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -47,6 +48,21 @@ class PlanType extends AbstractType
                 'choices' => $dates,
                 'choice_translation_domain' => false,
                 'constraints' => [new NotBlank(message: 'Choose a date.')],
+            ])
+            ->add('from', TimeType::class, [
+                'label' => 'From',
+                'widget' => 'single_text',
+                'input' => 'string',
+                'input_format' => 'H:i',
+                'required' => false,
+            ])
+            ->add('until', TimeType::class, [
+                'label' => 'Until',
+                'widget' => 'single_text',
+                'input' => 'string',
+                'input_format' => 'H:i',
+                'required' => false,
+                'help' => 'An end earlier than the start is the next day (20:00 to 01:00).',
             ])
             ->add('city', ChoiceType::class, [
                 'label' => 'City',

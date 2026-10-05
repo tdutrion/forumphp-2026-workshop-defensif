@@ -74,6 +74,22 @@ final class PlanApiTest extends WebTestCase
         self::assertSame($without, $withFalse);
     }
 
+    public function testTheTimeRangeFiltersTheProgrammes(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2, 'from' => '16:00']);
+        $invalid = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'from' => '25:99']);
+
+        // Assert
+        foreach ($body['programmes'] as $programme) {
+            self::assertNotContains('f1', array_column(array_column($programme['showtimes'], 'film'), 'slug'));
+        }
+        self::assertContains('from', array_column($invalid['errors'] ?? [], 'field'));
+    }
+
     public function testInvalidParametersGiveAProblem(): void
     {
         // Arrange

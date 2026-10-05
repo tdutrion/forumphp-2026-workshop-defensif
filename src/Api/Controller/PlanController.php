@@ -26,6 +26,8 @@ class PlanController extends AbstractController
 
     #[Route('/api/plans', name: 'api_plans', methods: ['GET'])]
     #[OA\Parameter(name: 'date', in: 'query', required: true, description: 'Local day of the cinemas, in Y-m-d format', schema: new OA\Schema(type: 'string'))]
+    #[OA\Parameter(name: 'from', in: 'query', required: false, description: 'Earliest start, local time of the cinema (H:i)', schema: new OA\Schema(type: 'string'))]
+    #[OA\Parameter(name: 'until', in: 'query', required: false, description: 'Latest end, local time (H:i); earlier than from = next day', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'city', in: 'query', required: false, description: 'City slug (or position)', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'position', in: 'query', required: false, description: 'JSON position, e.g. {"lat": 47.32, "lng": 5.04}', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'radius', in: 'query', required: false, description: 'Radius in km (1 to 50, default 10)', schema: new OA\Schema(type: 'integer'))]
