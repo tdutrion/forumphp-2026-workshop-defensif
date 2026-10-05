@@ -37,3 +37,16 @@ services:
   database:
     ports:
       - "127.0.0.1::3306"
+
+  # Database browser, signed in with the development account (http://127.0.0.1:8082).
+  phpmyadmin:
+    image: phpmyadmin:5.2.3
+    environment:
+      PMA_HOST: database
+      PMA_USER: ${MYSQL_USER:-app}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-app-dev-password}
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8082:80" # never HOST_IP: it is signed in to the database

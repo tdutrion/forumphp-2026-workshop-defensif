@@ -13,7 +13,7 @@ Docker with Compose v2, `make` and `curl`. Nothing else runs on the host.
 ## Getting started
 
 ```bash
-make up        # build and start FrankenPHP, MySQL, the worker and the local OIDC provider
+make up        # build and start FrankenPHP, MySQL, the worker, the local OIDC provider and phpMyAdmin
 make db-load   # reset the database and import the Pathé catalog (downloaded once from the GitHub release)
 ```
 
@@ -22,6 +22,8 @@ The ports are published on 127.0.0.1 only: the development secrets are public. S
 
 Open https://localhost (accept the local certificate) and sign in with
 **Local provider**: any username works, no Internet connection needed.
+
+phpMyAdmin is at http://127.0.0.1:8082, already signed in to the development database.
 
 The interface is in English, and in French when the browser asks for it. Templates and code
 use translation keys (`planner.form.date`, `seen.mark`…); the texts live in
