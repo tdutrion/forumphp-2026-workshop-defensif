@@ -174,4 +174,19 @@ final class ChainBuilderTest extends TestCase
         self::assertGreaterThan(100, \count($unbounded));
         self::assertLessThan(5, \count($bounded));
     }
+
+    public function testTwoChainsShowingTheSameWorkNeverFillOneProgramme(): void
+    {
+        // Arrange: the same work, at one chain at 14:00 and at another chain, next door, at 17:00.
+        $showtimes = [
+            $this->inCinemaA('a')->ofFilm('digger-51293')->ofWork('W1')->startingAt('14:00')->build(),
+            $this->inCinemaB('b')->ofFilm('other-digger')->ofWork('W1')->startingAt('17:00')->build(),
+        ];
+
+        // Act
+        $programmes = (new ChainBuilder())->build($showtimes, 2, false);
+
+        // Assert
+        self::assertSame([], $this->ids($programmes));
+    }
 }

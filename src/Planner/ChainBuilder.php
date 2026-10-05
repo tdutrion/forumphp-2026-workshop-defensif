@@ -27,7 +27,7 @@ class ChainBuilder
     }
 
     /**
-     * @param array  $showtimes  candidate showtimes: id, filmSlug, cinemaSlug, latitude, longitude,
+     * @param array  $showtimes  candidate showtimes: id, filmSlug, workId (common to every chain), cinemaSlug, latitude, longitude,
      *                           start and end (timestamps), plus any display keys
      * @param int    $count      number of films per programme
      * @param bool   $acceptAds  accept arriving up to 15 minutes after the showtime starts
@@ -65,14 +65,15 @@ class ChainBuilder
         }
 
         $last = $path[\count($path) - 1];
-        $films = array_column($path, 'filmSlug');
+        // One showtime per work: the same film shown by two chains is still one film.
+        $works = array_column($path, 'workId');
         $total = \count($showtimes);
         for ($next = $lastIndex + 1; $next < $total; ++$next) {
             if ($nodes >= $limit) {
                 return;
             }
             $candidate = $showtimes[$next];
-            if (in_array($candidate['filmSlug'], $films, true) || !$this->canChain($last, $candidate, $acceptAds, $travelMode)) {
+            if (in_array($candidate['workId'], $works, true) || !$this->canChain($last, $candidate, $acceptAds, $travelMode)) {
                 continue;
             }
             $this->explore([...$path, $candidate], $next, $showtimes, $count, $acceptAds, $travelMode, $programmes, $nodes, $limit);

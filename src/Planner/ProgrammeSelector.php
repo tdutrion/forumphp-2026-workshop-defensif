@@ -31,16 +31,17 @@ class ProgrammeSelector
         usort($programmes, $score);
 
         $candidates = [];
-        $filmSets = [];
+        $workSets = [];
         $wanted = null === $seed ? $max : max($max, $this->pool);
         foreach ($programmes as $programme) {
-            $films = array_column($programme['showtimes'], 'filmSlug');
-            sort($films);
-            $key = implode('|', $films);
-            if (isset($filmSets[$key])) {
+            // Programmes are different when their works differ (whatever the chain of each film).
+            $works = array_column($programme['showtimes'], 'workId');
+            sort($works);
+            $key = implode('|', $works);
+            if (isset($workSets[$key])) {
                 continue;
             }
-            $filmSets[$key] = true;
+            $workSets[$key] = true;
             $candidates[] = $programme;
             if (\count($candidates) === $wanted) {
                 break;

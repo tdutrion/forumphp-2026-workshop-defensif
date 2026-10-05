@@ -43,7 +43,7 @@ final class ProgrammeBuilder
     public function build(): array
     {
         return [
-            'showtimes' => array_map(static fn (string $film) => ['filmSlug' => $film, 'lateMinutes' => 0], $this->films),
+            'showtimes' => array_map(static fn (string $film) => ['filmSlug' => $film, 'workId' => $film, 'lateMinutes' => 0], $this->films),
             'wait' => $this->wait,
             'distance' => $this->distance,
         ];

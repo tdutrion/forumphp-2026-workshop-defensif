@@ -9,6 +9,7 @@ namespace App\Tests\Builder;
 final class ScreeningBuilder
 {
     private string $film = 'film-1';
+    private ?string $work = null;
     private string $cinema = 'A';
     private float $latitude = 0.0;
     private float $longitude = 0.0;
@@ -29,6 +30,17 @@ final class ScreeningBuilder
     {
         $clone = clone $this;
         $clone->film = $filmSlug;
+
+        return $clone;
+    }
+
+    /**
+     * The work of the film (common to every chain); the film slug by default.
+     */
+    public function ofWork(string $workId): self
+    {
+        $clone = clone $this;
+        $clone->work = $workId;
 
         return $clone;
     }
@@ -67,6 +79,7 @@ final class ScreeningBuilder
         return [
             'id' => $this->id,
             'filmSlug' => $this->film,
+            'workId' => $this->work ?? $this->film,
             'cinemaSlug' => $this->cinema,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,

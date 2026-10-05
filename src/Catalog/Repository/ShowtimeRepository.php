@@ -26,7 +26,7 @@ class ShowtimeRepository extends ServiceEntityRepository
      * @param string|null $version           'vf', 'vost', 'vo', 'vfst' or null for any
      * @param string      $now               current instant in UTC, format 'Y-m-d H:i:s'
      *
-     * @return array rows ['id', 'filmSlug', 'filmTitle', 'duration', 'cinemaSlug', 'cinemaName', 'timezone',
+     * @return array rows ['id', 'filmSlug', 'workId' (hexadecimal), 'filmTitle', 'duration', 'cinemaSlug', 'cinemaName', 'timezone',
      *               'latitude', 'longitude', 'startsAt', 'endsAt', 'version', 'bookingUrl'] (instants in UTC)
      */
     public function findCandidates(string $date, array $cinemaSlugs, array $excludedFilmSlugs, ?string $version, string $now): array
@@ -35,7 +35,7 @@ class ShowtimeRepository extends ServiceEntityRepository
             return [];
         }
 
-        $sql = 'SELECT s.id, s.film_slug AS filmSlug, f.title AS filmTitle, f.duration, s.cinema_slug AS cinemaSlug,
+        $sql = 'SELECT s.id, s.film_slug AS filmSlug, HEX(f.work_id) AS workId, f.title AS filmTitle, f.duration, s.cinema_slug AS cinemaSlug,
                        c.name AS cinemaName, c.timezone, c.latitude, c.longitude, s.starts_at AS startsAt, s.ends_at AS endsAt,
                        s.version, s.booking_url AS bookingUrl
                 FROM showtime s
