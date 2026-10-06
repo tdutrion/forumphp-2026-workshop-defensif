@@ -17,7 +17,9 @@ use App\Tests\Fake\FakePatheApi;
 use App\Tests\Fake\FakeWikidataApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Lock\Key;
 use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\InMemoryStore;
 
 final class CatalogSyncTest extends KernelTestCase
 {
@@ -280,5 +282,35 @@ final class CatalogSyncTest extends KernelTestCase
         $cities = array_map(static fn (City $city) => $city->getSlug(), $this->em()->getRepository(City::class)->findAll());
         sort($cities);
         self::assertSame(['dijon', 'lyon'], $cities);
+    }
+
+    public function testTheLockIsKeptWhileTheSynchronizationRuns(): void
+    {
+        // Arrange: a sync of every city can outlast the lifetime of the lock; the store counts the extensions.
+        self::bootKernel();
+        self::getContainer()->get(FakePatheApi::class)->serve($this->dijon());
+        $store = new class extends InMemoryStore {
+            public int $extensions = 0;
+
+            public function putOffExpiration(Key $key, float $ttl): void
+            {
+                ++$this->extensions;
+                parent::putOffExpiration($key, $ttl);
+            }
+        };
+        $container = self::getContainer();
+        $runner = new CatalogSyncRunner(
+            $container->get(CatalogSynchronizer::class),
+            $container->get(CatalogUpdatePublisher::class),
+            new LockFactory($store),
+            $container->get(CatalogCalendar::class),
+            '',
+        );
+
+        // Act
+        $runner->run(['dijon', 'lyon']);
+
+        // Assert: once when acquired, then at least once per cinema.
+        self::assertGreaterThanOrEqual(1 + 2, $store->extensions);
     }
 }
