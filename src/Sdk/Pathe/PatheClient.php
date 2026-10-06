@@ -69,9 +69,9 @@ class PatheClient
     /**
      * Detail page of a film: the only place where Pathé gives its nationality. Cached like the reference data.
      */
-    public function getShow(string $showSlug): array|false
+    public function getShow(ShowSlug $showSlug): array|false
     {
-        return $this->get('show/'.rawurlencode($showSlug), true);
+        return $this->get('show/'.rawurlencode($showSlug->value), true);
     }
 
     public function getShows(): array|false
@@ -87,17 +87,29 @@ class PatheClient
     /**
      * A cinema's programme: which films play on which days (without the times).
      */
-    public function getCinemaProgramme(string $cinemaSlug): array|false
+    public function getCinemaProgramme(CinemaSlug $cinemaSlug): array|false
     {
-        return $this->get('cinema/'.rawurlencode($cinemaSlug).'/shows');
+        return $this->get('cinema/'.rawurlencode($cinemaSlug->value).'/shows');
     }
 
     /**
-     * Showtimes of a film in a cinema, indexed by date. Pathé returns [] when there are none.
+     * Showtimes of a film in a cinema, all days together (Pathé indexes them by date, or returns [] when there are none).
      */
-    public function getShowtimes(string $showSlug, string $cinemaSlug): array|false
+    public function getShowtimes(ShowSlug $showSlug, CinemaSlug $cinemaSlug): PatheShowtimes|false
     {
-        return $this->get('show/'.rawurlencode($showSlug).'/showtimes/'.rawurlencode($cinemaSlug));
+        $path = 'show/'.rawurlencode($showSlug->value).'/showtimes/'.rawurlencode($cinemaSlug->value);
+        $data = $this->get($path);
+        if (false === $data) {
+            return false;
+        }
+
+        try {
+            return PatheShowtimes::fromApiResponse($data);
+        } catch (\InvalidArgumentException $e) {
+            $this->logger->warning('Unexpected showtimes from Pathé', ['path' => $path, 'error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     /**

@@ -15,6 +15,9 @@ class PatheMapper
         ];
     }
 
+    /**
+     * @return array the cinema's fields, its 'position' a GpsPosition or null
+     */
     public function mapCinema(array $raw): array
     {
         $theater = $raw['theaters'][0] ?? [];
@@ -27,9 +30,7 @@ class PatheMapper
             'address' => $theater['addressLine1'] ?? null,
             'postalCode' => $theater['addressZip'] ?? null,
             'town' => $theater['addressCity'] ?? null,
-            // Pathé calls the latitude "x" and the longitude "y".
-            'latitude' => isset($theater['gpsPosition']['x']) ? (float) $theater['gpsPosition']['x'] : null,
-            'longitude' => isset($theater['gpsPosition']['y']) ? (float) $theater['gpsPosition']['y'] : null,
+            'position' => GpsPosition::fromApi($theater['gpsPosition'] ?? []),
             'hallCount' => $raw['hallCount'] ?? null,
         ];
     }
@@ -141,46 +142,42 @@ class PatheMapper
      * Pathé sends naive local times ('2026-10-04 21:40:00'): they are converted to UTC here,
      * with the time zone of the chain, and the local calendar day is kept for day-based searches.
      *
-     * @param array  $raw      response from /show/{slug}/showtimes/{cinema}: [] or showtimes indexed by date
-     * @param string $timezone IANA time zone of the chain, e.g. 'Europe/Paris'
+     * @param \DateTimeZone $timezone time zone of the chain, e.g. Europe/Paris
      *
      * @return array list of showtimes, instants in UTC ('Y-m-d H:i:s')
      */
-    public function mapShowtimes(array $raw, string $timezone): array
+    public function mapShowtimes(PatheShowtimes $showtimes, \DateTimeZone $timezone): array
     {
-        $local = new \DateTimeZone($timezone);
         $utc = new \DateTimeZone('UTC');
-        $showtimes = [];
-        foreach ($raw as $items) {
-            foreach ($items as $item) {
-                // The booking link ends up in an href: only Pathé HTTPS links are accepted.
-                if (1 !== preg_match('#^https://s\.pathe\.fr/.*/(V\d+S\d+)/#', $item['refCmd'] ?? '', $matches)) {
-                    continue;
-                }
-
-                $reservableUntil = null;
-                if (isset($item['reservabilityEnd'])) {
-                    // This field carries its own offset, unlike "time" and "endTime".
-                    $reservableUntil = (new \DateTimeImmutable($item['reservabilityEnd']))->setTimezone($utc)->format('Y-m-d H:i:s');
-                }
-
-                $start = new \DateTimeImmutable($item['time'], $local);
-                $showtimes[] = [
-                    'id' => $matches[1],
-                    'startsAt' => $start->setTimezone($utc)->format('Y-m-d H:i:s'),
-                    'endsAt' => (new \DateTimeImmutable($item['endTime'], $local))->setTimezone($utc)->format('Y-m-d H:i:s'),
-                    'localDate' => $start->format('Y-m-d'),
-                    'version' => $item['version'],
-                    'status' => $item['status'],
-                    'bookingUrl' => $item['refCmd'],
-                    'reservableUntil' => $reservableUntil,
-                    'auditorium' => $item['auditoriumName'] ?? null,
-                    'capacity' => $item['auditoriumCapacity'] ?? null,
-                ];
+        $mapped = [];
+        foreach ($showtimes->items as $item) {
+            // The booking link ends up in an href: only Pathé HTTPS links are accepted.
+            if (1 !== preg_match('#^https://s\.pathe\.fr/.*/(V\d+S\d+)/#', $item['refCmd'] ?? '', $matches)) {
+                continue;
             }
+
+            $reservableUntil = null;
+            if (isset($item['reservabilityEnd'])) {
+                // This field carries its own offset, unlike "time" and "endTime".
+                $reservableUntil = (new \DateTimeImmutable($item['reservabilityEnd']))->setTimezone($utc)->format('Y-m-d H:i:s');
+            }
+
+            $start = new \DateTimeImmutable($item['time'], $timezone);
+            $mapped[] = [
+                'id' => $matches[1],
+                'startsAt' => $start->setTimezone($utc)->format('Y-m-d H:i:s'),
+                'endsAt' => (new \DateTimeImmutable($item['endTime'], $timezone))->setTimezone($utc)->format('Y-m-d H:i:s'),
+                'localDate' => $start->format('Y-m-d'),
+                'version' => $item['version'],
+                'status' => $item['status'],
+                'bookingUrl' => $item['refCmd'],
+                'reservableUntil' => $reservableUntil,
+                'auditorium' => $item['auditoriumName'] ?? null,
+                'capacity' => $item['auditoriumCapacity'] ?? null,
+            ];
         }
 
-        return $showtimes;
+        return $mapped;
     }
 
     /**
