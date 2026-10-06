@@ -93,6 +93,32 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85501'));
     }
 
+    public function testACinemaThatLeftTheListOfPatheIsClosed(): void
+    {
+        // Arrange: Dijon and Lyon were synchronized with a second cinema in Dijon.
+        self::bootKernel();
+        self::getContainer()->get(FakePatheApi::class)->serve($this->dijon()
+            ->withCinema('cinema-pathe-dijon-sud', 'dijon', 47.30, 5.04)
+            ->withShowtime('digger-51293', 'cinema-pathe-dijon-sud', '2026-10-04 20:00:00', 'V3346S1'));
+        self::getContainer()->get(CatalogSynchronizer::class)->synchronize(['dijon', 'lyon'], '2026-10-04');
+        $withoutDijonSudNorVaise = PatheApiBuilder::aPatheApi()
+            ->withCity('dijon', 'Dijon')
+            ->withCity('lyon', 'Lyon')
+            ->withCinema('cinema-pathe-dijon', 'dijon', 47.318031, 5.029935)
+            ->withFilm('digger-51293', 'Digger', 129)
+            ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 21:40:00', 'V3345S85501');
+
+        // Act: only Dijon is synchronized this time.
+        $this->synchronize($withoutDijonSudNorVaise);
+
+        // Assert
+        $this->em()->clear();
+        self::assertFalse($this->em()->find(Cinema::class, 'cinema-pathe-dijon-sud')->isOpen());
+        self::assertNull($this->em()->find(Showtime::class, 'V3346S1'), 'its showtimes are no longer offered');
+        self::assertTrue($this->em()->find(Cinema::class, 'cinema-pathe-dijon')->isOpen());
+        self::assertTrue($this->em()->find(Cinema::class, 'cinema-pathe-vaise')->isOpen(), 'Lyon was not synchronized');
+    }
+
     public function testKeepsTheShowtimesOfACinemaWhoseScheduleCouldNotBeFullyRead(): void
     {
         // Arrange
