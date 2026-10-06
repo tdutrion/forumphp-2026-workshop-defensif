@@ -2,11 +2,14 @@
 
 namespace App\Tests\Integration\Catalog\Sync;
 
+use App\Catalog\CatalogCalendar;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
 use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Showtime;
 use App\Catalog\Sync\CatalogSynchronizer;
+use App\Catalog\Sync\CatalogSyncRunner;
+use App\Catalog\Sync\CatalogUpdatePublisher;
 use App\Tests\Builder\PatheApiBuilder;
 use App\Tests\Builder\ShowtimeBuilder;
 use App\Tests\Builder\WikidataApiBuilder;
@@ -14,6 +17,7 @@ use App\Tests\Fake\FakePatheApi;
 use App\Tests\Fake\FakeWikidataApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Lock\LockFactory;
 
 final class CatalogSyncTest extends KernelTestCase
 {
@@ -226,5 +230,29 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertNotFalse($stats);
         self::assertSame(0, $stats['linked']);
         self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85501'));
+    }
+
+    public function testAnEmptyCityListSynchronizesEveryCityOfTheChain(): void
+    {
+        // Arrange: PATHE_CITIES set to nothing.
+        self::bootKernel();
+        self::getContainer()->get(FakePatheApi::class)->serve($this->dijon());
+        $container = self::getContainer();
+        $runner = new CatalogSyncRunner(
+            $container->get(CatalogSynchronizer::class),
+            $container->get(CatalogUpdatePublisher::class),
+            $container->get(LockFactory::class),
+            $container->get(CatalogCalendar::class),
+            ' ',
+        );
+
+        // Act
+        $stats = $runner->run();
+
+        // Assert
+        self::assertSame(2, $stats['cities']);
+        $cities = array_map(static fn (City $city) => $city->getSlug(), $this->em()->getRepository(City::class)->findAll());
+        sort($cities);
+        self::assertSame(['dijon', 'lyon'], $cities);
     }
 }

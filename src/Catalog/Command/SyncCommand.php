@@ -20,7 +20,7 @@ class SyncCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption('city', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'City to synchronize (repeatable). Defaults to PATHE_CITIES.');
+        $this->addOption('city', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'City to synchronize (repeatable). Defaults to PATHE_CITIES (empty: every city).');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

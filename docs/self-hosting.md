@@ -75,7 +75,7 @@ chmod 600 .env.prod.local
 | `OAUTH_PROVIDERS` | yes | Comma-separated providers offered on the sign-in page: `github`, `google`, or both. |
 | `OAUTH_GITHUB_CLIENT_ID`, `OAUTH_GITHUB_CLIENT_SECRET` | with `github` | Credentials of the GitHub OAuth app. |
 | `OAUTH_GOOGLE_CLIENT_ID`, `OAUTH_GOOGLE_CLIENT_SECRET` | with `google` | Credentials of the Google OAuth client. |
-| `PATHE_CITIES` | no | Pathé cities of the catalog, as slugs (default `paris,lyon,dijon`). |
+| `PATHE_CITIES` | no | Pathé cities of the catalog, as comma-separated slugs (default `paris,lyon,dijon`). Empty (`PATHE_CITIES=`): every Pathé city. |
 | `CATALOG_SCHEDULE_ENABLED` | no | `1` (default) synchronizes the catalog every 6 hours, `0` never. |
 | `SOURCE_CODE_URL` | no | Repository offered to your users in the footer (see [your obligations](#your-obligations)). |
 

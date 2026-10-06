@@ -37,7 +37,7 @@ class CatalogSynchronizer
     }
 
     /**
-     * @param array       $citySlugs cities to synchronize, e.g. ['paris', 'lyon', 'dijon']
+     * @param array       $citySlugs cities to synchronize, e.g. ['paris', 'lyon', 'dijon']; empty = every city of the chain
      * @param string|null $today     first local day synchronized ('Y-m-d'); null = today in the chain's time zone
      * @param int         $days      number of days synchronized
      *
@@ -59,7 +59,7 @@ class CatalogSynchronizer
 
         $cities = [];
         foreach ($rawCities as $raw) {
-            if (!in_array($raw['slug'], $citySlugs, true)) {
+            if ([] !== $citySlugs && !in_array($raw['slug'], $citySlugs, true)) {
                 continue;
             }
             $data = $this->mapper->mapCity($raw);

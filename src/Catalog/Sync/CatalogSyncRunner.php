@@ -22,14 +22,14 @@ class CatalogSyncRunner
     }
 
     /**
-     * @param array $citySlugs cities to synchronize; empty = the PATHE_CITIES list
+     * @param array $citySlugs cities to synchronize; empty = the PATHE_CITIES list (itself empty = every city)
      *
      * @return array|false the statistics of CatalogSynchronizer::synchronize(), or false
      */
     public function run(array $citySlugs = []): array|false
     {
         if ([] === $citySlugs) {
-            $citySlugs = array_map('trim', explode(',', $this->defaultCities));
+            $citySlugs = array_values(array_filter(array_map('trim', explode(',', $this->defaultCities)), static fn (string $slug): bool => '' !== $slug));
         }
 
         // A scheduled sync and a manual one must never write the catalog at the same time.
