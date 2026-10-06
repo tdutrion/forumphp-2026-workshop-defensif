@@ -198,18 +198,16 @@ class PlannerService
             return true;
         }
 
-        $midnight = (new \DateTimeImmutable($date.' 00:00:00', new \DateTimeZone($row['timezone'])))->getTimestamp();
-        $toMinutes = static fn (string $time): int => (int) substr($time, 0, 2) * 60 + (int) substr($time, 3, 2);
-        $fromMinutes = null === $from ? 0 : $toMinutes($from);
-        $startMinutes = intdiv($row['start'] - $midnight, 60);
-        if ($startMinutes < $fromMinutes) {
+        // Local instants of the limits: the day of a clock change has 23 or 25 hours.
+        $timezone = new \DateTimeZone($row['timezone']);
+        if (null !== $from && $row['start'] < (new \DateTimeImmutable($date.' '.$from, $timezone))->getTimestamp()) {
             return false;
         }
         if (null === $until) {
             return true;
         }
 
-        return intdiv($row['end'] - $midnight, 60) <= $toMinutes($until);
+        return $row['end'] <= (new \DateTimeImmutable($date.' '.$until, $timezone))->getTimestamp();
     }
 
     /**

@@ -202,6 +202,22 @@ final class PlannerServiceTest extends KernelTestCase
         self::assertNotEmpty($beforeDinner['programmes']);
     }
 
+    public function testTheTimeRangeIsInLocalTimeOnTheDayTheClocksChange(): void
+    {
+        // Arrange: on 2030-10-27, Dijon goes back from UTC+2 to UTC+1 at 3:00; a showtime 20:00–22:00 local time.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+        $film = FilmBuilder::aFilm()->withSlug('f8')->lasting(100)->build();
+        $this->store($film, ShowtimeBuilder::aShowtime()->withId('V1S8')->of($film)->at($this->dijon)->startingAt('2030-10-27 20:00:00')->build());
+
+        // Act
+        $result = $this->planner()->plan($this->criteria(['date' => '2030-10-27', 'films' => 1, 'from' => '20:00', 'until' => '22:00']), $userId);
+
+        // Assert
+        self::assertNotFalse($result);
+        self::assertSame([['f8']], $this->filmSets($result));
+    }
+
     public function testNeverUsesACinemaTheUserExcluded(): void
     {
         // Arrange: a second cinema next to Pathé Dijon, which the user excludes.
