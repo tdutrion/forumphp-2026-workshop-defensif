@@ -446,8 +446,8 @@ not executable on PHP 8.5.
 | SPL exceptions (`InvalidArgumentException`, `OutOfRangeException`…) | 5.1 | `\RuntimeException` everywhere | SPL exceptions in the value objects | 1, 11 |
 | `DateTimeImmutable` | 5.5 | `strtotime()` and minutes as integers in `ChainBuilder` | `ScreeningTime` | 3 |
 | `finally` | 5.5 | sync lock released in every branch | `try/finally` | 11 |
-| Named constructors | — | `new Coordinates($raw['x'], $raw['y'])` at every call | `Coordinates::fromPathe()` | 1 |
-| Typed variadics | 5.6 | `new ShowtimeCollection(array $items)` | `ShowtimeList(Showtime ...$items)` | 12 |
+| Named constructors | — | `x`/`y` read from the raw cinema at every call | `GpsPosition::fromApi()` (SDK) | 1 |
+| Typed variadics | 5.6 | arrays of candidate screenings | `ScreeningList(Screening ...$screenings)` | 12 |
 | Scalar typing + `strict_types` | 7.0 | files without `strict_types`; `'3'` converted to `int` | `declare(strict_types=1)` everywhere | 13 |
 | Return types | 7.0 | service methods without a return type | typed returns | 13 |
 | `Throwable`/`Error`/`TypeError` hierarchy | 7.0 | `catch (\Exception)` in the sync | targeted `catch` blocks | 11 |
@@ -468,7 +468,7 @@ not executable on PHP 8.5.
 | Named arguments | 8.0 | `new Showtime($a, $b, $c, $d, $e)` | named arguments | 1 |
 | `get_debug_type`, `ValueError` | 8.0 | error messages built with `gettype()` | precise messages | 11 |
 | Backed enums, methods, `tryFrom()` | 8.1 | `'vf'`/`'vost'`, `'available'` as strings | `ShowtimeVersion`, `BookingStatus` | 2 |
-| `readonly` properties | 8.1 | mutable `ScreeningTime` | `readonly` | 8 |
+| `readonly` properties | 8.1 | programmes as mutable arrays | `final readonly class Programme` | 8 |
 | `new` in initializers, Null Object | 8.1 | `?HubInterface $hub = null` + `if` | `NullPublisher` by default | 14 |
 | Intersection types | 8.1 | `iterable $showtimes` | `Countable&IteratorAggregate` | 12 |
 | First-class callables | 8.1 | `array_map([$this, 'map'], …)` | `$this->map(...)` | 12 |
@@ -511,7 +511,7 @@ not executable on PHP 8.5.
 | Extension by registry | — | `match ($provider)` | interface + tagged services | 9 |
 | Hidden inputs | — | `new \DateTimeImmutable('now', …)` in the services, "today" for a chain computed in two controllers | `ClockInterface` | 14 |
 | UI component contracts | 8.1 | anonymous Twig components with free-string props (`variant`, `type`), silently ignored when unknown | class components with enum props and typed `mount()` | 19 |
-| Chain configuration | 8.1 | `app.chains` read as a raw array, time zone and country stored as strings | `Chain` value object, `\DateTimeZone` mapped by Doctrine, `ChainRegistry` | 18 |
+| Chain configuration | 8.1 | `app.chains` read as a raw array, time zone and country stored as strings | `CinemaChain` value object, `\DateTimeZone` mapped by Doctrine, `CinemaChainRegistry` | 18 |
 | Typed configuration | — | `%env(PATHE_CITIES)%` split by hand | `%env(csv:…)%`, `%env(int:…)%` | 14 |
 | Validated input DTOs | — | `$request->query->all()` | `#[MapQueryString]` + Validator | 4 |
 | Output DTOs and API contract | — | `JsonResponse` built from arrays | DTO + ObjectMapper, precise OpenAPI | 16 |
@@ -547,7 +547,7 @@ are extensions, to be done in any order.
 | 15 | URLs and transformations: web service calls with the URI extension, pipe `\|>` | 35 min |
 | 16 | Output: API DTOs, ObjectMapper, `SortDirection`, translatable messages, strict Twig | 40 min |
 | 17 | Tooling: PHPStan max, Infection | 30 min |
-| 18 | Chains and time zones: `Chain` value object, `\DateTimeZone` in Doctrine | 30 min |
+| 18 | Cinema chains and time zones: `CinemaChain` value object, `\DateTimeZone` in Doctrine | 30 min |
 | 19 | UI component contracts: class components with enum props | 20 min |
 
 Total ≈ 8 h 55. The trainer guide (`docs/exercises.md`) describes for
