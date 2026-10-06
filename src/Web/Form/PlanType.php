@@ -153,12 +153,11 @@ class PlanType extends AbstractType implements DataMapperInterface
 
     /**
      * A readonly PlanRequest cannot be filled field by field: it is built once from all the fields,
-     * named like its constructor arguments. An empty field (null, or '' for a time) keeps the default value of
-     * its argument.
+     * named like its constructor arguments. An empty field keeps the default value of its argument.
      */
     public function mapFormsToData(\Traversable $forms, mixed &$viewData): void
     {
         $arguments = array_map(static fn (FormInterface $field): mixed => $field->getData(), iterator_to_array($forms));
-        $viewData = new PlanRequest(...array_filter($arguments, static fn (mixed $value): bool => null !== $value && '' !== $value));
+        $viewData = new PlanRequest(...array_filter($arguments, static fn (mixed $value): bool => null !== $value));
     }
 }

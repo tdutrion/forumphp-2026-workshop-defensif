@@ -114,6 +114,26 @@ final class PlanApiTest extends WebTestCase
         self::assertContains('until', array_column($reversed['errors'] ?? [], 'field'));
     }
 
+    public function testAnEmptyParameterMeansNotGiven(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+        $criteria = ['date' => '2030-01-10', 'city' => 'dijon', 'seed' => '7'];
+
+        // Act
+        $without = $this->api('GET', '/api/plans', $criteria);
+        $withEmpty = $this->api('GET', '/api/plans', ['from' => '', 'until' => '', 'films' => '', 'position' => '', 'version' => '', 'travelMode' => '', 'acceptAds' => ''] + $criteria);
+        $status = $this->client->getResponse()->getStatusCode();
+        // The draw itself is only fixed by the seed: an empty seed draws again, like a missing one.
+        $this->api('GET', '/api/plans', ['seed' => ''] + $criteria);
+        $emptySeed = $this->client->getResponse()->getStatusCode();
+
+        // Assert
+        self::assertSame(200, $status);
+        self::assertSame($without, $withEmpty);
+        self::assertSame(200, $emptySeed);
+    }
+
     public function testInvalidParametersGiveAProblem(): void
     {
         // Arrange
