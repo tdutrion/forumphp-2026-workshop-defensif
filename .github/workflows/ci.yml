@@ -31,7 +31,7 @@ jobs:
       - name: Build the CSS (the pages of the functional tests need it)
         run: make css
 
-      - name: Lint (composer.json, audit, container, Twig, YAML)
+      - name: Lint (composer.json, audit, container, Twig, YAML, database schema)
         run: make lint
 
       - name: Code style (php-cs-fixer, @Symfony)
@@ -42,6 +42,9 @@ jobs:
 
       - name: Tests (PHPUnit)
         run: make test
+
+      - name: Production image (the target that self-hosting builds)
+        run: docker build --target frankenphp_prod .
 
       - name: Logs of the containers
         if: failure()

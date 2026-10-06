@@ -54,12 +54,14 @@ cs: ## Fixes the code style (@Symfony)
 cs-check: ## Checks the code style without changing anything (CI)
 	$(PHP) vendor/bin/php-cs-fixer fix --dry-run --diff
 
-lint: ## Validates composer.json, the dependencies (audit), the container, the Twig templates and the YAML files
+lint: ## Validates composer.json, the dependencies (audit), the container, the Twig templates, the YAML files and the database schema
 	$(PHP) composer validate --strict --no-check-publish
 	$(PHP) composer audit
 	$(CONSOLE) lint:container
 	$(CONSOLE) lint:twig templates
 	$(CONSOLE) lint:yaml config translations --parse-tags
+	@# The mapping against the migrated database: a forgotten migration fails here.
+	$(CONSOLE) doctrine:schema:validate
 
 sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
 	$(CONSOLE) catalog:sync --no-debug $(c) # debug keeps every SQL backtrace: out of memory on 3 cities
