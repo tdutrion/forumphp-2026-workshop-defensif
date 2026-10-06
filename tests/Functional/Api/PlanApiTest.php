@@ -130,6 +130,24 @@ final class PlanApiTest extends WebTestCase
         self::assertContains(['field' => 'city', 'message' => 'Choose a city or use your position.'], $body['errors']);
     }
 
+    public function testADayWithoutBookableShowtimesAndAnUnknownParameterAreInvalid(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $anotherDay = $this->api('GET', '/api/plans', ['date' => '2030-01-11', 'city' => 'dijon']);
+        $anotherDayStatus = $this->client->getResponse()->getStatusCode();
+        $radius = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'dijon', 'radius' => 50]);
+        $radiusStatus = $this->client->getResponse()->getStatusCode();
+
+        // Assert
+        self::assertSame(422, $anotherDayStatus);
+        self::assertSame(['date'], array_column($anotherDay['errors'], 'field'));
+        self::assertSame(422, $radiusStatus);
+        self::assertSame(['radius'], array_column($radius['errors'], 'field'), 'the radius is fixed (10 km)');
+    }
+
     public function testErrorsAreProblemsWithTheirHttpHeaders(): void
     {
         // Arrange

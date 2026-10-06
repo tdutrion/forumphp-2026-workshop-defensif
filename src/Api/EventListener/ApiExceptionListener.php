@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -37,7 +39,15 @@ class ApiExceptionListener
             'title' => $title,
             'status' => $status,
         ];
-        if ($exception instanceof HttpExceptionInterface && '' !== $exception->getMessage()) {
+        $violations = $exception->getPrevious() instanceof ValidationFailedException ? $exception->getPrevious()->getViolations() : null;
+        if (null !== $violations) {
+            // #[MapQueryString] and #[MapRequestPayload]: one error per parameter, already translated by the validator.
+            $problem['title'] = $this->translator->trans('api.invalid_parameters');
+            $problem['errors'] = array_map(
+                static fn (ConstraintViolationInterface $violation): array => ['field' => $violation->getPropertyPath(), 'message' => (string) $violation->getMessage()],
+                iterator_to_array($violations),
+            );
+        } elseif ($exception instanceof HttpExceptionInterface && '' !== $exception->getMessage()) {
             $problem['detail'] = $this->translator->trans($exception->getMessage());
         }
 

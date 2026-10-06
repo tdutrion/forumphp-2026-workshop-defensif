@@ -47,7 +47,7 @@ class HomeController extends AbstractController
         $result = null;
         $nearbyCinemas = [];
         if ($form->isSubmitted() && $form->isValid()) {
-            $result = $this->plannerService->planFromForm($form->getData(), $user->getUserIdentifier());
+            $result = $this->plannerService->plan($form->getData(), $user->getUserIdentifier());
             $nearbyCinemas = $this->plannerService->nearbyCinemas($form->getData(), $user->getUserIdentifier());
         }
 

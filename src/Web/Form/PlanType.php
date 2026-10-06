@@ -3,8 +3,13 @@
 namespace App\Web\Form;
 
 use App\Catalog\ShowtimeVersion;
+use App\Planner\PlanRequest;
 use App\Planner\TravelMode;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\DataMapperInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Extension\Core\DataMapper\DataMapper;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -12,18 +17,15 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Range;
-use Symfony\Component\Validator\Constraints\Regex;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Planning form, shared by the website (GET) and the API.
+ * Planning form of the website (GET), filling a PlanRequest, which holds the validation rules (the API binds the
+ * same PlanRequest from its query string).
  */
-class PlanType extends AbstractType
+class PlanType extends AbstractType implements DataMapperInterface
 {
     public function __construct(private RequestStack $requestStack)
     {
@@ -49,7 +51,6 @@ class PlanType extends AbstractType
                 'label' => 'planner.form.date',
                 'choices' => $dates,
                 'choice_translation_domain' => false,
-                'constraints' => [new NotBlank(message: 'planner.date.required')],
             ])
             ->add('from', TimeType::class, [
                 'label' => 'planner.form.from',
@@ -82,7 +83,7 @@ class PlanType extends AbstractType
             // Draw of the programmes (see ProgrammeSelector): the same seed, the same programmes.
             ->add('seed', HiddenType::class, [
                 'required' => false,
-                'constraints' => [new Regex(pattern: '/^\d{1,9}$/', message: 'planner.seed.invalid')],
+                'invalid_message' => 'planner.seed.invalid',
             ])
             ->add('travelMode', EnumType::class, [
                 'label' => 'planner.form.travel_mode',
@@ -93,7 +94,6 @@ class PlanType extends AbstractType
             ->add('films', IntegerType::class, [
                 'label' => 'planner.form.films',
                 'data' => 2,
-                'constraints' => [new Range(min: 1, max: 8, notInRangeMessage: 'planner.films.range')],
             ])
             ->add('version', EnumType::class, [
                 'label' => 'planner.form.version',
@@ -106,9 +106,24 @@ class PlanType extends AbstractType
             ->add('acceptAds', CheckboxType::class, [
                 'label' => 'planner.form.accept_ads',
                 'required' => false,
-                // API clients send "0" or "false" to say no (a browser sends nothing).
+                // A link written by hand may say "0" or "false" for no (a browser sends nothing).
                 'false_values' => [null, '', '0', 'false'],
-            ]);
+            ])
+            ->setDataMapper($this);
+
+        $builder->get('seed')->addModelTransformer(new CallbackTransformer(
+            static fn (?int $seed): string => (string) $seed,
+            static function (?string $seed): ?int {
+                if (null === $seed) {
+                    return null;
+                }
+                if (!ctype_digit($seed)) {
+                    throw new TransformationFailedException('A seed is a natural number.');
+                }
+
+                return (int) $seed;
+            },
+        ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -117,9 +132,11 @@ class PlanType extends AbstractType
         $resolver->setAllowedTypes('dates', 'array');
         $resolver->setAllowedTypes('cities', 'array');
         $resolver->setDefaults([
+            'data_class' => PlanRequest::class,
+            // Built by mapFormsToData() from every field at once.
+            'empty_data' => null,
             'method' => 'GET',
             'csrf_protection' => false,
-            'constraints' => [new Callback($this->validateLocation(...))],
         ]);
     }
 
@@ -128,15 +145,20 @@ class PlanType extends AbstractType
         return 'plan';
     }
 
-    public function validateLocation(?array $data, ExecutionContextInterface $context): void
+    public function mapDataToForms(mixed $viewData, \Traversable $forms): void
     {
-        if (empty($data['city']) && empty($data['position'])) {
-            $context->buildViolation('planner.location.required')->atPath('[city]')->addViolation();
-        }
+        // Reading a readonly object is like reading any other one.
+        new DataMapper()->mapDataToForms($viewData, $forms);
+    }
 
-        // 'H:i' strings compare in time order; a range ending after midnight is refused.
-        if (!empty($data['from']) && !empty($data['until']) && $data['until'] <= $data['from']) {
-            $context->buildViolation('planner.time_range.order')->atPath('[until]')->addViolation();
-        }
+    /**
+     * A readonly PlanRequest cannot be filled field by field: it is built once from all the fields,
+     * named like its constructor arguments. An empty field (null, or '' for a time) keeps the default value of
+     * its argument.
+     */
+    public function mapFormsToData(\Traversable $forms, mixed &$viewData): void
+    {
+        $arguments = array_map(static fn (FormInterface $field): mixed => $field->getData(), iterator_to_array($forms));
+        $viewData = new PlanRequest(...array_filter($arguments, static fn (mixed $value): bool => null !== $value && '' !== $value));
     }
 }
