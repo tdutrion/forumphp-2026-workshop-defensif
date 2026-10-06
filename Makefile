@@ -53,6 +53,16 @@ phpstan: ## Static analysis (level 5)
 cs: ## Fixes the code style (@Symfony)
 	$(PHP) vendor/bin/php-cs-fixer fix
 
+cs-check: ## Checks the code style without changing anything (CI)
+	$(PHP) vendor/bin/php-cs-fixer fix --dry-run --diff
+
+lint: ## Validates composer.json, the dependencies (audit), the container, the Twig templates and the YAML files
+	$(PHP) composer validate --strict --no-check-publish
+	$(PHP) composer audit
+	$(CONSOLE) lint:container
+	$(CONSOLE) lint:twig templates
+	$(CONSOLE) lint:yaml config translations --parse-tags
+
 sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
 	$(CONSOLE) catalog:sync --no-debug $(c) # debug keeps every SQL backtrace: out of memory on 3 cities
 
@@ -91,4 +101,4 @@ phpstan-max: ## PHPStan max level (workshop progress measure)
 phpstan-baseline: ## Regenerates the max-level baseline
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G --generate-baseline phpstan-baseline.neon
 
-.PHONY: help up css css-watch down logs sh composer console test phpstan cs sync db-dump db-load phpstan-max phpstan-baseline
+.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load phpstan-max phpstan-baseline
