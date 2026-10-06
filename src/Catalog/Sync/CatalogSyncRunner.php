@@ -32,14 +32,15 @@ class CatalogSyncRunner
             $citySlugs = array_values(array_filter(array_map('trim', explode(',', $this->defaultCities)), static fn (string $slug): bool => '' !== $slug));
         }
 
-        // A scheduled sync and a manual one must never write the catalog at the same time.
+        // A scheduled sync and a manual one must never write the catalog at the same time. A sync of every
+        // city can take longer than the lifetime of the lock: the synchronizer extends it as it goes.
         $lock = $this->lockFactory->createLock('catalog-sync', 3600);
         if (!$lock->acquire()) {
             throw new \RuntimeException('A synchronization is already running.');
         }
 
         try {
-            $stats = $this->synchronizer->synchronize($citySlugs);
+            $stats = $this->synchronizer->synchronize($citySlugs, stillRunning: static fn () => $lock->refresh());
             if (false !== $stats) {
                 // The pages read the days to offer from this cache: compute it now, not on the next visit.
                 $this->calendar->refresh();

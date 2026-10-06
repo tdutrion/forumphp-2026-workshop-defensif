@@ -37,14 +37,15 @@ class CatalogSynchronizer
     }
 
     /**
-     * @param array       $citySlugs cities to synchronize, e.g. ['paris', 'lyon', 'dijon']; empty = every city of the chain
-     * @param string|null $today     first local day synchronized ('Y-m-d'); null = today in the chain's time zone
-     * @param int         $days      number of days synchronized
+     * @param array         $citySlugs    cities to synchronize, e.g. ['paris', 'lyon', 'dijon']; empty = every city of the chain
+     * @param string|null   $today        first local day synchronized ('Y-m-d'); null = today in the chain's time zone
+     * @param int           $days         number of days synchronized
+     * @param \Closure|null $stillRunning called before each cinema and each film page, e.g. to keep a lock (a sync of every city takes long)
      *
      * @return array|false ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors', 'linked' (works linked to Wikidata)],
      *                     or false if the Pathé reference data is unreachable
      */
-    public function synchronize(array $citySlugs, ?string $today = null, int $days = 7): array|false
+    public function synchronize(array $citySlugs, ?string $today = null, int $days = 7, ?\Closure $stillRunning = null): array|false
     {
         $chain = $this->chains[self::CHAIN];
         $today ??= (new \DateTimeImmutable('now', new \DateTimeZone($chain['timezone'])))->format('Y-m-d');
@@ -136,6 +137,9 @@ class CatalogSynchronizer
 
         $playing = [];
         foreach ($cinemas as $cinemaSlug => $cinema) {
+            if (null !== $stillRunning) {
+                $stillRunning();
+            }
             if (!$cinema->isOpen()) {
                 $stats['deleted'] += $this->showtimeRepository->deleteForCinemasBetween([$cinemaSlug], $today, $lastDay, []);
                 continue;
@@ -196,6 +200,9 @@ class CatalogSynchronizer
 
         // Original language (VOST/VO filter), synopsis and work of the films that play, read once from their film page.
         foreach ($playing as $showSlug => $film) {
+            if (null !== $stillRunning) {
+                $stillRunning();
+            }
             if (null !== $film->getOriginalLanguage() && null !== $film->getSynopsis() && null !== $film->getWork()->getDirectors()) {
                 continue;
             }
