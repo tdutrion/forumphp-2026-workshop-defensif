@@ -20,8 +20,8 @@ class User implements UserInterface
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     private Uuid $id;
 
-    /** Email verified by at least one provider, otherwise null. */
-    #[ORM\Column(length: 180, unique: true, nullable: true)]
+    /** Email verified by at least one provider, otherwise null; in lower case, compared byte for byte (josé@ is not jose@). */
+    #[ORM\Column(length: 180, unique: true, nullable: true, options: ['collation' => 'utf8mb4_bin'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
