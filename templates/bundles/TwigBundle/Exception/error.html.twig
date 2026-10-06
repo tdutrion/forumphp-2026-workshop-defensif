@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'error.page.title'|trans }} · ScreenRoute{% endblock %}
+
+{% block body %}
+    <twig:Card class="mx-auto max-w-md text-center">
+        <h1 class="mb-2 text-2xl font-bold">{{ 'error.page.title'|trans }}</h1>
+        <p class="mb-6 text-ink-muted">{{ 'error.page.text'|trans }}</p>
+        <twig:Button tag="a" href="{{ path('app_home') }}">{{ 'error.page.back'|trans }}</twig:Button>
+    </twig:Card>
+{% endblock %}

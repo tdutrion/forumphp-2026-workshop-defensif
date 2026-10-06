@@ -93,6 +93,9 @@ explicit and checked by the language and the tooling.
   implementations explicitly (Symfony HttpClient through `Psr18Client`,
   nyholm/psr7, a `cache.pathe` pool, Monolog).
 - **Languages**: Identifiers, messages, comments, documentation, README and commits are in English. The UI is written in English and translated into French with the Symfony Translator (default locale en, French served to browsers that ask for it).
+  Templates and code use translation keys (`planner.form.date`, `seen.mark`…), never English
+  text: the English catalog (`messages.en.yaml`, generated with `bin/console translation:extract`)
+  and the French one hold the texts; constraint messages are keys of the `validators` domain.
 - **Git**: Conventional Commits in English, signed commits authored by `Thomas Dutrion <hello@tdutrion.fr>`.
 
 ## 3. Scope
@@ -177,12 +180,17 @@ Only the sync command calls Pathé. The site only reads the database.
 
 | Field    | Rule                                                                                                      |
 |----------|-----------------------------------------------------------------------------------------------------------|
-| Date     | a day for which showtimes are synchronized (Pathé publishes the current week, from Wednesday to Tuesday)  |
+| Date     | a day that still has a bookable showtime (Pathé publishes the current week, from Wednesday to Tuesday); once today's last showtime has passed, the form opens on tomorrow |
+| Time range | optional "from" and "until" (local time of the cinema): the first showtime starts at or after "from", the last one ends at or before "until", on the same day; an "until" at or before "from" makes the search invalid (form error, 422 in the API) |
 | Place    | a Pathé city (autocomplete on the synchronized cities) or the browser position                            |
-| Radius   | 1 to 50 km, 10 km by default                                                                              |
-| Films    | 2 to 5                                                                                                    |
-| Version  | optional: VF, VOST, VO, VFST                                                                              |
+| Radius   | none in the form: fixed at 10 km around the city or the position (`PlannerService::DEFAULT_RADIUS_KM`)   |
+| Films    | 1 to 8, 2 by default (8 can fit in a long day)                                                            |
+| Version  | optional: VF, VOST, VO, VFST. VOST and VO also keep the films made in the language of the cinema's chain (`language` in `app.chains`: a French film in VF at Pathé, an English film at Cineworld UK); the original language comes from the film's nationality (`/show/{slug}`), read once per film |
 | Ads      | checkbox "I accept arriving during the ads (15 minutes)"                                                  |
+
+The last bookable time of each day is computed by the import (`catalog:sync`,
+`catalog:shift-dates`) and kept in the `cache.catalog` pool (`CatalogCalendar`); a missing
+cache (cleared, or after `make db-load`) is computed again on the next request.
 
 The center of the radius is either the barycenter of the cinemas of the
 chosen city, or the browser position. The GPS position that Pathé gives for a
@@ -209,7 +217,10 @@ A showtime is a candidate if it meets all these conditions:
   - the end of the previous one + 10 min, if it is the same cinema;
   - the end of the previous one + 10 min + the travel, if it is another
     cinema. The travel is the straight-line distance between the two
-    cinemas, covered at 15 km/h.
+    cinemas, covered at the speed of the travel mode chosen in the form, plus
+    its fixed time: on foot 5 km/h, by bike 15 km/h, public transport 20 km/h
+    + 10 min of waiting (default), by car 30 km/h + 15 min of parking. No
+    routing service: the application must work without a network.
 - The next showtime is compatible if the earliest arrival is before or equal
   to its `time`. With the ads option, the arrival can be up to
   `time + 15 min`.
@@ -222,18 +233,47 @@ A showtime is a candidate if it meets all these conditions:
    nodes. The cap keeps the response time under a second.
 2. Each complete programme is scored: total wait time (sum of the gaps
    between arrival and `time`), then total distance traveled.
+   Between two showtimes, the page and the API show the break in clear
+   (minutes from the end of the previous film to the next start) and the
+   travel time it includes.
+   Each programme shows its total break (the sum of those breaks) and the
+   travel it includes. The wait used for the ranking is smaller: it leaves
+   out the 10-minute margins and the travel; the API exposes both.
 3. The 3 best programmes that are pairwise different are kept: each
    must have at least one film that the other does not have.
-4. If fewer than 3 exist, the ones found are returned, with a message that
-   explains why (no candidate showtime, radius too small, too many films
-   requested…).
+4. If no programme of N films exists, the search starts again with one film
+   fewer, down to single films; the result says how many films it kept and the
+   page explains it ("No marathon of 4 films is possible: here are programmes
+   of 3 films.", or "here are films on their own.").
+5. If fewer than 3 exist, the ones found are returned, with a message that
+   explains why (no candidate showtime, nothing in the time range…).
 
 ### "Already seen"
 
-- "Already seen" button on each film, in the results and on the film page.
-  Can be undone.
+- Above the programmes, the list of every film they propose (each film once),
+  with "Already seen" and "Not for me" buttons. A click posts, then redirects
+  (303, Post/Redirect/Get) to the same search, which no longer proposes the
+  film. The programmes themselves only offer "Book".
+- "Already seen" button on the film page too. Can be undone.
 - List managed from the profile.
-- "Mark this programme as seen" button that adds all its films.
+
+### "Not for me" (films the user does not want to see)
+
+- "Not for me" button next to "Already seen", in the list of proposed films
+  and on the film page. Can be undone.
+- Those films are never offered by the planner, like the films already seen.
+- List managed from the profile ("Films I don't want to see").
+
+### Excluded cinemas
+
+- With the results, a "Nearby cinemas (active/total)" table (every open cinema within the
+  fixed 10 km radius of the search, with its distance), closed by default,
+  excluded cinemas included: each one has an
+  "Exclude" or "Excluded ✓ (undo)" button (Post/Redirect/Get back to the same
+  search) and a badge when the programmes use it. A cinema excluded by mistake
+  can be reactivated from there, even when nothing can be planned without it.
+  The planner never uses an excluded cinema.
+- List managed from the profile ("Excluded cinemas").
 
 ### Accounts and sign-in
 
@@ -271,6 +311,12 @@ A showtime is a candidate if it meets all these conditions:
 | GET     | `/api/me/seen-films`   | list the films already seen    |
 | PUT     | `/api/me/seen-films/{slug}` | mark a film as seen       |
 | DELETE  | `/api/me/seen-films/{slug}` | remove a film already seen |
+| GET     | `/api/me/unwanted-films`   | list the films the user does not want to see |
+| PUT     | `/api/me/unwanted-films/{slug}` | never offer this film again |
+| DELETE  | `/api/me/unwanted-films/{slug}` | offer this film again |
+| GET     | `/api/me/excluded-cinemas` | list the cinemas the user excluded |
+| PUT     | `/api/me/excluded-cinemas/{slug}` | never use this cinema again |
+| DELETE  | `/api/me/excluded-cinemas/{slug}` | use this cinema again |
 
 - Authentication: a personal token, generated from the profile, shown only
   once. Stored as a SHA-256 hash, revocable, with an expiration
@@ -430,7 +476,7 @@ not executable on PHP 8.5.
 | `readonly` classes | 8.2 | value objects with a forgotten property | `final readonly class` | 8 |
 | DNF types, standalone `true`/`false`/`null` | 8.2 | `array|false` as a return | precise type or Result | 5 |
 | `#[\SensitiveParameter]` | 8.2 | OAuth secrets, tokens | — | shown |
-| Typed class constants | 8.3 | `const DEFAULT_RADIUS = 10` | `const int DEFAULT_RADIUS = 10` | 13 |
+| Typed class constants | 8.3 | `const DEFAULT_RADIUS_KM = 10` | `const int DEFAULT_RADIUS_KM = 10` | 13 |
 | `#[\Override]` | 8.3 | OAuth provider implementations | `#[\Override]` | 9 |
 | `json_validate()` | 8.3 | same field: full decoding just to know whether it is valid | `json_validate()` | 11 |
 | Deep cloning of `readonly` | 8.3 | cloned programme that shares its showtimes | `__clone` with reassignment | 8 |
@@ -449,11 +495,11 @@ not executable on PHP 8.5.
 | URI extension: reading a received URL | 8.5 | `preg_match` on the `refCmd` booking link | `Uri\Rfc3986\Uri::parse()` then reading the host and the path | 15 |
 | `array_first`/`array_last` | 8.5 | `reset()`/`end()` on the showtimes | native functions | 12 |
 | `final` promoted properties | 8.5 | — | `final` on promoted properties | 8 |
-| `clamp()` | 8.6 (polyfill) | `max(1, min(50, $radius))` | `clamp()` in `Radius` | 4 |
+| `clamp()` | 8.6 (polyfill) | the 1–8 range of the number of films | `clamp()` in `FilmCount` | 4 |
 | `SortDirection` enum | 8.6 (polyfill) | `'asc'`/`'desc'` as strings in lists | `\SortDirection` | 16 |
 | `Time\Duration` | 8.6 (polyfill-time) | durations in whole minutes | `Time\Duration` | 3 |
 | `readonly` default values, partial application | 8.6 | — | — | shown (slide) |
-| Self-validating value objects | — | slugs, coordinates, radius as scalars | `CinemaSlug`, `Coordinates`, `Radius` | 1, 4 |
+| Self-validating value objects | — | slugs, coordinates, time range as scalars | `CinemaSlug`, `Coordinates`, `TimeRange` | 1, 4 |
 | Parse, don't validate (boundary) | — | inconsistent Pathé shapes propagated | normalization in `Pathe` | 1 |
 | `find`/`get` pair | — | `findBySlug(): ?array` everywhere | `find(): ?X`, `get(): X` | 6 |
 | Result for expected failures | — | `plan(): array\|false` | `PlanResult` | 5 |
@@ -487,7 +533,7 @@ are extensions, to be done in any order.
 | 1 | Pathé boundary: value objects, response normalization | 25 min |
 | 2 | Enums: versions and booking statuses | 15 min |
 | 3 | Time: `ScreeningTime`, `Time\Duration` | 20 min |
-| 4 | Planner input: DTO, `#[MapQueryString]`, `Radius`, `FilmCount` | 20 min |
+| 4 | Planner input: DTO, `#[MapQueryString]`, `FilmCount`, `TimeRange` | 20 min |
 | 5 | Planner output: typed collection, `PlanResult`, `#[\NoDiscard]` | 20 min |
 | 6 | Repositories: `find`/`get`, business exceptions | 15 min |
 | 7 | Entities: invariants, asymmetric visibility, property hooks, Doctrine | 45 min |
@@ -612,10 +658,10 @@ Before adding a second chain:
   identifiers are Pathé's. The primary keys must include the chain (or become
   UUIDs with a unique `(chain, external_id)` key) before another chain can
   collide with them.
-- **TODO: one film across chains.** The same film has a different slug in
-  each chain: matching (by title, year, running time, or an external id such
-  as TMDB) is needed so that "already seen" and "never the same film twice"
-  work across chains.
+- **Done (2026-10-05): one film across chains.** Every film points to a work,
+  linked to Wikidata or merged by fingerprint across chains; "already seen" and
+  "never the same film twice" hold for the work. See
+  `docs/superpowers/specs/2026-10-05-film-works-wikidata-design.md`.
 - **TODO: cities shared by several chains.** A city is currently a Pathé
   city. Cities of different chains (Lyon for Pathé and UGC) must be merged,
   or the planner must search by position only.

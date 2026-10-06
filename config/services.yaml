@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    # The planner draws its programmes among this many best ones (ProgrammeSelector).
+    app.planner.draw_pool: 10
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/*/Entity/'
+            - '../src/Kernel.php'
+
+    # PSR-18 adapter over the scoped client: the SDK only knows PSR interfaces.
+    app.pathe_http_client:
+        class: Symfony\Component\HttpClient\Psr18Client
+        arguments: ['@pathe.http_client']
+
+    # The PSR-17 request factory (nyholm/psr7) and the PSR-3 logger (monolog) are autowired.
+    App\Sdk\Pathe\PatheClient:
+        arguments:
+            $httpClient: '@app.pathe_http_client'
+            $cache: '@cache.pathe'
+            $delayMs: '%env(int:PATHE_DELAY_MS)%'
+            $cacheTtl: '%env(int:PATHE_CACHE_TTL)%'
+
+    app.wikidata_http_client:
+        class: Symfony\Component\HttpClient\Psr18Client
+        arguments: ['@wikidata.http_client']
+
+    App\Sdk\Wikidata\WikidataClient:
+        arguments:
+            # Wikidata asks every client to name itself and give a contact.
+            $userAgent: 'ScreenRoute/1.0 (%env(SOURCE_CODE_URL)%)'
+            $httpClient: '@app.wikidata_http_client'
+            $cache: '@cache.wikidata'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+when@test:
+    parameters:
+        # As many as shown: the functional tests always get the best programmes, the draw has its unit tests.
+        app.planner.draw_pool: 3
+
+    services:
+        # Use cases called directly by the integration tests (also kept when no controller uses them yet).
+        App\Account\AccountService: { autowire: true, public: true }
+        App\Account\SeenFilmService: { autowire: true, public: true }
+        App\Account\UnwantedFilmService: { autowire: true, public: true }
+        App\Account\ExcludedCinemaService: { autowire: true, public: true }
+        App\Account\ApiTokenService: { autowire: true, public: true }
+        App\Planner\PlannerService: { autowire: true, public: true }
+        App\Catalog\WorkLinker: { autowire: true, public: true }
+        App\Planner\LocationResolver: { autowire: true, public: true }
+        App\Tests\Fake\FakePatheApi:
+            public: true
+        App\Tests\Fake\FakeWikidataApi:
+            public: true
+        # The Wikidata SDK talks to the fake Wikidata API, without delay.
+        App\Sdk\Wikidata\WikidataClient:
+            public: true
+            arguments:
+                $userAgent: 'ScreenRoute/test'
+                $httpClient: '@App\Tests\Fake\FakeWikidataApi'
+                $cache: '@cache.wikidata'
+                $delayMs: 0
+        App\Tests\Fake\FakeOAuthServer:
+            public: true
+        app.fake_oauth_http_client:
+            class: GuzzleHttp\Client
+            factory: ['@App\Tests\Fake\FakeOAuthServer', 'httpClient']
+        # The SDK talks to the fake Pathé API (a PSR-18 client) instead of pathe.fr.
+        app.pathe_http_client:
+            alias: App\Tests\Fake\FakePatheApi

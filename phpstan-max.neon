@@ -1,0 +1,6 @@
+includes:
+    - phpstan.dist.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: max

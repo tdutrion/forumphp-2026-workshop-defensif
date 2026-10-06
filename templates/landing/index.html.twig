@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ScreenRoute · {{ 'landing.title_tagline'|trans }}{% endblock %}
+
+{% block body %}
+    {% set self_hosting_url = source_code_url ~ '/blob/HEAD/docs/self-hosting.md' %}
+    <div class="landing space-y-20 py-4">
+        {# Hero: what it is, and the two ways in. #}
+        <section class="grid items-center gap-10 md:grid-cols-2">
+            <div class="space-y-6">
+                <p class="flex flex-wrap gap-2">
+                    <twig:Badge tone="brand">{{ 'landing.hero.free'|trans }}</twig:Badge>
+                    <twig:Badge tone="brand">{{ 'landing.hero.no_ads'|trans }}</twig:Badge>
+                    <twig:Badge tone="brand">{{ 'landing.hero.open_source'|trans }}</twig:Badge>
+                </p>
+                <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{{ 'landing.hero.title'|trans }}</h1>
+                <p class="text-lg text-ink-muted">{{ 'landing.hero.text'|trans }}</p>
+                <div class="flex flex-wrap gap-3">
+                    <twig:Button tag="a" href="{{ path('app_login') }}" size="lg">{{ 'landing.cta.start'|trans }}</twig:Button>
+                    <twig:Button tag="a" href="{{ self_hosting_url }}" variant="secondary" size="lg"><twig:Icon name="server-stack" class="size-5" />{{ 'landing.cta.self_host'|trans }}</twig:Button>
+                </div>
+            </div>
+
+            {# An example of programme, drawn like the real ones of the planner. #}
+            <figure aria-label="{{ 'landing.sample.label'|trans }}">
+                <twig:Card class="flex flex-col gap-4 md:rotate-1">
+                    <header>
+                        <p class="text-xl font-semibold">{{ 'planner.programme.title'|trans({'%number%': 1}) }}</p>
+                        <p class="text-sm text-ink-muted">{{ 'planner.programme.total_break'|trans({'%minutes%': 65}) }} {{ 'planner.programme.total_travel'|trans({'%minutes%': 28}) }}</p>
+                    </header>
+                    <ol class="space-y-3">
+                        {% for showtime in [
+                            {start: '14:00', end: '16:05', film: 'landing.sample.comedy', version: 'VF', cinema: 'Pathé Wepler'},
+                            {start: '16:45', end: '18:55', film: 'landing.sample.thriller', version: 'VOST', cinema: 'Pathé Beaugrenelle', break: 40, travel: 28},
+                            {start: '19:20', end: '21:30', film: 'landing.sample.drama', version: 'VF', cinema: 'Pathé Beaugrenelle', break: 25},
+                        ] %}
+                            {% if not loop.first %}
+                                <li class="flex items-center gap-2 pl-3 text-xs text-ink-muted">
+                                    <twig:Icon name="clock" />
+                                    {{ 'planner.programme.break'|trans({'%minutes%': showtime.break}) }}{% if showtime.travel is defined %} · {{ 'planner.programme.break_travel'|trans({'%minutes%': showtime.travel}) }}{% endif %}
+                                </li>
+                            {% endif %}
+                            <li class="border-l-2 border-brand-600 pl-3">
+                                <p class="text-sm font-semibold text-brand-700">{{ showtime.start }} – {{ showtime.end }}</p>
+                                <p class="font-medium">{{ showtime.film|trans }}</p>
+                                <p class="mt-1 flex items-center gap-2 text-sm text-ink-muted"><twig:Badge>{{ showtime.version }}</twig:Badge>{{ showtime.cinema }}</p>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </twig:Card>
+                <figcaption class="mt-3 text-center text-xs text-ink-muted">{{ 'landing.sample.caption'|trans }}</figcaption>
+            </figure>
+        </section>
+
+        {# How it works, in three steps. #}
+        <section aria-labelledby="how-title" class="space-y-8">
+            <h2 id="how-title" class="text-center text-3xl font-bold">{{ 'landing.how.title'|trans }}</h2>
+            <ol class="grid gap-6 md:grid-cols-3">
+                {% for step in ['describe', 'chain', 'book'] %}
+                    {# "loop" does not reach the content of a component: a plain variable does. #}
+                    {% set number = loop.index %}
+                    <li>
+                        <twig:Card class="h-full space-y-2">
+                            <p class="flex size-9 items-center justify-center rounded-full bg-brand-600 font-bold text-white">{{ number }}</p>
+                            <h3 class="text-lg font-semibold">{{ ('landing.how.' ~ step ~ '.title')|trans }}</h3>
+                            <p class="text-ink-muted">{{ ('landing.how.' ~ step ~ '.text')|trans }}</p>
+                        </twig:Card>
+                    </li>
+                {% endfor %}
+            </ol>
+        </section>
+
+        {# What makes the programmes good. #}
+        <section aria-labelledby="features-title" class="space-y-8">
+            <h2 id="features-title" class="text-center text-3xl font-bold">{{ 'landing.features.title'|trans }}</h2>
+            <ul class="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+                {% for feature, icon in {travel: 'clock', version: 'language', hide: 'eye-slash', cinemas: 'map-pin', draw: 'arrow-path', api: 'code-bracket'} %}
+                    <li class="flex gap-4">
+                        <span class="flex size-10 shrink-0 items-center justify-center rounded-control bg-brand-50 text-brand-700"><twig:Icon :name="icon" class="size-5" /></span>
+                        <div>
+                            <h3 class="font-semibold">{{ ('landing.features.' ~ feature ~ '.title')|trans }}</h3>
+                            <p class="text-sm text-ink-muted">{{ ('landing.features.' ~ feature ~ '.text')|trans }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        {# Every chain with an unlimited pass; only the supported ones can be planned today. #}
+        <section id="chains" aria-labelledby="chains-title" class="space-y-6">
+            <div class="mx-auto max-w-2xl space-y-2 text-center">
+                <h2 id="chains-title" class="text-3xl font-bold">{{ 'landing.chains.title'|trans }}</h2>
+                <p class="text-ink-muted">{{ 'landing.chains.text'|trans }}</p>
+            </div>
+            <div class="grid gap-6 md:grid-cols-3">
+                <twig:Card class="space-y-3 ring-2 ring-brand-600">
+                    <twig:Badge tone="brand">{{ 'landing.chains.supported'|trans }}</twig:Badge>
+                    <ul class="space-y-2">
+                        {% for chain in supportedChains %}
+                            <li data-chain-supported class="text-lg">
+                                <span class="font-semibold">{{ chain.name }}</span>
+                                <span class="text-ink-muted">· {{ chain.countries|map(code => code|country_name(app.request.locale))|join(', ') }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <p id="coverage" class="text-sm text-ink-muted">
+                        <twig:Icon name="map-pin" class="inline size-4 align-text-bottom text-accent-500" />
+                        {{ 'landing.coverage'|trans }}
+                    </p>
+                </twig:Card>
+                <twig:Card class="space-y-3 md:col-span-2">
+                    <twig:Badge>{{ 'landing.chains.planned'|trans }}</twig:Badge>
+                    <ul class="flex flex-wrap gap-2">
+                        {% for chain in plannedChains %}
+                            <li data-chain-planned class="rounded-control bg-surface-muted px-2.5 py-1 text-sm text-ink-muted">
+                                <span class="font-medium text-ink">{{ chain.name }}</span>
+                                · {{ chain.countries|map(code => code|country_name(app.request.locale))|join(', ') }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </twig:Card>
+            </div>
+        </section>
+
+        {# Paid options to come: announced, not available. #}
+        <section id="paid-features" aria-labelledby="paid-title" class="space-y-6">
+            <div class="mx-auto max-w-2xl space-y-2 text-center">
+                <h2 id="paid-title" class="text-3xl font-bold">{{ 'landing.paid.title'|trans }}</h2>
+                <p class="text-ink-muted">{{ 'landing.paid.text'|trans }}</p>
+            </div>
+            <ul class="grid gap-6 md:grid-cols-2">
+                {% for feature, icon in {recommendations: 'sparkles', travel: 'map-pin'} %}
+                    <li data-paid-feature>
+                        <twig:Card class="h-full space-y-3 border-2 border-dashed border-line shadow-none ring-0">
+                            <p class="flex flex-wrap gap-2">
+                                <twig:Badge tone="warning">{{ 'landing.paid.badge'|trans }}</twig:Badge>
+                                <twig:Badge>{{ 'landing.paid.not_available'|trans }}</twig:Badge>
+                            </p>
+                            <h3 class="flex items-center gap-2 text-lg font-semibold">
+                                <twig:Icon :name="icon" class="size-5 text-accent-500" />{{ ('landing.paid.' ~ feature ~ '.title')|trans }}
+                            </h3>
+                            <p class="text-ink-muted">{{ ('landing.paid.' ~ feature ~ '.text')|trans }}</p>
+                        </twig:Card>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        {# Free, and yours to host. #}
+        <section class="grid gap-6 md:grid-cols-2">
+            <twig:Card class="space-y-3">
+                <span class="flex size-10 items-center justify-center rounded-control bg-success-50 text-success-700"><twig:Icon name="shield-check" class="size-5" /></span>
+                <h2 class="text-2xl font-bold">{{ 'landing.free.title'|trans }}</h2>
+                <p class="text-ink-muted">{{ 'landing.free.text'|trans }}</p>
+                <a href="{{ path('app_legal_privacy') }}" class="inline-block text-sm font-medium text-brand-700 hover:underline">{{ 'landing.free.privacy'|trans }}</a>
+            </twig:Card>
+            <twig:Card class="space-y-3">
+                <span class="flex size-10 items-center justify-center rounded-control bg-accent-50 text-accent-700"><twig:Icon name="server-stack" class="size-5" /></span>
+                <h2 class="text-2xl font-bold">{{ 'landing.self_host.title'|trans }}</h2>
+                <p class="text-ink-muted">{{ 'landing.self_host.text'|trans }}</p>
+                <p class="flex flex-wrap gap-4 text-sm font-medium">
+                    <a href="{{ self_hosting_url }}" class="text-brand-700 hover:underline">{{ 'landing.self_host.guide'|trans }}</a>
+                    <a href="{{ source_code_url }}" class="text-brand-700 hover:underline">{{ 'landing.self_host.source'|trans }}</a>
+                </p>
+            </twig:Card>
+        </section>
+
+        {# Questions people ask before signing in. #}
+        <section aria-labelledby="faq-title" class="mx-auto max-w-3xl space-y-6">
+            <h2 id="faq-title" class="text-center text-3xl font-bold">{{ 'landing.faq.title'|trans }}</h2>
+            <div class="divide-y divide-line rounded-card bg-surface shadow-card ring-1 ring-line">
+                {% for question in ['pathe', 'free', 'cinemas', 'data'] %}
+                    <details class="group px-6 py-4">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">
+                            {{ ('landing.faq.' ~ question ~ '.question')|trans }}
+                            <twig:Icon name="chevron-down" class="transition-transform group-open:rotate-180" />
+                        </summary>
+                        <p class="mt-2 text-ink-muted">{{ ('landing.faq.' ~ question ~ '.answer')|trans }}</p>
+                    </details>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# Last call. #}
+        <section class="rounded-card bg-brand-600 px-6 py-12 text-center text-white">
+            <h2 class="text-3xl font-bold">{{ 'landing.final.title'|trans }}</h2>
+            <p class="mx-auto mt-3 max-w-xl text-white/90">{{ 'landing.final.text'|trans }}</p>
+            <twig:Button tag="a" href="{{ path('app_login') }}" variant="accent" size="lg" class="mt-6">{{ 'landing.cta.start'|trans }}</twig:Button>
+        </section>
+    </div>
+{% endblock %}

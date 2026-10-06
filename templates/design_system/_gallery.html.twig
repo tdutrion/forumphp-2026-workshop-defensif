@@ -1,0 +1,123 @@
+{# Every component once, for one theme (see index.html.twig). Parameter: form, the example form. #}
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Logo</h3>
+    {# Brand colours in both themes. The app icon and favicon are the same drawing, assets/images/logo.svg. #}
+    <div class="logo flex flex-wrap items-end gap-6">
+        <twig:Logo />
+        <twig:Logo :wordmark="false" class="[&_svg]:size-20" />
+        <img src="{{ asset('images/logo.svg') }}" alt="App icon" width="64" height="64">
+        <img src="{{ asset('images/logo.svg') }}" alt="Favicon" width="16" height="16">
+    </div>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Colors</h3>
+    <div class="grid grid-cols-4 gap-2 text-xs">
+        {% for token in ['brand-50', 'brand-600', 'brand-900', 'accent-50', 'accent-500', 'accent-700', 'ink', 'ink-muted', 'canvas', 'surface-muted', 'line', 'success-600', 'danger-600'] %}
+            <div><div class="h-10 rounded-control ring-1 ring-line bg-{{ token }}"></div>{{ token }}</div>
+        {% endfor %}
+    </div>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Buttons</h3>
+    <div class="flex flex-wrap gap-2">
+        <twig:Button type="button">Primary</twig:Button>
+        <twig:Button type="button" variant="secondary">Secondary</twig:Button>
+        <twig:Button type="button" variant="danger">Danger</twig:Button>
+        <twig:Button type="button" variant="ghost">Ghost</twig:Button>
+        <twig:Button type="button" variant="accent">Accent</twig:Button>
+        <twig:Button type="button" size="sm">Small</twig:Button>
+        <twig:Button type="button" size="lg">Large</twig:Button>
+        <twig:Button tag="a" href="#" variant="secondary">Link styled as a button</twig:Button>
+        <a href="#" aria-label="Open the film page" title="Open the film page" class="inline-flex rounded-control p-1.5 text-brand-700 hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-brand-600"><twig:Icon name="link" class="size-5" /></a>
+    </div>
+
+    <h4 class="mb-2 mt-6 text-sm font-semibold">Button group, primary action first</h4>
+    <div class="grid gap-4 sm:grid-cols-2">
+        <twig:ButtonGroup aria-label="Film actions">
+            <twig:Button tag="a" href="#" size="sm" data-primary><twig:Icon name="ticket" />Book</twig:Button>
+            <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="check" />Already seen</twig:Button>
+            <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="eye-slash" />Not for me</twig:Button>
+        </twig:ButtonGroup>
+        <twig:ButtonGroup aria-label="Film actions, both toggles on">
+            <twig:Button tag="a" href="#" size="sm" data-primary><twig:Icon name="ticket" />Book</twig:Button>
+            <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="check" />Seen ✓ (undo)</twig:Button>
+            <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="eye-slash" />Hidden ✓ (undo)</twig:Button>
+        </twig:ButtonGroup>
+    </div>
+
+    <h4 class="mb-2 mt-6 text-sm font-semibold">Compact button group, for tables</h4>
+    <twig:ButtonGroup class="button-group-sm" aria-label="Row actions">
+        <twig:Button type="button" variant="secondary" size="sm" aria-pressed="true"><twig:Icon name="check" />Remove from my history</twig:Button>
+        <twig:Button type="button" variant="secondary" size="sm" aria-pressed="false"><twig:Icon name="eye-slash" />Not for me</twig:Button>
+    </twig:ButtonGroup>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Dropdown and pagination</h3>
+    {# Open here so that its menu shows; the room below keeps it from covering the next card. #}
+    <div class="min-h-48">
+        <twig:Dropdown label="My profile" align="start" open>
+            <a href="#">My settings</a>
+            <a href="#">My film history</a>
+            <hr class="my-1 border-line">
+            <button type="button">Log out</button>
+        </twig:Dropdown>
+    </div>
+    <twig:Pagination :page="2" :pages="4" route="app_design_system" />
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Alerts and badges</h3>
+    <div class="space-y-2">
+        <twig:Alert type="success">Success message.</twig:Alert>
+        <twig:Alert type="error">Error message.</twig:Alert>
+        <twig:Alert type="info">Information message.</twig:Alert>
+    </div>
+    <div class="mt-4 flex gap-2">
+        <twig:Badge>VF</twig:Badge>
+        <twig:Badge tone="brand">VOST</twig:Badge>
+        <twig:Badge tone="warning">Late: 5 min</twig:Badge>
+    </div>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Icons</h3>
+    {# Keep in line with the paths of components/Icon.html.twig. #}
+    <ul class="icons grid grid-cols-3 gap-3 text-xs text-ink-muted">
+        {% for name in ['ticket', 'check', 'eye-slash', 'link', 'film', 'sun', 'moon', 'chevron-down', 'ellipsis-vertical', 'sparkles'] %}
+            <li class="flex items-center gap-2"><twig:Icon :name="name" class="size-5 text-ink" />{{ name }}</li>
+        {% endfor %}
+    </ul>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Table</h3>
+    <table class="w-full text-left text-sm">
+        <thead class="border-b border-line text-xs uppercase text-ink-muted">
+            <tr><th scope="col" class="py-2 pe-3">Film</th><th scope="col" class="py-2">Seen on</th></tr>
+        </thead>
+        <tbody>
+            <tr class="border-b border-line last:border-0">
+                <td class="py-3 pe-3"><span class="font-medium">Film title</span><p class="mt-1 line-clamp-2 text-ink-muted">Synopsis of the film, on two lines at most.</p></td>
+                <td class="py-3 text-ink-muted">Oct 4, 2026</td>
+            </tr>
+        </tbody>
+    </table>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Switch</h3>
+    <div class="flex flex-wrap gap-6 text-sm">
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch"> Off</label>
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch" checked> On</label>
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch" disabled> Disabled</label>
+        <label class="flex items-center gap-2"><input type="checkbox" role="switch" class="switch" checked disabled> On, disabled</label>
+    </div>
+</twig:Card>
+
+<twig:Card>
+    <h3 class="mb-4 font-semibold">Form</h3>
+    {{ form(form) }}
+</twig:Card>

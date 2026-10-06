@@ -1,0 +1,37 @@
+{% extends 'legal/_page.html.twig' %}
+
+{% block page %}legal.notice.title{% endblock %}
+
+{% block text %}
+    <p>Notice required by article 6 of the French law no. 2004-575 of 21 June 2004 on confidence in the digital economy (LCEN). The French version prevails.</p>
+
+    <h2>Publisher</h2>
+    <p>
+        TDUTRION SOLUTIONS, single-member limited liability company (EURL) with a share capital of €5,000<br>
+        Registered office: 229 rue Saint-Honoré, 75001 Paris, France<br>
+        Paris Trade and Companies Register (RCS) 987 542 230 — SIRET 987 542 230 00014<br>
+        EU VAT number: FR31987542230<br>
+        Contact: <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>
+    </p>
+
+    <h2>Publication director</h2>
+    <p>Thomas Dutrion, manager of TDUTRION SOLUTIONS.</p>
+
+    <h2>Design and development</h2>
+    <p>Thomas Dutrion, <a href="https://www.pappers.fr/entreprise/tdutrion-solutions-987542230">tdutrion solutions</a>.</p>
+
+    <h2>Hosting</h2>
+    <p>
+        Infomaniak Network SA<br>
+        Rue Eugène-Marziano 25, 1227 Les Acacias (Geneva), Switzerland<br>
+        Phone: +41 22 820 35 40 — <a href="https://www.infomaniak.com">www.infomaniak.com</a>
+    </p>
+
+    <h2>Intellectual property</h2>
+    <p>The code of ScreenRoute belongs to TDUTRION SOLUTIONS and is published under the free <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU Affero General Public License v3.0</a> (AGPL-3.0): you may use, study, modify and host it yourself, provided you publish under the same license the changes of a version you make available online. The sources are on <a href="https://github.com/tdutrion/forumphp-2026-workshop-defensif">GitHub</a>.</p>
+    <p>The name "ScreenRoute", the layout and the texts of the website remain the property of TDUTRION SOLUTIONS: an instance hosted by someone else must not present itself as the official service.</p>
+    <p>The cinemas, showtimes, titles, posters and synopses of the films come from Pathé and remain the property of their owners. ScreenRoute is an independent service: it is neither published nor endorsed by Pathé. Tickets are booked and paid for on the Pathé website.</p>
+
+    <h2>Personal data</h2>
+    <p>How your data is processed is described in the <a href="{{ path('app_legal_privacy') }}">privacy policy</a>, and the use of the service in the <a href="{{ path('app_legal_terms') }}">terms of use</a>.</p>
+{% endblock %}

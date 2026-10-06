@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{# The theme chosen in the settings; without one ("auto"), the CSS follows the system. #}
+{% set theme = app.user ? app.user.theme.value : 'auto' %}
+<html lang="{{ app.request.locale }}"{% if theme != 'auto' %} data-theme="{{ theme }}"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}ScreenRoute{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.svg') }}">
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}{% block importmap %}{{ importmap('app') }}{% endblock %}{% endblock %}
+</head>
+{#
+    data-turbo="false": every link and form is a plain browser navigation. Buttons always do a
+    Post/Redirect/Get with a full page load (more reliable than fetch, and <html data-theme> follows).
+    Turbo only serves the Mercure stream of catalog updates.
+#}
+<body class="min-h-screen" data-turbo="false">
+    <header class="site-header border-b border-line bg-surface">
+        <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
+            <a href="{{ path('app_home') }}" class="rounded-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600"><twig:Logo /></a>
+            <div class="flex items-center gap-4">
+            {% if app.user %}
+                <nav class="flex items-center gap-4">
+                    <a href="{{ path('app_home') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.plan'|trans }}</a>
+                    <a href="{{ path('app_films') }}" class="text-sm font-medium text-ink-muted hover:text-ink">{{ 'layout.films'|trans }}</a>
+                    <twig:Dropdown id="profile-menu" :label="'layout.my_profile'|trans">
+                        <a href="{{ path('app_settings') }}">{{ 'layout.settings'|trans }}</a>
+                        <a href="{{ path('app_history') }}">{{ 'layout.history'|trans }}</a>
+                        <a href="{{ path('app_unwanted_films') }}">{{ 'layout.unwanted_films'|trans }}</a>
+                        <hr class="my-1 border-line">
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button type="submit">{{ 'layout.log_out'|trans }}</button>
+                        </form>
+                    </twig:Dropdown>
+                    {#
+                        Light/dark switch, saved on the account like the choice of the settings, back to this page.
+                        With the automatic theme, the controller reads the system to offer the other one
+                        (without JavaScript: dark).
+                    #}
+                    <div id="theme-switch" data-controller="theme-switch" data-theme-switch-theme-value="{{ theme }}">
+                        <form method="post" action="{{ path('app_settings_theme') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('settings-theme') }}">
+                            <input type="hidden" name="theme" value="{{ theme == 'dark' ? 'light' : 'dark' }}" data-theme-switch-target="input">
+                            <input type="hidden" name="_return_route" value="{{ app.request.attributes.get('_route') }}">
+                            <input type="hidden" name="_return_params" value="{{ app.request.attributes.get('_route_params')|default({})|url_encode }}">
+                            <input type="hidden" name="_return" value="{{ app.request.queryString }}">
+                            <button type="submit" class="inline-flex rounded-control p-1.5 text-ink-muted hover:bg-surface-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-brand-600">
+                                <span data-theme-switch-target="toDark" class="{{ theme == 'dark' ? 'hidden' : '' }}"><twig:Icon name="moon" class="size-5" /><span class="sr-only">{{ 'layout.theme_dark'|trans }}</span></span>
+                                <span data-theme-switch-target="toLight" class="{{ theme == 'dark' ? '' : 'hidden' }}"><twig:Icon name="sun" class="size-5" /><span class="sr-only">{{ 'layout.theme_light'|trans }}</span></span>
+                            </button>
+                        </form>
+                    </div>
+                </nav>
+            {% elseif app.request.attributes.get('_route') != 'app_login' %}
+                <twig:Button tag="a" href="{{ path('app_login') }}" variant="secondary" size="sm">{{ 'security.sign_in'|trans }}</twig:Button>
+            {% endif %}
+            {# Language switch, for everyone: a plain form, back to this page (Post/Redirect/Get). #}
+            <div id="language-switch">
+                <form method="post" action="{{ path('app_locale') }}" class="flex rounded-control text-xs font-semibold ring-1 ring-line" aria-label="{{ 'layout.language'|trans }}">
+                    <input type="hidden" name="_return_route" value="{{ app.request.attributes.get('_route') }}">
+                    <input type="hidden" name="_return_params" value="{{ app.request.attributes.get('_route_params')|default({})|filter((value, key) => key != '_locale')|url_encode }}">
+                    <input type="hidden" name="_return" value="{{ app.request.queryString }}">
+                    {% for locale in ['fr', 'en'] %}
+                        <button type="submit" name="locale" value="{{ locale }}" lang="{{ locale }}" aria-pressed="{{ app.request.locale == locale ? 'true' : 'false' }}"
+                                class="px-2 py-1 text-ink-muted first-of-type:rounded-s-control last-of-type:rounded-e-control hover:text-ink aria-pressed:bg-brand-600 aria-pressed:text-white">{{ locale|upper }}</button>
+                    {% endfor %}
+                </form>
+            </div>
+            </div>
+        </div>
+    </header>
+    <main class="mx-auto max-w-5xl space-y-6 px-6 py-8">
+        {# Flash messages are translated by the code that adds them. #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}<twig:Alert :type="type">{{ message }}</twig:Alert>{% endfor %}
+        {% endfor %}
+        {% block body %}{% endblock %}
+    </main>
+    <footer class="border-t border-line">
+        <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-ink-muted">
+            <p>{{ 'layout.footer.copyright'|trans({'%year%': 'now'|date('Y')}) }}</p>
+            <nav aria-label="{{ 'layout.footer.legal'|trans }}" class="flex flex-wrap gap-4">
+                <a href="{{ path('app_legal_notice') }}" class="hover:text-ink hover:underline">{{ 'legal.notice.title'|trans }}</a>
+                <a href="{{ path('app_legal_terms') }}" class="hover:text-ink hover:underline">{{ 'legal.terms.title'|trans }}</a>
+                <a href="{{ path('app_legal_privacy') }}" class="hover:text-ink hover:underline">{{ 'legal.privacy.title'|trans }}</a>
+                {# AGPL-3.0, section 13: the users of the service are offered its source code. #}
+                <a href="{{ source_code_url }}" class="hover:text-ink hover:underline">{{ 'layout.footer.source_code'|trans }}</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

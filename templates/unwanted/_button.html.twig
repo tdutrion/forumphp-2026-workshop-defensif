@@ -1,0 +1,8 @@
+<span data-unwanted-film="{{ slug }}">
+    <form method="post" action="{{ path(unwanted ? 'app_film_wanted' : 'app_film_unwanted', {slug: slug}) }}" class="inline">
+        {% if return_route|default('') %}<input type="hidden" name="_return_route" value="{{ return_route }}">{% endif %}
+        {% if return_to|default('') %}<input type="hidden" name="_return" value="{{ return_to }}">{% endif %}
+        <input type="hidden" name="_token" value="{{ csrf_token('unwanted-film') }}">
+        <twig:Button type="submit" variant="secondary" size="sm" aria-pressed="{{ unwanted ? 'true' : 'false' }}"><twig:Icon name="eye-slash" />{{ label|default((unwanted ? 'unwanted.undo' : 'unwanted.mark')|trans) }}</twig:Button>
+    </form>
+</span>

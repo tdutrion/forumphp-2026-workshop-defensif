@@ -1,0 +1,28 @@
+{% props wordmark = true %}
+{#
+    The ScreenRoute logo: a clapperboard (orange arm with blue stripes, open over a blue slate) whose
+    slate carries the route in S (the S of ScreenRoute), from its start ring to a white arrow. Brand colours on purpose:
+    the symbol is the same in both themes. The favicon is the same drawing (assets/images/logo.svg):
+    keep both in line. With wordmark, the name follows the symbol, which is then decorative.
+#}
+<span {{ attributes.defaults({class: 'inline-flex items-center gap-2'}) }}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" class="size-9 shrink-0">
+      <g transform="rotate(-12 6 22.5)">
+        <rect x="6" y="13.5" width="52" height="9" rx="2.5" fill="#e67e22"/>
+        <polygon points="12,22.5 17.5,22.5 22.5,13.5 17,13.5" fill="#2980b9"/>
+        <polygon points="23,22.5 28.5,22.5 33.5,13.5 28,13.5" fill="#2980b9"/>
+        <polygon points="34,22.5 39.5,22.5 44.5,13.5 39,13.5" fill="#2980b9"/>
+        <polygon points="45,22.5 50.5,22.5 55.5,13.5 50,13.5" fill="#2980b9"/>
+      </g>
+      <rect x="6" y="25" width="52" height="34" rx="6" fill="#2980b9"/>
+      <g transform="translate(14.72 25.6) scale(0.53)" fill="none" stroke="#fff">
+        <path d="M21.5 51H43A9 9 0 0 0 43 33H25A9 9 0 0 1 25 15H42" stroke-width="10"/>
+        <path d="M41 6.5v17l14.5-8.5z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+        <circle cx="16" cy="51" r="5.5" stroke-width="4.5"/>
+      </g>
+    </svg>
+    {%- if wordmark -%}
+        {# Part of the logo, hence the brand orange whatever the contrast rules for text. #}
+        <span class="text-xl font-bold tracking-tight text-ink">Screen<span class="text-accent-500">Route</span></span>
+    {%- endif -%}
+</span>

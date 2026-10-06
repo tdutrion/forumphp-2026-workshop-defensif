@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{#
+    Layout of a legal page. Blocks: page (translation key of the title) and text (the page itself,
+    plain HTML with h2, h3, p, ul, a). Change the date of last update along with the text.
+#}
+
+{% block title %}{{ block('page')|trim|trans }} · ScreenRoute{% endblock %}
+
+{% block body %}
+    {# The classes of <twig:Card>: blocks of this page cannot be used inside a component. #}
+    <section class="legal space-y-4 rounded-card bg-surface p-6 leading-7 shadow-card ring-1 ring-line [&_a]:text-brand-700 [&_a]:underline [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-4 [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:ps-6">
+        <header>
+            <h1 class="text-3xl font-bold">{{ block('page')|trim|trans }}</h1>
+            <p class="text-sm text-ink-muted">{{ 'legal.last_update'|trans({'%date%': '2026-10-05'|format_date('long', locale=app.request.locale)}) }}</p>
+        </header>
+        {% block text %}{% endblock %}
+    </section>
+{% endblock %}

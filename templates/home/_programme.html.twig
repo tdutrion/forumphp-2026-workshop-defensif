@@ -1,0 +1,32 @@
+<twig:Card class="programme flex flex-col gap-4">
+    <header>
+        <h2 class="text-xl font-semibold">{{ 'planner.programme.title'|trans({'%number%': number}) }}</h2>
+        <p class="text-sm text-ink-muted">
+            {{ 'planner.programme.total_break'|trans({'%minutes%': programme.breakMinutes}) }}{% if programme.travelMinutes > 0 %} {{ 'planner.programme.total_travel'|trans({'%minutes%': programme.travelMinutes}) }}{% endif %}
+            {% if programme.distance > 0 %} · {{ 'planner.programme.distance'|trans({'%km%': programme.distance|format_number({fraction_digit: 1}, locale=app.request.locale)}) }}{% endif %}
+        </p>
+    </header>
+    <ol class="space-y-4">
+        {% for showtime in programme.showtimes %}
+            {% if not loop.first %}
+                <li class="programme-break flex items-center gap-2 pl-3 text-xs text-ink-muted" aria-label="{{ 'planner.programme.between'|trans }}">
+                    <span aria-hidden="true">⏱</span>
+                    <span>
+                        {{ 'planner.programme.break'|trans({'%minutes%': showtime.breakMinutes}) }}
+                        {% if showtime.travelMinutes > 0 %} · {{ 'planner.programme.break_travel'|trans({'%minutes%': showtime.travelMinutes}) }}{% endif %}
+                    </span>
+                </li>
+            {% endif %}
+            <li class="border-l-2 border-brand-600 pl-3" data-film-slug="{{ showtime.filmSlug }}">
+                <p class="text-sm font-semibold text-brand-700">{{ showtime.startTime }} – {{ showtime.endTime }}</p>
+                <a href="{{ path('app_film_show', {slug: showtime.filmSlug}) }}" class="font-medium hover:underline">{{ showtime.filmTitle }}</a>
+                <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+                    <twig:Badge>{{ showtime.version|upper }}</twig:Badge>
+                    {{ showtime.cinemaName }}
+                    {% if showtime.lateMinutes > 0 %}<twig:Badge tone="warning">{{ 'planner.programme.late'|trans({'%minutes%': showtime.lateMinutes}) }}</twig:Badge>{% endif %}
+                </p>
+                <twig:Button tag="a" size="sm" data-primary class="mt-2" href="{{ showtime.bookingUrl }}" target="_blank" rel="noopener noreferrer"><twig:Icon name="ticket" />{{ 'planner.programme.book'|trans }}</twig:Button>
+            </li>
+        {% endfor %}
+    </ol>
+</twig:Card>

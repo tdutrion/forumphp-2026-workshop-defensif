@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="text-3xl font-bold">{{ 'planner.title'|trans }}</h1>
+
+    {# "Programme updated" notification published by the sync (Task 4), in the language of the page #}
+    {{ turbo_stream_from('catalog/' ~ app.request.locale) }}
+    <div id="catalog-status"></div>
+
+    <twig:Card>
+        {{ form_start(form, {attr: {
+            'class': 'grid items-start gap-x-6 sm:grid-cols-2',
+            'data-controller': 'geolocation',
+            'data-geolocation-unavailable-value': 'planner.geolocation.unavailable'|trans,
+            'data-geolocation-locating-value': 'planner.geolocation.locating'|trans,
+            'data-geolocation-saved-value': 'planner.geolocation.saved'|trans,
+            'data-geolocation-denied-value': 'planner.geolocation.denied'|trans,
+            'data-geolocation-prefilled-value': 'planner.geolocation.prefilled'|trans,
+            'data-geolocation-cities-value': cityCentres|json_encode,
+        }}) }}
+            {{ form_row(form.date) }}
+            <div class="grid grid-cols-2 gap-x-4">
+                {{ form_row(form.from) }}
+                {{ form_row(form.until) }}
+            </div>
+            <div>
+                {{ form_row(form.city) }}
+                <p class="-mt-2 mb-4 flex items-center gap-2 text-sm text-ink-muted">
+                    {{ 'planner.form.or'|trans }}
+                    <twig:Button type="button" variant="ghost" size="sm" data-action="geolocation#locate">{{ 'planner.form.use_my_position'|trans }}</twig:Button>
+                    <span data-geolocation-target="status"></span>
+                </p>
+            </div>
+            {{ form_row(form.travelMode) }}
+            {{ form_row(form.films) }}
+            {{ form_row(form.version) }}
+            <div class="self-center">{{ form_row(form.acceptAds) }}</div>
+            <div class="sm:col-span-2">
+                {# The draw used for the programmes below: a new search with other criteria keeps it. #}
+                {{ form_widget(form.seed, {value: seed ?? form.seed.vars.value}) }}
+                <twig:Button type="submit">{{ 'planner.form.submit'|trans }}</twig:Button>
+            </div>
+        {{ form_end(form) }}
+    </twig:Card>
+
+    {% if nearbyCinemas is not empty %}
+        <twig:Card id="nearby-cinemas">
+            {# Closed by default: open it to exclude a cinema, or to reactivate one. #}
+            <details class="group">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
+                    <h2>{{ 'planner.cinemas.title'|trans({'%active%': nearbyCinemas|filter(c => not c.excluded)|length, '%count%': nearbyCinemas|length}) }}</h2>
+                    <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
+                </summary>
+                <div class="mt-2">
+                    <table class="w-full text-sm">
+                        <thead class="sr-only">
+                            <tr>
+                                <th scope="col">{{ 'planner.cinemas.cinema'|trans }}</th>
+                                <th scope="col">{{ 'planner.cinemas.actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-line">
+                            {% for cinema in nearbyCinemas %}
+                                <tr data-nearby-cinema="{{ cinema.slug }}">
+                                    <td class="py-2 pr-4">
+                                        <span class="font-medium">{{ cinema.name }}</span>
+                                        <span class="text-ink-muted">· {{ 'planner.cinemas.distance'|trans({'%km%': cinema.distance|format_number({fraction_digit: 1}, locale=app.request.locale)}) }}</span>
+                                        {% if usedCinemas[cinema.slug] is defined %}<twig:Badge tone="brand">{{ 'planner.cinemas.in_programmes'|trans }}</twig:Badge>{% endif %}
+                                    </td>
+                                    <td class="py-2 text-right">
+                                        <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'planner.cinemas.actions'|trans }}">
+                                            {{ include('excluded/_button.html.twig', {slug: cinema.slug, excluded: cinema.excluded, return_to: returnQuery}) }}
+                                        </twig:ButtonGroup>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </twig:Card>
+    {% endif %}
+
+    {% if result is same as(false) %}
+        <twig:Alert type="info" class="plan-message">{{ 'planner.result.no_showtime'|trans }}</twig:Alert>
+    {% elseif result %}
+        {% if result.reason == 'unknown_location' %}
+            <twig:Alert type="error" class="plan-message">{{ 'planner.result.unknown_place'|trans }}</twig:Alert>
+        {% elseif result.reason == 'no_programme' %}
+            <twig:Alert type="info" class="plan-message">{{ 'planner.result.no_programme'|trans }}</twig:Alert>
+        {% elseif result.reason == 'fewer_films' %}
+            {% if result.films == 1 %}
+                <twig:Alert type="info" class="plan-message">{{ 'planner.result.single_films'|trans({'%requested%': form.vars.value.films}) }}</twig:Alert>
+            {% else %}
+                <twig:Alert type="info" class="plan-message">{{ 'planner.result.fewer_films'|trans({'%requested%': form.vars.value.films, '%count%': result.films}) }}</twig:Alert>
+            {% endif %}
+        {% elseif result.reason == 'not_enough_programmes' %}
+            <twig:Alert type="info" class="plan-message">{{ 'planner.result.not_enough_programmes'|trans({'%count%': result.programmes|length}) }}</twig:Alert>
+        {% endif %}
+
+        {% if proposedFilms is not empty %}
+            <twig:Card id="proposed-films">
+                {# Open by default; it can be collapsed to leave room for the programmes. #}
+                <details class="group" open>
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
+                        <h2>{{ 'planner.films.title'|trans({'%count%': proposedFilms|length}) }}</h2>
+                        <span aria-hidden="true" class="text-ink-muted transition-transform group-open:rotate-180">▾</span>
+                    </summary>
+                    <div class="mt-2">
+                    <table class="w-full text-sm">
+                        <thead class="sr-only">
+                            <tr>
+                                <th scope="col">{{ 'planner.films.film'|trans }}</th>
+                                <th scope="col">{{ 'film.actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-line">
+                            {% for film in proposedFilms %}
+                                <tr data-proposed-film="{{ film.slug }}">
+                                    <td class="py-2 pr-4">
+                                        <a href="{{ path('app_film_show', {slug: film.slug}) }}" class="font-medium hover:underline">{{ film.title }}</a>
+                                    </td>
+                                    <td class="py-2 text-right">
+                                        <twig:ButtonGroup class="button-group-sm" aria-label="{{ 'film.actions'|trans }}">
+                                            {{ include('seen/_button.html.twig', {slug: film.slug, seen: false, return_to: returnQuery}) }}
+                                            {{ include('unwanted/_button.html.twig', {slug: film.slug, unwanted: false, return_to: returnQuery}) }}
+                                        </twig:ButtonGroup>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </details>
+            </twig:Card>
+        {% endif %}
+
+        {% if otherProgrammesQuery and result.programmes is not empty %}
+            <div class="flex justify-end">
+                <twig:Button tag="a" variant="secondary" href="{{ path('app_home', otherProgrammesQuery) }}" id="other-programmes">{{ 'planner.other_programmes'|trans }}</twig:Button>
+            </div>
+        {% endif %}
+        <div class="grid gap-6 lg:grid-cols-3">
+            {% for programme in result.programmes %}
+                {{ include('home/_programme.html.twig', {programme: programme, number: loop.index}) }}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

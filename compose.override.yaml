@@ -1,0 +1,59 @@
+# Development environment
+services:
+  php:
+    image: ${IMAGES_PREFIX:-}workshop-php-dev
+    # The application reads its configuration from the environment only (no symfony/dotenv):
+    # .env holds the development defaults, .env.local (optional, git-ignored) overrides them.
+    env_file: &env-files
+      - .env
+      - path: .env.local
+        required: false
+    build:
+      context: .
+      target: frankenphp_dev
+    volumes:
+      - ./:/app
+      - ./docker/frankenphp/Caddyfile:/etc/frankenphp/Caddyfile:ro
+      - ./docker/frankenphp/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro
+      # var/ stays outside the mount for better performance on macOS
+      - /app/var
+    environment:
+      FRANKENPHP_WORKER_CONFIG: watch
+      XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+      APP_ENV: "${APP_ENV:-dev}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    tty: true
+
+  worker:
+    image: ${IMAGES_PREFIX:-}workshop-php-dev
+    env_file: *env-files
+    volumes:
+      - ./:/app
+      - /app/var
+
+  oidc:
+    image: ghcr.io/navikt/mock-oauth2-server:6.0.4
+    environment:
+      JSON_CONFIG_PATH: /config.json
+    volumes:
+      - ./docker/oidc/config.json:/config.json:ro
+    ports:
+      - "127.0.0.1:8081:8080"
+
+  database:
+    ports:
+      - "127.0.0.1::3306"
+
+  # Database browser, signed in with the development account (http://127.0.0.1:8082).
+  phpmyadmin:
+    image: phpmyadmin:5.2.3
+    environment:
+      PMA_HOST: database
+      PMA_USER: ${MYSQL_USER:-app}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-app-dev-password}
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8082:80" # never HOST_IP: it is signed in to the database

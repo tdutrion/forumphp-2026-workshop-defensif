@@ -1,0 +1,34 @@
+parameters:
+    # Supported cinema chains. Instants are stored in UTC; each chain's time zone converts
+    # its local times (input from its API, display) and gives the country of its cinemas.
+    # language: ISO 639-1 language of the chain's audience. With the VOST or VO filter, a film
+    # made in that language also counts as original version (a French film in VF at Pathé,
+    # an English film at a chain such as Cineworld UK).
+    app.chains:
+        pathe:
+            name: 'Pathé'
+            country: 'FR'
+            timezone: 'Europe/Paris'
+            language: 'fr'
+
+    # Chains with an unlimited pass, not supported yet: shown on the landing page (research of
+    # October 4, 2026, see the spec). Supporting one = an SDK and an entry in app.chains above;
+    # remove it from this list then. countries: ISO 3166-1 codes.
+    app.chains_planned:
+        - { name: 'Pathé', countries: ['NL', 'CH'] }
+        - { name: 'UGC', countries: ['FR', 'BE'] }
+        - { name: 'Megarama', countries: ['FR'] }
+        - { name: 'Kinepolis', countries: ['BE'] }
+        - { name: 'Cineworld', countries: ['GB', 'IE'] }
+        - { name: 'Odeon', countries: ['GB'] }
+        - { name: 'Everyman', countries: ['GB'] }
+        - { name: 'Cineville', countries: ['NL', 'BE', 'DE', 'SE', 'AT'] }
+        - { name: 'UCI Kinowelt', countries: ['DE'] }
+        - { name: 'Yorck', countries: ['DE'] }
+        - { name: 'Cinfinity', countries: ['DE'] }
+        - { name: 'Cinesa', countries: ['ES'] }
+        - { name: 'Cinema City', countries: ['PL'] }
+        - { name: 'Nordisk Film', countries: ['DK', 'NO'] }
+        - { name: 'AMC Theatres', countries: ['US'] }
+        - { name: 'Regal', countries: ['US'] }
+        - { name: 'Alamo Drafthouse', countries: ['US'] }

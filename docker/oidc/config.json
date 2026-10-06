@@ -1,0 +1,19 @@
+{
+  "interactiveLogin": true,
+  "tokenCallbacks": [
+    {
+      "issuerId": "local",
+      "requestMappings": [
+        {
+          "requestParam": "subject",
+          "match": ".*",
+          "claims": {
+            "email": "${subject}",
+            "email_verified": true,
+            "name": "${subject}"
+          }
+        }
+      ]
+    }
+  ]
+}

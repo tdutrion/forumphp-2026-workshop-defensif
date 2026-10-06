@@ -1,0 +1,14 @@
+{% props type = 'info' %}
+{% set alert = html_cva(
+    base: 'flash rounded-control px-4 py-3 text-sm ring-1',
+    variants: {
+        type: {
+            success: 'flash-success bg-success-50 text-success-700 ring-success-600/20',
+            error: 'flash-error bg-danger-50 text-danger-700 ring-danger-600/20',
+            info: 'flash-info bg-info-50 text-info-700 ring-info-600/20',
+        },
+    },
+) %}
+<p role="{{ type == 'error' ? 'alert' : 'status' }}" {{ attributes.defaults({class: alert.apply({type: type})}) }}>
+    {%- block content %}{% endblock -%}
+</p>

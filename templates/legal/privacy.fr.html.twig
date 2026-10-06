@@ -1,0 +1,51 @@
+{% extends 'legal/_page.html.twig' %}
+
+{% block page %}legal.privacy.title{% endblock %}
+
+{% block text %}
+    <p>Cette politique décrit les données personnelles traitées par ScreenRoute, conformément au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
+
+    <h2>Responsable du traitement</h2>
+    <p>TDUTRION SOLUTIONS, 229 rue Saint-Honoré, 75001 Paris, représentée par Thomas Dutrion, gérant. Contact : <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>.</p>
+
+    <h2>Données traitées</h2>
+    <ul>
+        <li><strong>Compte</strong> : identifiant chez le fournisseur de connexion choisi (Google, GitHub…), adresse e-mail vérifiée et nom affiché qu'il nous transmet, date de création.</li>
+        <li><strong>Préférences</strong> : thème clair, foncé ou automatique, nombre de films par page.</li>
+        <li><strong>Vos choix</strong> : films déjà vus, films que vous ne voulez pas voir, cinémas exclus, avec leur date.</li>
+        <li><strong>Jetons d'API</strong> : nom, dates de création, d'expiration et de révocation. Le jeton lui-même n'est jamais conservé, seulement son empreinte (SHA-256).</li>
+        <li><strong>Position</strong> : seulement si vous l'autorisez dans votre navigateur. Elle sert à la recherche en cours et n'est pas enregistrée dans votre compte ; elle figure dans l'adresse de la page de résultats.</li>
+        <li><strong>Journaux techniques</strong> : adresse IP, page demandée, date et heure, pour la sécurité et le bon fonctionnement du service.</li>
+    </ul>
+    <p>Aucun mot de passe n'est conservé. Aucune donnée n'est vendue, ni utilisée à des fins publicitaires ou de mesure d'audience.</p>
+
+    <h2>Finalités et bases légales</h2>
+    <ul>
+        <li>Fournir le service (compte, recherche de programmes, historique, préférences, API) : exécution des <a href="{{ path('app_legal_terms') }}">conditions générales d'utilisation</a> (article 6.1.b du RGPD).</li>
+        <li>Sécuriser le service et prévenir les abus (journaux techniques) : intérêt légitime de l'éditeur (article 6.1.f du RGPD).</li>
+    </ul>
+
+    <h2>Destinataires</h2>
+    <ul>
+        <li>Vos données ne sont accessibles qu'à TDUTRION SOLUTIONS.</li>
+        <li>Elles sont hébergées par Infomaniak Network SA, en Suisse, sous-traitant de l'éditeur. La Suisse fait l'objet d'une décision d'adéquation de la Commission européenne : le niveau de protection y est reconnu équivalent à celui de l'Union européenne.</li>
+        <li>Lors de la connexion, vous êtes redirigé vers le fournisseur que vous avez choisi (Google, GitHub…), qui traite vos données selon sa propre politique de confidentialité.</li>
+    </ul>
+
+    <h2>Durées de conservation</h2>
+    <ul>
+        <li>Compte, préférences et choix : tant que le compte existe. Ils sont supprimés lorsque vous demandez la suppression du compte.</li>
+        <li>Jetons d'API : jusqu'à la suppression du compte ; un jeton expiré ou révoqué ne donne plus aucun accès.</li>
+        <li>Journaux techniques : 12 mois au plus.</li>
+    </ul>
+
+    <h2>Cookies</h2>
+    <p>ScreenRoute ne dépose que des cookies strictement nécessaires à son fonctionnement : le cookie de session, qui vous garde connecté, et des cookies de protection des formulaires contre la falsification de requêtes (CSRF). Ils sont exemptés de consentement (article 82 de la loi Informatique et Libertés) : aucun bandeau n'est donc nécessaire. Aucun cookie de mesure d'audience, de publicité ou de réseau social n'est utilisé.</p>
+
+    <h2>Sécurité</h2>
+    <p>Les échanges sont chiffrés (HTTPS). La connexion passe par votre fournisseur d'identité, sans mot de passe stocké, et les jetons d'API ne sont conservés que sous forme d'empreinte.</p>
+
+    <h2>Vos droits</h2>
+    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition, ainsi que du droit de définir des directives sur le sort de vos données après votre décès. Pour les exercer, écrivez à <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a> : une réponse vous sera apportée dans un délai d'un mois.</p>
+    <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL (Commission nationale de l'informatique et des libertés), 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, ou sur <a href="https://www.cnil.fr">www.cnil.fr</a>.</p>
+{% endblock %}

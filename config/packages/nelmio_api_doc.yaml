@@ -1,0 +1,16 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: ScreenRoute
+            description: API of the movie marathon planner (same use cases as the website).
+            version: 1.0.0
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+        security:
+            - Bearer: []
+    areas:
+        path_patterns:
+            - ^/api(?!/doc)

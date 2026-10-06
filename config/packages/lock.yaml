@@ -1,0 +1,7 @@
+framework:
+    # Shared by the php and worker containers through MySQL (table lock_keys, created on first use).
+    lock: '%env(LOCK_DSN)%'
+
+when@test:
+    framework:
+        lock: 'in-memory'

@@ -1,0 +1,339 @@
+@import "tailwindcss";
+
+@source "../../templates";
+/* Class names built dynamically by the style guide (Tailwind only sees names written in full). */
+@source inline("bg-{brand-50,brand-600,brand-900,accent-50,accent-500,accent-700,ink,ink-muted,canvas,surface-muted,line,success-600,danger-600}");
+
+/*
+ * Design tokens: the only place where colors, fonts, radii and shadows are chosen.
+ * The default palette is removed, so a class such as "bg-red-500" produces nothing:
+ * add a token here instead.
+ */
+@theme {
+    --color-*: initial;
+
+    --color-white: oklch(100% 0 0);
+    --color-black: oklch(0% 0 0);
+
+    /* Brand: blue #2980b9 (600). White text on it reaches 4.3:1; prefer 700 behind small text. */
+    --color-brand-50: #eef6fb;
+    --color-brand-100: #d8eaf6;
+    --color-brand-200: #b3d6ed;
+    --color-brand-300: #86bde0;
+    --color-brand-400: #5ba5d4;
+    --color-brand-500: #3a91c8;
+    --color-brand-600: #2980b9;
+    --color-brand-700: #216897;
+    --color-brand-800: #1b5279;
+    --color-brand-900: #163f5d;
+
+    /* Accent: orange #e67e22 (500), for highlights; text on light backgrounds uses 700. */
+    --color-accent-50: #fdf3ea;
+    --color-accent-100: #fbe3cc;
+    --color-accent-200: #f6c393;
+    --color-accent-300: #f0a35c;
+    --color-accent-400: #eb8f3c;
+    --color-accent-500: #e67e22;
+    --color-accent-600: #c96a15;
+    --color-accent-700: #a35512;
+
+    --color-ink: oklch(21% 0.034 265);
+    --color-ink-muted: oklch(44.6% 0.03 257);
+    --color-canvas: oklch(98.5% 0.002 248);
+    --color-surface: oklch(100% 0 0);
+    --color-surface-muted: oklch(96.7% 0.003 265);
+    --color-line: oklch(92.8% 0.006 265);
+
+    --color-success-50: oklch(98.2% 0.018 156);
+    --color-success-600: oklch(62.7% 0.194 149);
+    --color-success-700: oklch(52.7% 0.154 150);
+    --color-danger-50: oklch(97.1% 0.013 17);
+    --color-danger-600: oklch(57.7% 0.245 27);
+    --color-danger-700: oklch(50.5% 0.213 27);
+    --color-danger-800: oklch(44.4% 0.177 27);
+    --color-info-50: oklch(97% 0.014 254);
+    --color-info-600: oklch(54.6% 0.245 263);
+    --color-info-700: oklch(48.8% 0.243 264);
+
+    /* System fonts only: nothing to download, works offline. */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    --radius-control: 0.5rem;
+    --radius-card: 0.75rem;
+    --radius-pill: 9999px;
+
+    --shadow-card: 0 1px 2px 0 oklch(0% 0 0 / 0.05), 0 1px 3px 0 oklch(0% 0 0 / 0.1);
+}
+
+/*
+ * Dark theme: the same tokens, redefined, so every component follows without a "dark:" class.
+ * The neutrals swap, the -50 tints become dark backgrounds and the -700 shades (text on tints) light
+ * ones. Filled buttons hover with the -800 shades, which stay dark in both themes.
+ * Chosen in the settings (data-theme on <html>); "auto" (no attribute) follows the system.
+ * Any element can carry data-theme too (the style guide shows both themes side by side), hence the
+ * light block, which repeats the @theme values of the swapped tokens for a light block in a dark page.
+ * The two dark blocks must stay identical, the light one must match @theme.
+ */
+[data-theme="light"] {
+    color-scheme: light;
+    --color-ink: oklch(21% 0.034 265);
+    --color-ink-muted: oklch(44.6% 0.03 257);
+    --color-canvas: oklch(98.5% 0.002 248);
+    --color-surface: oklch(100% 0 0);
+    --color-surface-muted: oklch(96.7% 0.003 265);
+    --color-line: oklch(92.8% 0.006 265);
+    --color-brand-50: #eef6fb;
+    --color-brand-700: #216897;
+    --color-accent-50: #fdf3ea;
+    --color-accent-700: #a35512;
+    --color-success-50: oklch(98.2% 0.018 156);
+    --color-success-700: oklch(52.7% 0.154 150);
+    --color-danger-50: oklch(97.1% 0.013 17);
+    --color-danger-700: oklch(50.5% 0.213 27);
+    --color-info-50: oklch(97% 0.014 254);
+    --color-info-700: oklch(48.8% 0.243 264);
+    --shadow-card: 0 1px 2px 0 oklch(0% 0 0 / 0.05), 0 1px 3px 0 oklch(0% 0 0 / 0.1);
+}
+
+[data-theme="dark"] {
+    color-scheme: dark;
+    --color-ink: oklch(93% 0.01 265);
+    --color-ink-muted: oklch(72% 0.02 257);
+    --color-canvas: oklch(17% 0.02 265);
+    --color-surface: oklch(21.5% 0.022 265);
+    --color-surface-muted: oklch(26.5% 0.024 265);
+    --color-line: oklch(33% 0.025 265);
+    --color-brand-50: #12324a;
+    --color-brand-700: #86bde0;
+    --color-accent-50: #3d2610;
+    --color-accent-700: #f0a35c;
+    --color-success-50: oklch(27% 0.05 156);
+    --color-success-700: oklch(80% 0.15 150);
+    --color-danger-50: oklch(27% 0.07 20);
+    --color-danger-700: oklch(78% 0.13 20);
+    --color-info-50: oklch(27% 0.06 260);
+    --color-info-700: oklch(80% 0.1 260);
+    --shadow-card: 0 1px 2px 0 oklch(0% 0 0 / 0.3), 0 1px 3px 0 oklch(0% 0 0 / 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        color-scheme: dark;
+        --color-ink: oklch(93% 0.01 265);
+        --color-ink-muted: oklch(72% 0.02 257);
+        --color-canvas: oklch(17% 0.02 265);
+        --color-surface: oklch(21.5% 0.022 265);
+        --color-surface-muted: oklch(26.5% 0.024 265);
+        --color-line: oklch(33% 0.025 265);
+        --color-brand-50: #12324a;
+        --color-brand-700: #86bde0;
+        --color-accent-50: #3d2610;
+        --color-accent-700: #f0a35c;
+        --color-success-50: oklch(27% 0.05 156);
+        --color-success-700: oklch(80% 0.15 150);
+        --color-danger-50: oklch(27% 0.07 20);
+        --color-danger-700: oklch(78% 0.13 20);
+        --color-info-50: oklch(27% 0.06 260);
+        --color-info-700: oklch(80% 0.1 260);
+        --shadow-card: 0 1px 2px 0 oklch(0% 0 0 / 0.3), 0 1px 3px 0 oklch(0% 0 0 / 0.4);
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-canvas font-sans text-ink antialiased;
+    }
+
+    /* The marker of <summary> (dropdowns): the chevron icon replaces it. */
+    summary::-webkit-details-marker {
+        display: none;
+    }
+}
+
+/*
+ * Switch: a native checkbox (class "switch", role="switch") drawn as an on/off toggle. Every
+ * yes-or-no choice is one; it still posts like a checkbox, without JavaScript.
+ */
+@layer components {
+    .switch {
+        @apply relative inline-flex h-5 w-9 shrink-0 cursor-pointer appearance-none rounded-pill bg-line transition-colors;
+    }
+    .switch::before {
+        @apply absolute top-0.5 left-0.5 size-4 rounded-pill bg-white shadow-sm transition-transform;
+        content: "";
+    }
+    .switch:checked {
+        @apply bg-brand-600;
+    }
+    .switch:checked::before {
+        @apply translate-x-4;
+    }
+    .switch:focus-visible {
+        @apply outline-2 outline-offset-2 outline-brand-600;
+    }
+    .switch:disabled {
+        @apply cursor-not-allowed opacity-50;
+    }
+}
+
+/*
+ * <twig:ButtonGroup> (Flowbite-like): joined buttons sharing their borders, one shadow, the focus
+ * ring above the neighbours. The wrappers of a toggle (span, form) are transparent.
+ * - Without a primary action: one row, rounded at both ends.
+ * - With one (data-primary, always first): the buttons are stacked, full width, the primary
+ *   action on top.
+ * In the utilities layer so that it wins over the classes of <twig:Button>.
+ */
+@layer utilities {
+    .button-group {
+        @apply inline-grid grid-flow-col rounded-control shadow-sm;
+    }
+
+    .button-group > span,
+    .button-group form {
+        display: contents;
+    }
+
+    .button-group :is(a, button) {
+        @apply relative inline-flex items-center justify-center gap-1.5 rounded-none border border-line bg-surface px-3 py-2 text-sm leading-5 font-medium text-ink shadow-none ring-0 hover:bg-surface-muted hover:text-brand-700 focus:z-10 focus:outline-none focus-visible:ring-3 focus-visible:ring-brand-600/30;
+    }
+
+    /* Compact variant, for tables. */
+    .button-group.button-group-sm :is(a, button) {
+        @apply gap-1 px-2 py-1 text-xs leading-4;
+    }
+
+    /* A toggle that is on (Seen ✓, Hidden ✓). */
+    .button-group :is(a, button)[aria-pressed="true"] {
+        @apply bg-brand-50 text-brand-700;
+    }
+
+    /* One row. */
+    .button-group > :not(:first-child):is(a, button),
+    .button-group > :not(:first-child) :is(a, button) {
+        @apply -ms-px;
+    }
+
+    .button-group > :first-child:is(a, button),
+    .button-group > :first-child :is(a, button) {
+        @apply rounded-s-control;
+    }
+
+    .button-group > :last-child:is(a, button),
+    .button-group > :last-child :is(a, button) {
+        @apply rounded-e-control;
+    }
+
+    /*
+     * <twig:Dropdown>: links and buttons of the menu dressed as items, whatever their own classes
+     * (a toggle partial renders a <twig:Button>). Forms and wrappers are transparent.
+     */
+    .dropdown-menu > span,
+    .dropdown-menu form {
+        display: contents;
+    }
+
+    .dropdown-menu :is(a, button) {
+        @apply flex w-full items-center gap-2 rounded-control bg-transparent px-3 py-2 text-start text-sm font-normal text-ink shadow-none ring-0 hover:bg-surface-muted hover:text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600;
+    }
+
+    /* With a primary action (first): the buttons are stacked, full width. */
+    .button-group:has([data-primary]) {
+        @apply grid-flow-row grid-cols-1;
+    }
+
+    .button-group :is(a, button)[data-primary] {
+        @apply rounded-none rounded-t-control border-brand-600 bg-brand-600 text-white hover:border-brand-800 hover:bg-brand-800 hover:text-white;
+    }
+
+    .button-group:has([data-primary]) > :not(:first-child) :is(a, button) {
+        @apply ms-0 -mt-px rounded-none;
+    }
+
+    .button-group:has([data-primary]) > :last-child :is(a, button) {
+        @apply rounded-b-control;
+    }
+}
+
+/*
+ * Tom Select (the city autocomplete) dressed like the other fields of the design system, so that
+ * "City" lines up with "Getting around". Unlayered and scoped to forms on purpose:
+ * tom-select.default.css is not in a cascade layer either, and unlayered rules beat layered ones.
+ */
+/* The wrapper gets the classes of a field from the form theme: only the inner control is the field. */
+form .ts-wrapper {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+form .ts-wrapper .ts-control,
+form .ts-wrapper.single.input-active .ts-control {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    box-shadow: 0 1px 2px 0 oklch(0% 0 0 / 0.05);
+    padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+    color: var(--color-ink);
+}
+
+/*
+ * Room for the caret of a single select. tom-select.default.css paints a light gradient on the
+ * single select with a more specific selector (.ts-wrapper.single .ts-control): drop it here,
+ * at least as specific, so the field follows the theme.
+ */
+form .ts-wrapper.single .ts-control {
+    padding-right: calc(var(--spacing) * 8);
+    border-color: var(--color-line);
+    background-image: none;
+    box-shadow: 0 1px 2px 0 oklch(0% 0 0 / 0.05);
+}
+
+form .ts-wrapper .ts-control,
+form .ts-wrapper .ts-control input,
+form .ts-wrapper .ts-dropdown {
+    font-size: var(--text-base);
+    line-height: calc(var(--spacing) * 6);
+}
+
+form .ts-wrapper.focus .ts-control {
+    border-color: var(--color-brand-600);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-brand-600) 30%, transparent);
+}
+
+form .ts-wrapper .ts-dropdown {
+    border-color: var(--color-line);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-card);
+}
+
+/* Tom Select writes its colours in hex: the tokens instead, so that the dark theme applies. */
+form .ts-wrapper .ts-dropdown :is(.option, .no-results, .optgroup-header) {
+    background: transparent;
+    color: var(--color-ink);
+}
+
+form .ts-wrapper .ts-dropdown .create {
+    color: var(--color-ink-muted);
+}
+
+form .ts-wrapper .ts-control input::placeholder {
+    color: var(--color-ink-muted);
+}
+
+form .ts-wrapper.single .ts-control::after {
+    border-top-color: var(--color-ink-muted);
+}
+
+form .ts-wrapper.single.dropdown-active .ts-control::after {
+    border-top-color: transparent;
+    border-bottom-color: var(--color-ink-muted);
+}
+
+form .ts-wrapper .ts-dropdown .active {
+    background-color: var(--color-brand-50);
+    color: var(--color-brand-700);
+}

@@ -1,0 +1,14 @@
+{% props tone = 'neutral' %}
+{% set badge = html_cva(
+    base: 'inline-flex items-center rounded-control px-2 py-0.5 text-xs font-medium',
+    variants: {
+        tone: {
+            neutral: 'bg-surface-muted text-ink-muted',
+            brand: 'bg-brand-50 text-brand-700',
+            warning: 'bg-accent-50 text-accent-700 ring-1 ring-accent-500/30',
+        },
+    },
+) %}
+<span {{ attributes.defaults({class: badge.apply({tone: tone})}) }}>
+    {%- block content %}{% endblock -%}
+</span>

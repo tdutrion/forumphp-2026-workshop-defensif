@@ -1,0 +1,8 @@
+<span data-seen-film="{{ slug }}">
+    <form method="post" action="{{ path(seen ? 'app_film_unseen' : 'app_film_seen', {slug: slug}) }}" class="inline">
+        {% if return_route|default('') %}<input type="hidden" name="_return_route" value="{{ return_route }}">{% endif %}
+        {% if return_to|default('') %}<input type="hidden" name="_return" value="{{ return_to }}">{% endif %}
+        <input type="hidden" name="_token" value="{{ csrf_token('seen-film') }}">
+        <twig:Button type="submit" variant="secondary" size="sm" aria-pressed="{{ seen ? 'true' : 'false' }}"><twig:Icon name="check" />{{ label|default((seen ? 'seen.undo' : 'seen.mark')|trans) }}</twig:Button>
+    </form>
+</span>

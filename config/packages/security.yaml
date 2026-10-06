@@ -1,0 +1,41 @@
+security:
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Account\Entity\User
+                property: id
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        api_doc:
+            pattern: ^/api/doc
+            security: false
+        api:
+            pattern: ^/api/
+            stateless: true
+            access_token:
+                token_handler: App\Security\ApiTokenHandler
+                failure_handler: App\Security\ApiAuthenticationFailureHandler
+        main:
+            lazy: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\OAuthAuthenticator
+            entry_point: App\Security\OAuthAuthenticator
+            logout:
+                path: app_logout
+                target: app_login
+                enable_csrf: true
+
+    access_control:
+        - { path: ^/api/, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/, roles: PUBLIC_ACCESS }
+        - { path: ^/design-system, roles: PUBLIC_ACCESS }
+        - { path: ^/legal/, roles: PUBLIC_ACCESS }
+        - { path: ^/locale$, roles: PUBLIC_ACCESS }
+        # The landing page for visitors, the planner for signed-in users (HomeController).
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER }

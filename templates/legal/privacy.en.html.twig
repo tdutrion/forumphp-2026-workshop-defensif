@@ -1,0 +1,51 @@
+{% extends 'legal/_page.html.twig' %}
+
+{% block page %}legal.privacy.title{% endblock %}
+
+{% block text %}
+    <p>This policy describes the personal data processed by ScreenRoute, under the General Data Protection Regulation (GDPR) and the French Data Protection Act. This translation is provided for convenience: the French version prevails.</p>
+
+    <h2>Data controller</h2>
+    <p>TDUTRION SOLUTIONS, 229 rue Saint-Honoré, 75001 Paris, France, represented by Thomas Dutrion, manager. Contact: <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>.</p>
+
+    <h2>Data processed</h2>
+    <ul>
+        <li><strong>Account</strong>: identifier at the sign-in provider you chose (Google, GitHub…), the verified email address and display name it sends us, creation date.</li>
+        <li><strong>Preferences</strong>: light, dark or automatic theme, number of films per page.</li>
+        <li><strong>Your choices</strong>: films already seen, films you do not want to see, excluded cinemas, with their date.</li>
+        <li><strong>API tokens</strong>: name, creation, expiry and revocation dates. The token itself is never kept, only its fingerprint (SHA-256).</li>
+        <li><strong>Position</strong>: only if you allow it in your browser. It serves the current search and is not saved in your account; it appears in the address of the results page.</li>
+        <li><strong>Technical logs</strong>: IP address, requested page, date and time, for the security and proper working of the service.</li>
+    </ul>
+    <p>No password is kept. No data is sold, nor used for advertising or audience measurement.</p>
+
+    <h2>Purposes and legal bases</h2>
+    <ul>
+        <li>Providing the service (account, programme search, history, preferences, API): performance of the <a href="{{ path('app_legal_terms') }}">terms of use</a> (GDPR article 6.1.b).</li>
+        <li>Securing the service and preventing abuse (technical logs): legitimate interest of the publisher (GDPR article 6.1.f).</li>
+    </ul>
+
+    <h2>Recipients</h2>
+    <ul>
+        <li>Your data is only accessible to TDUTRION SOLUTIONS.</li>
+        <li>It is hosted by Infomaniak Network SA, in Switzerland, as the publisher's processor. Switzerland is covered by an adequacy decision of the European Commission: its level of protection is recognised as equivalent to that of the European Union.</li>
+        <li>When signing in, you are redirected to the provider you chose (Google, GitHub…), which processes your data under its own privacy policy.</li>
+    </ul>
+
+    <h2>Retention periods</h2>
+    <ul>
+        <li>Account, preferences and choices: as long as the account exists. They are deleted when you ask for the account to be deleted.</li>
+        <li>API tokens: until the account is deleted; an expired or revoked token no longer gives any access.</li>
+        <li>Technical logs: 12 months at most.</li>
+    </ul>
+
+    <h2>Cookies</h2>
+    <p>ScreenRoute only sets cookies strictly necessary for it to work: the session cookie, which keeps you signed in, and cookies protecting the forms against cross-site request forgery (CSRF). They are exempt from consent (article 82 of the French Data Protection Act): no banner is therefore needed. No audience measurement, advertising or social network cookie is used.</p>
+
+    <h2>Security</h2>
+    <p>Exchanges are encrypted (HTTPS). Signing in goes through your identity provider, with no stored password, and API tokens are only kept as a fingerprint.</p>
+
+    <h2>Your rights</h2>
+    <p>You have the right of access, rectification, erasure, restriction, portability and objection, and the right to set guidelines on what happens to your data after your death. To exercise them, write to <a href="mailto:hello@tdutrion.fr">hello@tdutrion.fr</a>: you will get an answer within one month.</p>
+    <p>If you believe your rights are not respected, you can lodge a complaint with the CNIL (French data protection authority), 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, France, or at <a href="https://www.cnil.fr">www.cnil.fr</a>.</p>
+{% endblock %}

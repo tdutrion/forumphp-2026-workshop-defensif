@@ -1,0 +1,18 @@
+{% props label, align = 'end', compact = false %}
+{#
+    Menu opened by its button: a <details>, so it works without JavaScript; the dropdown controller
+    closes it on a click outside or Escape. Links and buttons inside are dressed as menu items
+    (.dropdown-menu in app.css), forms and their wrappers stay transparent.
+#}
+<details {{ attributes.defaults({class: 'dropdown relative inline-block', 'data-controller': 'dropdown'}) }}>
+    <summary class="dropdown-toggle {{ compact ? 'p-1.5' : 'px-3 py-1.5' }} inline-flex cursor-pointer list-none items-center gap-1.5 rounded-control text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-brand-600">
+        {%- if compact -%}
+            <twig:Icon name="ellipsis-vertical" class="size-5" /><span class="sr-only">{{ label }}</span>
+        {%- else -%}
+            {{ label }}<twig:Icon name="chevron-down" />
+        {%- endif -%}
+    </summary>
+    <div class="dropdown-menu absolute z-20 mt-1 min-w-52 rounded-control bg-surface p-1 shadow-card ring-1 ring-line {{ align == 'end' ? 'end-0' : 'start-0' }}">
+        {%- block content %}{% endblock -%}
+    </div>
+</details>

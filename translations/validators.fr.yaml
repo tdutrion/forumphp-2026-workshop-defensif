@@ -1,0 +1,6 @@
+'planner.date.required': 'Choisissez une date.'
+'planner.films.range': 'Choisissez entre {{ min }} et {{ max }} films.'
+'planner.location.required': 'Choisissez une ville ou utilisez votre position.'
+'planner.seed.invalid': 'Tirage invalide.'
+'planner.time_range.order': 'La fin de la plage horaire doit être après son début.'
+'settings.exclude_cinema.invalid': 'Choisissez un cinéma dans la liste.'
