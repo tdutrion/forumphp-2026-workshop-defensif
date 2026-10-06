@@ -3,14 +3,25 @@
 namespace App\Tests\Integration\Catalog;
 
 use App\Catalog\CatalogCalendar;
+use App\Catalog\Repository\ShowtimeRepository;
 use App\Catalog\Sync\CatalogSyncRunner;
+use App\Tests\Builder\CinemaBuilder;
+use App\Tests\Builder\CityBuilder;
+use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\PatheApiBuilder;
+use App\Tests\Builder\ShowtimeBuilder;
 use App\Tests\Fake\FakePatheApi;
+use App\Tests\StoresEntities;
+use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
+use Symfony\Component\Yaml\Yaml;
 use Symfony\Contracts\Cache\CacheInterface;
 
 final class CatalogCalendarTest extends KernelTestCase
 {
+    use StoresEntities;
+
     private function catalogCache(): CacheInterface
     {
         return self::getContainer()->get('cache.catalog');
@@ -60,5 +71,38 @@ final class CatalogCalendarTest extends KernelTestCase
         });
         self::assertSame([], $dates);
         self::assertFalse($recomputed, 'the cache was not recreated');
+    }
+
+    public function testTheCalendarIsStoredWhereTheWebAndWorkerContainersBothSeeIt(): void
+    {
+        // Arrange: the worker and the web server have their own var/ directory, but the same database.
+        $config = Yaml::parseFile(\dirname(__DIR__, 3).'/config/packages/framework.yaml', Yaml::PARSE_CUSTOM_TAGS);
+
+        // Act
+        $adapter = $config['framework']['cache']['pools']['cache.catalog']['adapter'] ?? null;
+
+        // Assert
+        self::assertSame('cache.adapter.doctrine_dbal', $adapter, 'the catalog calendar must live in MySQL, not in a container');
+    }
+
+    public function testARefreshByTheWorkerIsSeenByTheWebServer(): void
+    {
+        // Arrange: one pool per container, on the same database (the migration created the table).
+        self::bootKernel();
+        $cinema = CinemaBuilder::aCinema()->in(CityBuilder::aCity()->build())->build();
+        $film = FilmBuilder::aFilm()->build();
+        $this->store($cinema->getCity(), $cinema, $film, ShowtimeBuilder::aShowtime()->of($film)->at($cinema)->startingAt('2030-01-10 14:00:00')->build());
+        $connection = self::getContainer()->get(Connection::class);
+        $showtimes = self::getContainer()->get(ShowtimeRepository::class);
+        $worker = new CatalogCalendar($showtimes, new DoctrineDbalAdapter($connection, 'catalog'));
+        $web = new CatalogCalendar($showtimes, new DoctrineDbalAdapter($connection, 'catalog'));
+        $web->availableDates(new \DateTimeImmutable('2030-01-01', new \DateTimeZone('UTC')));
+
+        // Act: a new day is imported and the worker refreshes the calendar.
+        $this->store(ShowtimeBuilder::aShowtime()->of($film)->at($cinema)->startingAt('2030-01-11 14:00:00')->build());
+        $worker->refresh();
+
+        // Assert
+        self::assertSame(['2030-01-10', '2030-01-11'], $web->availableDates(new \DateTimeImmutable('2030-01-01', new \DateTimeZone('UTC'))));
     }
 }
