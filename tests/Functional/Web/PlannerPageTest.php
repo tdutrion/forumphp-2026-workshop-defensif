@@ -207,6 +207,21 @@ final class PlannerPageTest extends WebTestCase
         self::assertStringContainsString('Unknown place', $unknownPlace);
     }
 
+    public function testExplainsThatACityWithoutAnOpenCinemaIsUnknown(): void
+    {
+        // Arrange: Beaune's only cinema has closed.
+        $client = $this->signedInWithDijonCatalog();
+        $beaune = CityBuilder::aCity()->withSlug('beaune')->named('Beaune')->build();
+        $this->store($beaune, CinemaBuilder::aCinema()->withSlug('cinema-beaune')->in($beaune)->at(47.02, 4.84)->closed()->build());
+
+        // Act
+        $crawler = $client->request('GET', '/', $this->search(['city' => 'beaune']));
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('Unknown place', $crawler->filter('.plan-message')->text());
+    }
+
     public function testDatesFollowTheLanguageOfTheBrowser(): void
     {
         // Arrange

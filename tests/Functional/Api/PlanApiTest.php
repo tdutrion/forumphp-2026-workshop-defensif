@@ -3,6 +3,8 @@
 namespace App\Tests\Functional\Api;
 
 use App\Catalog\Entity\Cinema;
+use App\Tests\Builder\CinemaBuilder;
+use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\ShowtimeBuilder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -160,6 +162,22 @@ final class PlanApiTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
         self::assertResponseHeaderSame('content-type', 'application/problem+json');
         self::assertSame('position', $body['errors'][0]['field'] ?? null);
+    }
+
+    public function testACityWithoutAnOpenCinemaIsInvalidInput(): void
+    {
+        // Arrange: Beaune's only cinema has closed.
+        $this->arrangeDijonCatalogWithToken();
+        $beaune = CityBuilder::aCity()->withSlug('beaune')->named('Beaune')->build();
+        $this->store($beaune, CinemaBuilder::aCinema()->withSlug('cinema-beaune')->in($beaune)->at(47.02, 4.84)->closed()->build());
+
+        // Act
+        $body = $this->api('GET', '/api/plans', ['date' => '2030-01-10', 'city' => 'beaune']);
+
+        // Assert
+        self::assertResponseStatusCodeSame(422);
+        self::assertResponseHeaderSame('content-type', 'application/problem+json');
+        self::assertSame('city', $body['errors'][0]['field'] ?? null);
     }
 
     public function testAnUnknownTravelModeIsInvalid(): void
