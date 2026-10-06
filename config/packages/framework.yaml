@@ -22,9 +22,11 @@ framework:
             # Pathé reference data (cities, cinemas, films), kept PATHE_CACHE_TTL seconds.
             cache.pathe:
                 adapter: cache.app
-            # Last bookable time of each day, computed by the import (CatalogCalendar).
+            # Last bookable time of each day, computed by the import (CatalogCalendar). Refreshed by
+            # the worker and read by the web server: in MySQL (table cache_items), shared by both
+            # containers, whereas cache.app lives in the var/ directory of each container.
             cache.catalog:
-                adapter: cache.app
+                adapter: cache.adapter.doctrine_dbal
             # Wikidata answers (works), kept a day.
             cache.wikidata:
                 adapter: cache.app
