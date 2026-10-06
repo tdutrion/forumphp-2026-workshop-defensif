@@ -27,6 +27,7 @@ class AccountService
      */
     public function loginWithProvider(string $provider, array $userInfo): User
     {
+        $userInfo['email'] = $this->normalizeEmail($userInfo['email']);
         $linked = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo['id']);
         if (null !== $linked) {
             return $linked->getUser();
@@ -58,6 +59,7 @@ class AccountService
      */
     public function linkProvider(User $user, string $provider, array $userInfo): bool
     {
+        $userInfo['email'] = $this->normalizeEmail($userInfo['email']);
         $existing = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo['id']);
         if (null !== $existing) {
             return $existing->getUser()->getId()->equals($user->getId());
@@ -92,6 +94,15 @@ class AccountService
         }
 
         return false;
+    }
+
+    /**
+     * Emails are stored and compared in lower case (the column is case- and accent-sensitive):
+     * "Ada@Example.org" is "ada@example.org", but "josé@" is never "jose@".
+     */
+    private function normalizeEmail(?string $email): ?string
+    {
+        return null === $email ? null : mb_strtolower($email);
     }
 
     public function changeTheme(User $user, Theme $theme): void

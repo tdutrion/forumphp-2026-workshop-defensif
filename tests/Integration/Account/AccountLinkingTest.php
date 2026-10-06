@@ -65,6 +65,38 @@ final class AccountLinkingTest extends KernelTestCase
         self::assertNull($user->getEmail(), 'an unverified email is not copied to the account');
     }
 
+    public function testAnEmailThatOnlyDiffersByAnAccentIsAnotherAccount(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $jose = UserBuilder::aUser()->withEmail('jose@corp.example')->linkedTo('github', '42')->build();
+        $this->store($jose);
+
+        // Act
+        $user = $this->accounts()->loginWithProvider('google', IdentityBuilder::anIdentity()->withId('g-7')->withEmail('josé@corp.example')->build());
+
+        // Assert
+        self::assertFalse($jose->getId()->equals($user->getId()));
+        self::assertSame('josé@corp.example', $user->getEmail());
+        self::assertCount(1, $jose->getLinkedAccounts());
+    }
+
+    public function testEmailsAreComparedAndStoredInLowerCase(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $ada = UserBuilder::aUser()->withEmail('ada@example.org')->linkedTo('github', '42')->build();
+        $this->store($ada);
+
+        // Act
+        $user = $this->accounts()->loginWithProvider('google', IdentityBuilder::anIdentity()->withId('g-7')->withEmail('Ada@Example.org')->build());
+        $grace = $this->accounts()->loginWithProvider('google', IdentityBuilder::anIdentity()->withId('g-8')->withEmail('Grace@Example.org')->build());
+
+        // Assert
+        self::assertTrue($ada->getId()->equals($user->getId()));
+        self::assertSame('grace@example.org', $grace->getEmail());
+    }
+
     public function testAnIdentityAlreadyLinkedToAnotherAccountIsRefused(): void
     {
         // Arrange
