@@ -63,10 +63,10 @@ class PlanController extends AbstractController
 
         $data = $form->getData();
         $result = $this->plannerService->planFromForm($data, $user->getUserIdentifier());
-        if (false !== $result && 'unknown_location' === $result['reason'] && empty($data['city'])) {
-            // The position could not be read: invalid input, like the other parameters.
+        if (false !== $result && 'unknown_location' === $result['reason']) {
+            // The position could not be read, or the city has no open cinema left: invalid input, like the other parameters.
             return new JsonResponse(
-                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => [['field' => 'position', 'message' => $this->translator->trans('planner.result.unknown_place')]]],
+                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => [['field' => empty($data['city']) ? 'position' : 'city', 'message' => $this->translator->trans('planner.result.unknown_place')]]],
                 422,
                 ['Content-Type' => 'application/problem+json'],
             );
