@@ -3,10 +3,12 @@
 namespace App\Tests\Functional\Web;
 
 use App\Account\ApiTokenService;
+use App\Account\Entity\ApiToken;
 use App\Account\Entity\User;
 use App\Tests\Builder\FilmBuilder;
 use App\Tests\Builder\UserBuilder;
 use App\Tests\StoresEntities;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -142,6 +144,24 @@ final class SettingsTest extends WebTestCase
         // Assert
         self::assertResponseRedirects('/settings');
         self::assertNull($this->tokens()->findUserByToken($plain));
+    }
+
+    public function testAnExpiredTokenIsNoLongerListed(): void
+    {
+        // Arrange
+        $client = $this->signedInAs(UserBuilder::aUser());
+        $this->tokens()->create($this->user, 'Still valid');
+        $this->tokens()->create($this->user, 'Expired one');
+        $expired = self::getContainer()->get(EntityManagerInterface::class)->getRepository(ApiToken::class)->findOneBy(['name' => 'Expired one']);
+        $expired->setExpiresAt(new \DateTimeImmutable('-1 day'));
+        $this->store($expired);
+
+        // Act
+        $client->request('GET', '/settings');
+
+        // Assert
+        self::assertSelectorTextContains('#tokens', 'Still valid');
+        self::assertSelectorTextNotContains('#tokens', 'Expired one');
     }
 
     public function testTheLastConnectionCannotBeRemoved(): void
