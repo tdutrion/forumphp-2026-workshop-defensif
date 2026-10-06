@@ -84,8 +84,8 @@ class PlanController extends AbstractController
                     'film' => ['slug' => $showtime['filmSlug'], 'title' => $showtime['filmTitle']],
                     'cinema' => ['slug' => $showtime['cinemaSlug'], 'name' => $showtime['cinemaName']],
                     // ISO 8601 in the cinema's time zone: the offset lets a mobile app convert it.
-                    'startsAt' => $this->localIso($showtime['startsAt'], $showtime['timezone']),
-                    'endsAt' => $this->localIso($showtime['endsAt'], $showtime['timezone']),
+                    'startsAt' => $showtime['start']->localTime($showtime['timezone'])->format(\DATE_ATOM),
+                    'endsAt' => $showtime['end']->localTime($showtime['timezone'])->format(\DATE_ATOM),
                     'version' => $showtime['version'],
                     'lateMinutes' => $showtime['lateMinutes'],
                     // Minutes from the end of the previous film to this showtime, and the travel among them.
@@ -105,10 +105,5 @@ class PlanController extends AbstractController
         }
 
         return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason'], 'films' => $result['films'], 'seed' => $result['seed']]);
-    }
-
-    private function localIso(string $utc, string $timezone): string
-    {
-        return (new \DateTimeImmutable($utc, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone($timezone))->format(\DATE_ATOM);
     }
 }

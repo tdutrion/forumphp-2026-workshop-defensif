@@ -137,7 +137,7 @@ class CatalogSynchronizer
         }
         $this->em->flush();
 
-        $lastDay = date('Y-m-d', strtotime($today.' +'.($days - 1).' days'));
+        $lastDay = (new \DateTimeImmutable($today))->modify('+'.($days - 1).' days')->format('Y-m-d');
         $timezone = new \DateTimeZone($chain['timezone']);
 
         $playing = [];

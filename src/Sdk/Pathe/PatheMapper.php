@@ -2,11 +2,18 @@
 
 namespace App\Sdk\Pathe;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+
 /**
  * Turns raw Pathé responses into arrays ready to save.
  */
 class PatheMapper
 {
+    public function __construct(private LoggerInterface $logger = new NullLogger())
+    {
+    }
+
     public function mapCity(array $raw): array
     {
         return [
@@ -141,6 +148,7 @@ class PatheMapper
     /**
      * Pathé sends naive local times ('2026-10-04 21:40:00'): they are converted to UTC here,
      * with the time zone of the chain, and the local calendar day is kept for day-based searches.
+     * A showtime with a malformed date is skipped (and logged): the other ones are still mapped.
      *
      * @param \DateTimeZone $timezone time zone of the chain, e.g. Europe/Paris
      *
@@ -156,17 +164,23 @@ class PatheMapper
                 continue;
             }
 
-            $reservableUntil = null;
-            if (isset($item['reservabilityEnd'])) {
-                // This field carries its own offset, unlike "time" and "endTime".
-                $reservableUntil = (new \DateTimeImmutable($item['reservabilityEnd']))->setTimezone($utc)->format('Y-m-d H:i:s');
+            try {
+                $reservableUntil = null;
+                if (isset($item['reservabilityEnd'])) {
+                    // This field carries its own offset, unlike "time" and "endTime".
+                    $reservableUntil = (new \DateTimeImmutable($item['reservabilityEnd']))->setTimezone($utc)->format('Y-m-d H:i:s');
+                }
+                $start = new \DateTimeImmutable($item['time'], $timezone);
+                $end = new \DateTimeImmutable($item['endTime'], $timezone);
+            } catch (\DateMalformedStringException $e) {
+                $this->logger->warning('Malformed Pathé date, showtime skipped', ['showtime' => $matches[1], 'error' => $e->getMessage()]);
+                continue;
             }
 
-            $start = new \DateTimeImmutable($item['time'], $timezone);
             $mapped[] = [
                 'id' => $matches[1],
                 'startsAt' => $start->setTimezone($utc)->format('Y-m-d H:i:s'),
-                'endsAt' => (new \DateTimeImmutable($item['endTime'], $timezone))->setTimezone($utc)->format('Y-m-d H:i:s'),
+                'endsAt' => $end->setTimezone($utc)->format('Y-m-d H:i:s'),
                 'localDate' => $start->format('Y-m-d'),
                 'version' => $item['version'],
                 'status' => $item['status'],

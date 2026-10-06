@@ -2,6 +2,9 @@
 
 namespace App\Tests\Builder;
 
+use App\Planner\ScreeningTime;
+use Time\Duration;
+
 /**
  * A showtime as ChainBuilder receives it. Times are read in UTC, like every instant of the application;
  * the end includes the 20 minutes of ads, as Pathé computes it.
@@ -74,7 +77,7 @@ final class ScreeningBuilder
 
     public function build(): array
     {
-        $start = (new \DateTimeImmutable($this->day.' '.$this->time, new \DateTimeZone('UTC')))->getTimestamp();
+        $start = ScreeningTime::fromUtc($this->day.' '.$this->time);
 
         return [
             'id' => $this->id,
@@ -84,7 +87,7 @@ final class ScreeningBuilder
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'start' => $start,
-            'end' => $start + ($this->duration + 20) * 60,
+            'end' => $start->plus(Duration::fromMinutes($this->duration + 20)),
         ];
     }
 }
