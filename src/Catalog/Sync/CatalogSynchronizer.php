@@ -96,6 +96,16 @@ class CatalogSynchronizer
             ++$stats['cinemas'];
         }
 
+        // A cinema of a synchronized city that Pathé no longer lists has closed: its showtimes are deleted below.
+        if ([] !== $cities) {
+            foreach ($this->em->getRepository(Cinema::class)->findBy(['city' => array_keys($cities), 'open' => true]) as $cinema) {
+                if (!isset($cinemas[$cinema->getSlug()])) {
+                    $cinema->setOpen(false);
+                    $cinemas[$cinema->getSlug()] = $cinema;
+                }
+            }
+        }
+
         $films = [];
         foreach ($rawShows as $raw) {
             $data = $this->mapper->mapFilm($raw);
