@@ -47,6 +47,9 @@ services:
   database:
     ports:
       - "127.0.0.1::3306"
+    volumes:
+      # Creates the test database (app_test) on the first start: development only.
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
 
   # Database browser, signed in with the development account (http://127.0.0.1:8082).
   phpmyadmin:
