@@ -80,13 +80,14 @@ db-upload: ## Publishes the newest dump of data/ on the GitHub release (gh CLI, 
 
 db-load: ## Loads the newest dump of the GitHub releases, or the one picked in the list (downloaded if missing): resets the database (all data!) and imports it, e.g. make db-load dump=catalog-2026-10-05.sql.gz
 	@# The dump is chosen (and downloaded) before anything is dropped.
+	@# The catalog cache is cleared after the import: a page visited meanwhile would have cached the calendar of an empty catalog.
 	@dump=$$(CATALOG_REPO='$(CATALOG_REPO)' CATALOG_RELEASE='$(CATALOG_RELEASE)' bin/catalog-dump $(dump)) && \
 	set -x && \
 	$(CONSOLE) doctrine:database:drop --force --if-exists && \
 	$(CONSOLE) doctrine:database:create && \
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction && \
-	$(CONSOLE) cache:pool:clear cache.catalog && \
-	gunzip -c "$$dump" | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
+	gunzip -c "$$dump" | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"' && \
+	$(CONSOLE) cache:pool:clear cache.catalog
 
 phpstan-max: ## PHPStan max level (workshop progress measure)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G
