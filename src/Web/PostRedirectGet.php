@@ -40,12 +40,14 @@ final class PostRedirectGet
         }
         parse_str($return, $query);
         parse_str($request->request->getString('_return_params'), $parameters);
+        // A route parameter is a string ("slug[]=x" would give an array).
+        $parameters = array_filter($parameters, is_scalar(...));
 
         try {
             // The route parameters win over a query parameter of the same name.
             $url = $this->urlGenerator->generate($route, array_replace($query, $parameters));
-        } catch (RoutingException) {
-            // Missing or invalid route parameters: the planner.
+        } catch (RoutingException|\TypeError) {
+            // Missing or invalid route parameters (an array from the query, too): the planner.
             $url = $this->urlGenerator->generate('app_home');
         }
 
