@@ -72,12 +72,15 @@ class ApiTokenService
     }
 
     /**
-     * @return array active tokens: ['id', 'name', 'createdAt', 'expiresAt'] (dates in 'Y-m-d H:i' format)
+     * @return array active tokens (neither revoked nor expired): ['id', 'name', 'createdAt', 'expiresAt'] (dates in 'Y-m-d H:i' format)
      */
     public function listForUser(User $user): array
     {
         // UUID v7 values sort by creation date.
         $tokens = $this->apiTokenRepository->findBy(['user' => $user, 'revokedAt' => null], ['id' => 'ASC']);
+        // Same rule as findUserByToken(): an expired token no longer opens the account.
+        $now = new \DateTimeImmutable();
+        $tokens = array_values(array_filter($tokens, static fn (ApiToken $token) => $token->getExpiresAt() > $now));
 
         return array_map(static fn (ApiToken $token) => [
             'id' => $token->getId()->toRfc4122(),
