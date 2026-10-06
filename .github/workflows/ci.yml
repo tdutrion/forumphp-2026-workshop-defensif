@@ -28,6 +28,9 @@ jobs:
         # The entrypoint installs the Composer dependencies and runs the migrations.
         run: docker compose up --build --wait php
 
+      - name: Build the CSS (the pages of the functional tests need it)
+        run: make css
+
       - name: Lint (composer.json, audit, container, Twig, YAML)
         run: make lint
 
