@@ -37,15 +37,15 @@ parameters:
 			path: src/Account/AccountService.php
 
 		-
-			message: '#^Parameter \#1 \$email of method App\\Account\\Entity\\LinkedAccount\:\:setEmail\(\) expects string\|null, mixed given\.$#'
+			message: '#^Parameter \#1 \$email of method App\\Account\\AccountService\:\:normalizeEmail\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/Account/AccountService.php
 
 		-
-			message: '#^Parameter \#1 \$email of method App\\Account\\Entity\\User\:\:setEmail\(\) expects string\|null, mixed given\.$#'
+			message: '#^Parameter \#1 \$email of method App\\Account\\Entity\\LinkedAccount\:\:setEmail\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: src/Account/AccountService.php
 
 		-
@@ -97,6 +97,18 @@ parameters:
 			path: src/Account/ExcludedCinemaService.php
 
 		-
+			message: '#^Method App\\Account\\FilmPage\:\:__construct\(\) has parameter \$films with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/FilmPage.php
+
+		-
+			message: '#^Method App\\Account\\FilmPage\:\:load\(\) has parameter \$fetch with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Account/FilmPage.php
+
+		-
 			message: '#^Method App\\Account\\Repository\\ExcludedCinemaRepository\:\:findCinemaSlugsByUser\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -115,8 +127,8 @@ parameters:
 			path: src/Account/Repository/SeenFilmRepository.php
 
 		-
-			message: '#^Method App\\Account\\Repository\\SeenFilmRepository\:\:findOneByUserAndFilm\(\) should return App\\Account\\Entity\\SeenFilm\|null but returns mixed\.$#'
-			identifier: return.type
+			message: '#^Method App\\Account\\Repository\\SeenFilmRepository\:\:findPageByUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Account/Repository/SeenFilmRepository.php
 
@@ -127,8 +139,8 @@ parameters:
 			path: src/Account/Repository/UnwantedFilmRepository.php
 
 		-
-			message: '#^Method App\\Account\\Repository\\UnwantedFilmRepository\:\:findOneByUserAndFilm\(\) should return App\\Account\\Entity\\UnwantedFilm\|null but returns mixed\.$#'
-			identifier: return.type
+			message: '#^Method App\\Account\\Repository\\UnwantedFilmRepository\:\:findPageByUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Account/Repository/UnwantedFilmRepository.php
 
@@ -397,6 +409,18 @@ parameters:
 			path: src/Catalog/Command/SyncCommand.php
 
 		-
+			message: '#^Parameter \#8 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Command/SyncCommand.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Catalog/Command/WorkLinkCommand.php
+
+		-
 			message: '#^Method App\\Catalog\\Entity\\Film\:\:getGenres\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -413,6 +437,150 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Entity/Film.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Catalog/Entity/Work.php
+
+		-
+			message: '#^Method App\\Catalog\\Entity\\Work\:\:describe\(\) has parameter \$directors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Entity/Work.php
+
+		-
+			message: '#^Method App\\Catalog\\Entity\\Work\:\:fingerprintOf\(\) has parameter \$directors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Entity/Work.php
+
+		-
+			message: '#^Method App\\Catalog\\Entity\\Work\:\:getDirectors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Entity/Work.php
+
+		-
+			message: '#^Property App\\Catalog\\Entity\\Work\:\:\$directors type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Entity/Work.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Catalog/FilmCatalog.php
+
+		-
+			message: '#^Method App\\Catalog\\FilmCatalog\:\:browse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/FilmCatalog.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/FilmCatalog.php
+
+		-
+			message: '#^Method App\\Catalog\\FilmCatalogQuery\:\:toQuery\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/FilmCatalogQuery.php
+
+		-
+			message: '#^Cannot access offset ''bookingUrl'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''cinemaName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''cityName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''localDate'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''startsAt'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''timezone'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''version'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Method App\\Catalog\\FilmSchedule\:\:forFilm\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Parameter \#1 \$datetime of class DateTimeImmutable constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 4
+			path: src/Catalog/FilmSchedule.php
+
+		-
+			message: '#^Cannot access offset ''cityName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/Repository/CinemaRepository.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/Repository/CinemaRepository.php
+
+		-
+			message: '#^Cannot access offset ''slug'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/Repository/CinemaRepository.php
 
 		-
 			message: '#^Method App\\Catalog\\Repository\\CinemaRepository\:\:findByCity\(\) return type has no value type specified in iterable type array\.$#'
@@ -433,16 +601,88 @@ parameters:
 			path: src/Catalog/Repository/CinemaRepository.php
 
 		-
+			message: '#^Method App\\Catalog\\Repository\\CinemaRepository\:\:findOpenByCityName\(\) should return array\<string, array\<string, string\>\> but returns array\<array\<mixed\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Catalog/Repository/CinemaRepository.php
+
+		-
 			message: '#^Method App\\Catalog\\Repository\\CinemaRepository\:\:findOpenWithCoordinates\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Repository/CinemaRepository.php
 
 		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 2
+			path: src/Catalog/Repository/CinemaRepository.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: src/Catalog/Repository/CityRepository.php
+
+		-
 			message: '#^Method App\\Catalog\\Repository\\CityRepository\:\:findAllForSelect\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Repository/CityRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\CityRepository\:\:findCentres\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/CityRepository.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: array\{slug\: mixed, latitude\: float, longitude\: float\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Repository/CityRepository.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Binary operation "\." between ''SELECT COUNT…'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Binary operation "\." between ''SELECT f\.slug, f…'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Cannot call method toRfc4122\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:countShowing\(\) has parameter \$excludedSlugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
 
 		-
 			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findBySlug\(\) return type has no value type specified in iterable type array\.$#'
@@ -469,6 +709,78 @@ parameters:
 			path: src/Catalog/Repository/FilmRepository.php
 
 		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findShowing\(\) has parameter \$excludedSlugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findShowing\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findShowingGenres\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findShowingWeeks\(\) should return list\<string\> but returns list\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:showingConditions\(\) has parameter \$excludedSlugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:showingConditions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Parameter \#2 \$params of method Doctrine\\DBAL\\Connection\:\:fetchAllAssociative\(\) expects array\<int\<0, max\>\|string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Parameter \#2 \$params of method Doctrine\\DBAL\\Connection\:\:fetchOne\(\) expects array\<int\<0, max\>\|string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Parameter \#3 \$types of method Doctrine\\DBAL\\Connection\:\:fetchAllAssociative\(\) expects array\<int\<0, max\>\|string, Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|Doctrine\\DBAL\\Types\\Type\|string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Parameter \#3 \$types of method Doctrine\\DBAL\\Connection\:\:fetchOne\(\) expects array\<int\<0, max\>\|string, Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|Doctrine\\DBAL\\Types\\Type\|string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: src/Catalog/Repository/FilmRepository.php
+
+		-
 			message: '#^Method App\\Catalog\\Repository\\ShowtimeRepository\:\:deleteForCinemasBetween\(\) has parameter \$cinemaSlugs with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -476,6 +788,12 @@ parameters:
 
 		-
 			message: '#^Method App\\Catalog\\Repository\\ShowtimeRepository\:\:deleteForCinemasBetween\(\) has parameter \$keepIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/ShowtimeRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\ShowtimeRepository\:\:findBookableForFilm\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Repository/ShowtimeRepository.php
@@ -503,6 +821,36 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Repository/ShowtimeRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\WorkRepository\:\:findFilmTitles\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/WorkRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\WorkRepository\:\:findOtherChainWorkByFingerprint\(\) should return App\\Catalog\\Entity\\Work\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Catalog/Repository/WorkRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\WorkRepository\:\:findWorksOfFilms\(\) has parameter \$slugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/WorkRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\WorkRepository\:\:findWorksOfFilms\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/Repository/WorkRepository.php
+
+		-
+			message: '#^Method App\\Catalog\\Repository\\WorkRepository\:\:findWorksOfFilms\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Catalog/Repository/WorkRepository.php
 
 		-
 			message: '#^Method App\\Catalog\\Sync\\CatalogSyncRunner\:\:run\(\) has parameter \$citySlugs with no value type specified in iterable type array\.$#'
@@ -727,6 +1075,12 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Parameter \#1 \$originalTitle of method App\\Catalog\\Entity\\Work\:\:describe\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Parameter \#1 \$postalCode of method App\\Catalog\\Entity\\Cinema\:\:setPostalCode\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -787,6 +1141,12 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Parameter \#1 \$string of function substr expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -817,6 +1177,12 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Parameter \#2 \$originalTitle of method App\\Catalog\\WorkLinker\:\:describe\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
 			identifier: argument.type
 			count: 1
@@ -829,9 +1195,27 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Parameter \#3 \$year of method App\\Catalog\\WorkLinker\:\:describe\(\) expects int\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#4 \$directors of method App\\Catalog\\WorkLinker\:\:describe\(\) expects array\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
 			count: 9
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Possibly invalid array key type string\|null\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -851,6 +1235,138 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Catalog/Sync/CatalogUpdatePublisher.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Binary operation "\-" between mixed and int results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Cannot access offset ''types'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Cannot call method getLinkAttemptedAt\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Cannot call method getLinkStatus\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Method App\\Catalog\\WorkLinker\:\:attach\(\) has parameter \$film with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Method App\\Catalog\\WorkLinker\:\:describe\(\) has parameter \$directors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Method App\\Catalog\\WorkLinker\:\:linkDue\(\) has parameter \$works with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Method App\\Catalog\\WorkLinker\:\:matches\(\) has parameter \$film with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_intersect expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#1 \$array of function end expects array\|object, list\<string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#1 \$title of method App\\Sdk\\Wikidata\\WikidataClient\:\:searchFilms\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#1 \$work of method App\\Catalog\\WorkLinker\:\:link\(\) expects App\\Catalog\\Entity\\Work, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(mixed\)\: bool\)\|null, Closure\(array\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#2 \$imdbId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#3 \$film of method App\\Catalog\\WorkLinker\:\:attach\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Parameter \#3 \$tmdbId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/WorkLinker.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getWork\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Catalog/WorkMerger.php
+
+		-
+			message: '#^Call to an undefined method object\:\:setWork\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Catalog/WorkMerger.php
 
 		-
 			message: '#^Binary operation "\+" between mixed and 0\|900 results in an error\.$#'
@@ -901,12 +1417,6 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Cannot access offset ''filmSlug'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Planner/ChainBuilder.php
-
-		-
 			message: '#^Cannot access offset ''lateMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
@@ -934,6 +1444,12 @@ parameters:
 			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Cannot access offset ''workId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
 			path: src/Planner/ChainBuilder.php
 
 		-
@@ -1111,12 +1627,6 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
-			message: '#^Binary operation "\-" between mixed and int results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
-			path: src/Planner/PlannerService.php
-
-		-
 			message: '#^Binary operation "\." between ''@'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 2
@@ -1191,6 +1701,12 @@ parameters:
 		-
 			message: '#^Cannot access offset mixed on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
 			count: 1
 			path: src/Planner/PlannerService.php
 
@@ -1375,6 +1891,12 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
+			message: '#^Parameter \$seed of method App\\Planner\\ProgrammeSelector\:\:select\(\) expects int\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
 			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1399,6 +1921,12 @@ parameters:
 			path: src/Planner/ProgrammeSelector.php
 
 		-
+			message: '#^Parameter \#1 \$array of method Random\\Randomizer\:\:pickArrayKeys\(\) expects non\-empty\-array, list given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/ProgrammeSelector.php
+
+		-
 			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, list given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1406,6 +1934,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$callback of function usort expects callable\(mixed, mixed\)\: int, Closure\(array, array\)\: int\<\-1, 1\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/ProgrammeSelector.php
+
+		-
+			message: '#^Parameter \#2 \$num of method Random\\Randomizer\:\:pickArrayKeys\(\) expects int\<1, max\>, int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/ProgrammeSelector.php
@@ -1473,7 +2007,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''FR_FR'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
@@ -1627,6 +2161,18 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
+			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapFilmDetails\(\) has parameter \$rawShow with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapFilmDetails\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
 			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapOriginalLanguage\(\) has parameter \$rawShow with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1640,6 +2186,12 @@ parameters:
 
 		-
 			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapShowtimes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapSynopsis\(\) has parameter \$rawShow with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
@@ -1673,6 +2225,240 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Cannot access offset ''claims'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataClient\:\:get\(\) has parameter \$query with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataClient\:\:get\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataClient\:\:get\(\) should return array\|false but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataClient\:\:getFilms\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataClient\:\:getFilms\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataClient\:\:searchFilms\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_unique expects an array of values castable to string, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Parameter \#1 \$entity of method App\\Sdk\\Wikidata\\WikidataMapper\:\:film\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, list given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 2
+			path: src/Sdk/Wikidata/WikidataClient.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 3
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''datavalue'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''en'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''fr'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''labels'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''mainsnak'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot access offset ''value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:entityIds\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:entityIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:film\(\) has parameter \$entity with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:film\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:firstMatching\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:labels\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:labels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:searchIds\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:searchIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:values\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Wikidata\\WikidataMapper\:\:values\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Parameter \#1 \$claims of method App\\Sdk\\Wikidata\\WikidataMapper\:\:entityIds\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Parameter \#1 \$claims of method App\\Sdk\\Wikidata\\WikidataMapper\:\:values\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: src/Sdk/Wikidata/WikidataMapper.php
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
@@ -1735,6 +2521,12 @@ parameters:
 			path: src/Security/OAuthUserInfoExtractor.php
 
 		-
+			message: '#^Method App\\Web\\Controller\\DesignSystemController\:\:exampleForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Web/Controller/DesignSystemController.php
+
+		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 2
@@ -1765,6 +2557,24 @@ parameters:
 			path: src/Web/Controller/HomeController.php
 
 		-
+			message: '#^Method App\\Web\\Controller\\HomeController\:\:__construct\(\) has parameter \$chains with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Method App\\Web\\Controller\\HomeController\:\:__construct\(\) has parameter \$plannedChains with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: array\{name\: mixed, countries\: array\{mixed\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Web/Controller/HomeController.php
+
+		-
 			message: '#^Parameter \#1 \$data of method App\\Planner\\PlannerService\:\:nearbyCinemas\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1783,10 +2593,52 @@ parameters:
 			path: src/Web/Controller/HomeController.php
 
 		-
+			message: '#^Method App\\Web\\Controller\\LocaleController\:\:__construct\(\) has parameter \$locales with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Web/Controller/LocaleController.php
+
+		-
+			message: '#^Method App\\Web\\Controller\\SettingsController\:\:excludeCinemaForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Web/Controller/SettingsController.php
+
+		-
+			message: '#^Method App\\Web\\Controller\\SettingsController\:\:renderSettings\(\) has parameter \$excludeCinemaForm with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Web/Controller/SettingsController.php
+
+		-
 			message: '#^Parameter \#1 \$array of function array_diff expects an array of values castable to string, array given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Web/Controller/ProfileController.php
+			path: src/Web/Controller/SettingsController.php
+
+		-
+			message: '#^Parameter \#1 \$exceptSlugs of method App\\Catalog\\Repository\\CinemaRepository\:\:findOpenByCityName\(\) expects list\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Web/Controller/SettingsController.php
+
+		-
+			message: '#^Parameter \#2 \$cinemaSlug of method App\\Account\\ExcludedCinemaService\:\:exclude\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Web/Controller/SettingsController.php
+
+		-
+			message: '#^Method App\\Web\\EventListener\\LocaleFromCookieListener\:\:__construct\(\) has parameter \$locales with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Web/EventListener/LocaleFromCookieListener.php
+
+		-
+			message: '#^Class App\\Web\\Form\\ExcludeCinemaType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Web/Form/ExcludeCinemaType.php
 
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
@@ -1829,6 +2681,12 @@ parameters:
 			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: src/Web/Form/PlanType.php
+
+		-
+			message: '#^Property App\\Tests\\Builder\\FilmBuilder\:\:\$genres type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/FilmBuilder.php
 
 		-
 			message: '#^Method App\\Tests\\Builder\\IdentityBuilder\:\:build\(\) return type has no value type specified in iterable type array\.$#'
@@ -1885,6 +2743,12 @@ parameters:
 			path: tests/Builder/PatheApiBuilder.php
 
 		-
+			message: '#^Cannot access offset ''directors'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/PatheApiBuilder.php
+
+		-
 			message: '#^Cannot access offset ''duration'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1897,7 +2761,25 @@ parameters:
 			path: tests/Builder/PatheApiBuilder.php
 
 		-
+			message: '#^Cannot access offset ''originalTitle'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/PatheApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''releaseAt'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/PatheApiBuilder.php
+
+		-
 			message: '#^Cannot access offset ''shows'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/PatheApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''synopsis'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Builder/PatheApiBuilder.php
@@ -1957,7 +2839,7 @@ parameters:
 			path: tests/Builder/ProgrammeBuilder.php
 
 		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: array\{filmSlug\: string, lateMinutes\: 0\} given\.$#'
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: array\{filmSlug\: string, workId\: string, lateMinutes\: 0\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Builder/ProgrammeBuilder.php
@@ -1979,6 +2861,132 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Builder/ShowtimeBuilder.php
+
+		-
+			message: '#^Binary operation "\." between ''\+'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''directorIds'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''imdbId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''label'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''tmdbId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot access offset ''year'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Method App\\Tests\\Builder\\WikidataApiBuilder\:\:answer\(\) has parameter \$query with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Method App\\Tests\\Builder\\WikidataApiBuilder\:\:withFilm\(\) has parameter \$directors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: array\{mainsnak\: array\{datavalue\: array\{type\: string, value\: mixed\}\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$string of function crc32 expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$string of function mb_strtolower expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Property App\\Tests\\Builder\\WikidataApiBuilder\:\:\$films type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Property App\\Tests\\Builder\\WikidataApiBuilder\:\:\$people type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/WikidataApiBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$wikidataId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WorkBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$imdbId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WorkBuilder.php
+
+		-
+			message: '#^Parameter \#3 \$tmdbId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Builder/WorkBuilder.php
+
+		-
+			message: '#^Property App\\Tests\\Builder\\WorkBuilder\:\:\$directors type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/WorkBuilder.php
+
+		-
+			message: '#^Property App\\Tests\\Builder\\WorkBuilder\:\:\$link type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Builder/WorkBuilder.php
 
 		-
 			message: '#^Method App\\Tests\\Fake\\FakeOAuthServer\:\:__invoke\(\) has parameter \$options with no value type specified in iterable type array\.$#'
@@ -2031,7 +3039,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''field'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
@@ -2079,7 +3087,7 @@ parameters:
 		-
 			message: '#^Cannot access offset 0 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 6
+			count: 7
 			path: tests/Functional/Api/PlanApiTest.php
 
 		-
@@ -2167,6 +3175,42 @@ parameters:
 			path: tests/Functional/Api/SeenFilmApiTest.php
 
 		-
+			message: '#^Binary operation "\." between ''/api/works/'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Functional/Api/WorkApiTest.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Functional/Api/WorkApiTest.php
+
+		-
+			message: '#^Cannot access offset ''wikidataId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Functional/Api/WorkApiTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Api\\WorkApiTest\:\:api\(\) has parameter \$query with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Api/WorkApiTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Api\\WorkApiTest\:\:api\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Api/WorkApiTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Api\\WorkApiTest\:\:api\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Functional/Api/WorkApiTest.php
+
+		-
 			message: '#^Call to an undefined method object\:\:serve\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2177,6 +3221,42 @@ parameters:
 			identifier: cast.int
 			count: 1
 			path: tests/Functional/SmokeTest.php
+
+		-
+			message: '#^Cannot call method text\(\) on Symfony\\Component\\DomCrawler\\Crawler\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Functional/Web/ExcludedCinemaTest.php
+
+		-
+			message: '#^Method App\\Tests\\Functional\\Web\\FilmCatalogTest\:\:titles\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Functional/Web/FilmCatalogTest.php
+
+		-
+			message: '#^Parameter \#1 \$cinema of method App\\Tests\\Builder\\ShowtimeBuilder\:\:at\(\) expects App\\Catalog\\Entity\\Cinema, App\\Catalog\\Entity\\Cinema\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Functional/Web/FilmCatalogTest.php
+
+		-
+			message: '#^Parameter \#2 \$filmSlug of method App\\Account\\SeenFilmService\:\:markSeen\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Functional/Web/FilmHistoryTest.php
+
+		-
+			message: '#^Parameter \#2 \$uri of method Symfony\\Component\\BrowserKit\\AbstractBrowser\<Symfony\\Component\\HttpFoundation\\Request,Symfony\\Component\\HttpFoundation\\Response\>\:\:request\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Functional/Web/LegalPagesTest.php
+
+		-
+			message: '#^Possibly invalid array key type string\|null\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: tests/Functional/Web/LegalPagesTest.php
 
 		-
 			message: '#^Method App\\Tests\\Functional\\Web\\PlannerPageTest\:\:search\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
@@ -2191,10 +3271,40 @@ parameters:
 			path: tests/Functional/Web/PlannerPageTest.php
 
 		-
+			message: '#^Offset ''city'' might not exist on array\<mixed\>\|string\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Functional/Web/PlannerPageTest.php
+
+		-
+			message: '#^Offset ''seed'' might not exist on array\<mixed\>\|string\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Functional/Web/PlannerPageTest.php
+
+		-
+			message: '#^Parameter \#1 \$url of function parse_url expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Functional/Web/PlannerPageTest.php
+
+		-
 			message: '#^Method App\\Tests\\Functional\\Web\\SeenFilmTest\:\:seenFilms\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Functional/Web/SeenFilmTest.php
+
+		-
+			message: '#^Cannot call method setExpiresAt\(\) on App\\Account\\Entity\\ApiToken\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Functional/Web/SettingsTest.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$entities of method App\\Tests\\Functional\\Web\\SettingsTest\:\:store\(\) expects object, App\\Account\\Entity\\ApiToken\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Functional/Web/SettingsTest.php
 
 		-
 			message: '#^Method App\\Tests\\Functional\\Web\\UnwantedFilmTest\:\:plannedFilms\(\) return type has no value type specified in iterable type array\.$#'
@@ -2269,6 +3379,42 @@ parameters:
 			path: tests/Integration/Catalog/CatalogCalendarTest.php
 
 		-
+			message: '#^Cannot access offset ''adapter'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Catalog/CatalogCalendarTest.php
+
+		-
+			message: '#^Cannot access offset ''cache'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Catalog/CatalogCalendarTest.php
+
+		-
+			message: '#^Cannot access offset ''cache\.catalog'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Catalog/CatalogCalendarTest.php
+
+		-
+			message: '#^Cannot access offset ''framework'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Catalog/CatalogCalendarTest.php
+
+		-
+			message: '#^Cannot access offset ''pools'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Catalog/CatalogCalendarTest.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$entities of method App\\Tests\\Integration\\Catalog\\CatalogCalendarTest\:\:store\(\) expects object, App\\Catalog\\Entity\\City\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Catalog/CatalogCalendarTest.php
+
+		-
 			message: '#^Cannot access offset ''local_date'' on array\<string, mixed\>\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -2289,6 +3435,12 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:serve\(\)\.$#'
 			identifier: method.notFound
+			count: 6
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access offset ''cities'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
@@ -2302,6 +3454,12 @@ parameters:
 			message: '#^Cannot access offset ''errors'' on array\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access offset ''linked'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
@@ -2359,9 +3517,27 @@ parameters:
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
+			message: '#^Cannot call method getSynopsis\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
 			message: '#^Cannot call method getTimezone\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
 			identifier: method.nonObject
 			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot call method getWork\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot call method isOpen\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: method.nonObject
+			count: 3
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
@@ -2411,6 +3587,42 @@ parameters:
 			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogUpdateNotificationTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:serve\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Catalog/WorkLinkCommandTest.php
+
+		-
+			message: '#^Cannot call method getWork\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Integration/Catalog/WorkLinkCommandTest.php
+
+		-
+			message: '#^Parameter \#1 \$kernel of class Symfony\\Bundle\\FrameworkBundle\\Console\\Application constructor expects Symfony\\Component\\HttpKernel\\KernelInterface, Symfony\\Component\\HttpKernel\\KernelInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Catalog/WorkLinkCommandTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:serve\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Catalog/WorkLinkerTest.php
+
+		-
+			message: '#^Cannot call method getWork\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
+			identifier: method.nonObject
+			count: 6
+			path: tests/Integration/Catalog/WorkLinkerTest.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Catalog\\WorkLinkerTest\:\:reload\(\) should return App\\Catalog\\Entity\\Work but returns App\\Catalog\\Entity\\Work\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Integration/Catalog/WorkLinkerTest.php
 
 		-
 			message: '#^Cannot access offset ''latitude'' on array\|false\.$#'
@@ -2563,6 +3775,54 @@ parameters:
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:serve\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Cannot access offset ''Q1060'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Cannot access offset ''Q182153'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Cannot access offset ''directors'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Cannot access offset ''imdbId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Cannot access offset ''tmdbId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Parameter \#1 \$ids of method App\\Sdk\\Wikidata\\WikidataClient\:\:getFilms\(\) expects array, array\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, array\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
 			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
@@ -2635,6 +3895,24 @@ parameters:
 			path: tests/Unit/Planner/ChainBuilderTest.php
 
 		-
+			message: '#^Method App\\Tests\\Unit\\Planner\\ProgrammeSelectorTest\:\:twelveProgrammes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Planner/ProgrammeSelectorTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Planner\\ProgrammeSelectorTest\:\:waits\(\) has parameter \$selected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Planner/ProgrammeSelectorTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Planner\\ProgrammeSelectorTest\:\:waits\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Planner/ProgrammeSelectorTest.php
+
+		-
 			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2642,6 +3920,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: list given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Planner/ProgrammeSelectorTest.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Planner/ProgrammeSelectorTest.php
