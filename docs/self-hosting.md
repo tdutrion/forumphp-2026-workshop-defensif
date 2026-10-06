@@ -395,6 +395,10 @@ SetEnv SOURCE_CODE_URL https://github.com/tdutrion/forumphp-2026-workshop-defens
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # Apache with PHP-FPM or CGI drops the Authorization header: without these two lines,
+    # every API call with a Bearer token answers 401.
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
@@ -513,6 +517,7 @@ a first marathon.
 | `Environment variable not found: "..."` | A variable of [the configuration](#the-configuration) is missing: in the environment (A), `/etc/screenroute.env` (B) or `public/.htaccess` (C); then warm the cache up again. |
 | Certificate error, or the site does not answer (A, B) | The DNS records of the domain, ports 80 and 443 open (and `HOST_IP=0.0.0.0` with Docker); then `mm logs php` or `journalctl -u screenroute-web`. |
 | Every page but the home page answers 404 (C) | `public/.htaccess` and its rewrite rules; the web root must be `public/`. |
+| The API answers 401 with a valid token (C) | Apache drops the `Authorization` header: the two `HTTP:Authorization` lines of `public/.htaccess`. |
 | Sign-in fails after the provider page | The callback URL of the OAuth app must be exactly `https://<domain>/connect/<provider>/check`. |
 | No date to choose, empty programmes | The catalog is empty or outdated: [load it](#load-the-catalog); then the logs of the worker or of the scheduled task. |
 
