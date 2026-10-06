@@ -1,5 +1,7 @@
 x-php-env: &php-env
-  DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-app-dev-password}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=8.4.0&charset=utf8mb4
+  DATABASE_URL: &database-url mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-app-dev-password}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=8.4.0&charset=utf8mb4
+  # The catalog sync lock lives in MySQL, shared by the php and worker containers.
+  LOCK_DSN: *database-url
   MERCURE_URL: http://php/.well-known/mercure
   MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure
   MERCURE_RESOURCE_IDENTIFIER: https://${SERVER_NAME:-localhost}/.well-known/mercure

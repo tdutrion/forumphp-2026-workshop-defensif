@@ -20,6 +20,12 @@ make db-load   # reset the database and import the Pathé catalog (downloaded on
 The ports are published on 127.0.0.1 only: the development secrets are public. Set
 `HOST_IP=0.0.0.0` to reach the application from another device.
 
+Configuration comes from the environment only (no `symfony/dotenv`): Docker hands `.env`
+(development defaults, committed) and `.env.local` (optional, git-ignored, your overrides) to the
+`php` and `worker` containers. After changing either file, run `make up` to recreate the
+containers. The test values live in `phpunit.dist.xml`. In production, no `.env` file is used at
+all: see [docs/self-hosting.md](docs/self-hosting.md).
+
 Open https://localhost (accept the local certificate) and sign in with
 **Local provider**: any username works, no Internet connection needed.
 
@@ -39,7 +45,7 @@ and https://localhost/design-system.
 
 ## Optional: real providers
 
-Create OAuth apps and set the credentials in `.env.local`:
+Create OAuth apps and set the credentials in `.env.local` (then `make up`):
 
 | Provider | Callback URL | Variables |
 |----------|--------------|-----------|
@@ -65,7 +71,7 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make sh` / `make console c="…"` | Shell / Symfony console in the PHP container |
 
 The catalog is never synchronized on its own: set `CATALOG_SCHEDULE_ENABLED=1` in
-`.env.local` to let the `worker` service sync it every 6 hours. A manual and a scheduled
+`.env.local` (then `make up`) to let the `worker` service sync it every 6 hours. A manual and a scheduled
 sync never run together (lock in MySQL).
 
 The API is documented at https://localhost/api/doc; create a personal token

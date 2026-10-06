@@ -97,9 +97,13 @@ COPY --link --exclude=docker/ . ./
 
 # hadolint ignore=DL3018
 RUN <<-EOF
+	# Build only (exported in this step, never stored in the image): the console warms the cache up and
+	# needs these to exist. At run time, every value comes from the environment of the system.
+	export DATABASE_URL='mysql://build:build@localhost:3306/build?serverVersion=8.4.0' \
+		DEFAULT_URI=http://localhost MERCURE_URL=http://localhost/.well-known/mercure \
+		MERCURE_PUBLIC_URL=http://localhost/.well-known/mercure SOURCE_CODE_URL=http://localhost
 	mkdir -p var/cache var/log var/share
 	composer dump-autoload --classmap-authoritative --no-dev
-	composer dump-env prod
 	composer run-script --no-dev post-install-cmd
 	php bin/console importmap:install
 	php bin/console tailwind:build --minify

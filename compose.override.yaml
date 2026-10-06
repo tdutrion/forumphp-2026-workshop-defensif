@@ -2,6 +2,12 @@
 services:
   php:
     image: ${IMAGES_PREFIX:-}workshop-php-dev
+    # The application reads its configuration from the environment only (no symfony/dotenv):
+    # .env holds the development defaults, .env.local (optional, git-ignored) overrides them.
+    env_file: &env-files
+      - .env
+      - path: .env.local
+        required: false
     build:
       context: .
       target: frankenphp_dev
@@ -21,6 +27,7 @@ services:
 
   worker:
     image: ${IMAGES_PREFIX:-}workshop-php-dev
+    env_file: *env-files
     volumes:
       - ./:/app
       - /app/var

@@ -1,14 +1,30 @@
 # Production, for a self-hosted instance: see docs/self-hosting.md.
-#   docker compose -f compose.yaml -f compose.prod.yaml --env-file .env.prod.local up --build --wait
+#   docker compose --env-file /dev/null -f compose.yaml -f compose.prod.yaml up --build --wait
+# No .env file in production: every value comes from the environment of the system, and
+# "--env-file /dev/null" keeps Compose from reading the development .env for interpolation.
 # Every secret is required here: the development defaults of compose.yaml are public.
 x-app-env: &app-env
+  APP_ENV: prod
   APP_SECRET: ${APP_SECRET:?Set APP_SECRET, a long random string}
+  APP_SHARE_DIR: var/share
+  MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
+  MAILER_DSN: ${MAILER_DSN:-null://null}
+  PATHE_DELAY_MS: ${PATHE_DELAY_MS:-1000}
+  PATHE_CACHE_TTL: ${PATHE_CACHE_TTL:-3600}
+  # Synchronizes the catalog with Pathé every 6 hours (read by the worker).
+  CATALOG_SCHEDULE_ENABLED: ${CATALOG_SCHEDULE_ENABLED:-1}
   # Never "local": the local provider accepts any username (development only).
   OAUTH_PROVIDERS: ${OAUTH_PROVIDERS:?Set OAUTH_PROVIDERS, e.g. github,google}
   OAUTH_GOOGLE_CLIENT_ID: ${OAUTH_GOOGLE_CLIENT_ID:-}
   OAUTH_GOOGLE_CLIENT_SECRET: ${OAUTH_GOOGLE_CLIENT_SECRET:-}
   OAUTH_GITHUB_CLIENT_ID: ${OAUTH_GITHUB_CLIENT_ID:-}
   OAUTH_GITHUB_CLIENT_SECRET: ${OAUTH_GITHUB_CLIENT_SECRET:-}
+  # The local provider of the development environment: never offered in production.
+  OAUTH_LOCAL_CLIENT_ID: ''
+  OAUTH_LOCAL_CLIENT_SECRET: ''
+  OAUTH_LOCAL_URL_AUTHORIZE: ''
+  OAUTH_LOCAL_URL_TOKEN: ''
+  OAUTH_LOCAL_URL_USERINFO: ''
   # Unset: the three cities of the workshop; set but empty: every Pathé city.
   PATHE_CITIES: ${PATHE_CITIES-paris,lyon,dijon}
   SOURCE_CODE_URL: ${SOURCE_CODE_URL:-https://github.com/tdutrion/forumphp-2026-workshop-defensif}
@@ -27,8 +43,7 @@ services:
   worker:
     environment:
       <<: *app-env
-      # Synchronizes the catalog with Pathé every 6 hours.
-      CATALOG_SCHEDULE_ENABLED: ${CATALOG_SCHEDULE_ENABLED:-1}
+      DEFAULT_URI: https://${SERVER_NAME:?Set SERVER_NAME}
 
   database:
     environment:

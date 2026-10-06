@@ -13,8 +13,17 @@
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+        <!-- No symfony/dotenv: the container environment comes from .env (compose.override.yaml);
+             the test values are forced over it here. -->
         <server name="APP_ENV" value="test" force="true" />
+        <env name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
+        <env name="KERNEL_CLASS" value="App\Kernel" force="true" />
+        <env name="APP_SECRET" value="$ecretf0rt3st" force="true" />
+        <env name="PATHE_DELAY_MS" value="0" force="true" />
+        <env name="PATHE_CACHE_TTL" value="0" force="true" />
+        <env name="PATHE_CITIES" value="dijon" force="true" />
+        <env name="OAUTH_PROVIDERS" value="local,github,google,keycloak" force="true" />
     </php>
 
     <testsuites>

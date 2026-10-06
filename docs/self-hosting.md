@@ -46,23 +46,26 @@ alone: see the comment in `config/packages/knpu_oauth2_client.yaml`.
 
 ## 3. Configure the instance
 
-Create `.env.prod.local` at the root of the project. Git ignores it, and it is
-never copied into the Docker image:
+Production uses no `.env` file at all: the application reads the environment
+of the system only, and the Docker image contains no configuration. Set the
+variables in the environment of the account that runs Docker Compose, for
+instance in its `~/.profile` (readable by that account only):
 
 ```bash
-cat > .env.prod.local <<EOF
-SERVER_NAME=movies.example.org
-HOST_IP=0.0.0.0
-APP_SECRET=$(openssl rand -hex 32)
-CADDY_MERCURE_JWT_SECRET=$(openssl rand -hex 32)
-MYSQL_PASSWORD=$(openssl rand -hex 16)
-MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)
-OAUTH_PROVIDERS=github
-OAUTH_GITHUB_CLIENT_ID=your-client-id
-OAUTH_GITHUB_CLIENT_SECRET=your-client-secret
-PATHE_CITIES=paris,lyon,dijon
+cat >> ~/.profile <<EOF
+export SERVER_NAME=movies.example.org
+export HOST_IP=0.0.0.0
+export APP_SECRET=$(openssl rand -hex 32)
+export CADDY_MERCURE_JWT_SECRET=$(openssl rand -hex 32)
+export MYSQL_PASSWORD=$(openssl rand -hex 16)
+export MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)
+export OAUTH_PROVIDERS=github
+export OAUTH_GITHUB_CLIENT_ID=your-client-id
+export OAUTH_GITHUB_CLIENT_SECRET=your-client-secret
+export PATHE_CITIES=paris,lyon,dijon
 EOF
-chmod 600 .env.prod.local
+chmod 600 ~/.profile
+. ~/.profile
 ```
 
 | Variable | Required | Meaning |
@@ -81,7 +84,9 @@ chmod 600 .env.prod.local
 
 Compose stops with `required variable ... is missing a value` as long as a
 required variable is not set: the development defaults are public and must
-never reach production.
+never reach production. The `.env` file of the repository holds those
+development defaults: the commands below pass `--env-file /dev/null` so that
+Compose never reads it.
 
 ## 4. Start the instance
 
@@ -89,7 +94,7 @@ Every command of this guide goes through the same Compose files and settings.
 An alias saves typing them:
 
 ```bash
-alias mm='docker compose -f compose.yaml -f compose.prod.yaml --env-file .env.prod.local'
+alias mm='docker compose --env-file /dev/null -f compose.yaml -f compose.prod.yaml'
 mm up --build --wait
 ```
 
@@ -161,7 +166,7 @@ gunzip -c backup-2026-10-05.sql.gz | mm exec -T database sh -c 'mysql -u"$MYSQL_
   Marathon service.
 - **Wikidata.** Works are linked to Wikidata (CC0) during the synchronization; the requests
   name your instance by its `SOURCE_CODE_URL`, as Wikidata asks. A film can be linked by hand:
-  `docker compose -f compose.yaml -f compose.prod.yaml --env-file .env.prod.local exec php bin/console work:link <film> <Q-id>`.
+  `mm exec php bin/console work:link <film> <Q-id>`.
 - **Pathé.** The catalog comes from the public website of Pathé. Keep the
   synchronization gentle (`PATHE_DELAY_MS`, one second between requests by
   default) and the booking links pointing to Pathé.
@@ -170,7 +175,7 @@ gunzip -c backup-2026-10-05.sql.gz | mm exec -T database sh -c 'mysql -u"$MYSQL_
 
 | Symptom | Check |
 |---------|-------|
-| `required variable ... is missing a value` | The variable in `.env.prod.local`, and the `--env-file` option (the alias). |
+| `required variable ... is missing a value` | The variable in the environment of the shell (`echo $APP_SECRET`), then the alias. |
 | Certificate error, or the site does not answer | The DNS records of the domain, ports 80 and 443 open, `HOST_IP=0.0.0.0`; then `mm logs php`. |
 | Sign-in fails after the provider page | The callback URL of the OAuth app must be exactly `https://<domain>/connect/<provider>/check`. |
 | No date to choose, empty programmes | The catalog is empty or outdated: step 5, then `mm logs worker`. |
