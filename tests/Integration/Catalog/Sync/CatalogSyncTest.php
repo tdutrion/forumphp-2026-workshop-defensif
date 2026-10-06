@@ -2,11 +2,13 @@
 
 namespace App\Tests\Integration\Catalog\Sync;
 
+use App\Catalog\BookingStatus;
 use App\Catalog\CatalogCalendar;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
 use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Showtime;
+use App\Catalog\ShowtimeVersion;
 use App\Catalog\Sync\CatalogSynchronizer;
 use App\Catalog\Sync\CatalogSyncRunner;
 use App\Catalog\Sync\CatalogUpdatePublisher;
@@ -153,6 +155,27 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertSame(1, $stats['errors']);
         self::assertSame(0, $stats['deleted']);
         self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85483'));
+    }
+
+    public function testAShowtimeWithAnUnknownVersionOrStatusIsSkipped(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $api = $this->dijon()
+            ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 14:00:00', 'V3345S85470', version: 'vx')
+            ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 16:00:00', 'V3345S85471', status: 'complet')
+            ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 18:00:00', 'V3345S85472', version: 'vost', status: 'sold_out');
+
+        // Act
+        $stats = $this->synchronize($api);
+
+        // Assert
+        self::assertSame(0, $stats['errors']);
+        self::assertNull($this->em()->find(Showtime::class, 'V3345S85470'), 'unknown version');
+        self::assertNull($this->em()->find(Showtime::class, 'V3345S85471'), 'unknown status');
+        $soldOut = $this->em()->find(Showtime::class, 'V3345S85472');
+        self::assertSame(ShowtimeVersion::Vost, $soldOut->getVersion());
+        self::assertSame(BookingStatus::SoldOut, $soldOut->getStatus());
     }
 
     public function testOnlySecurePosterLinksAreStored(): void

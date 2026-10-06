@@ -144,7 +144,7 @@ class PatheMapper
      *
      * @param \DateTimeZone $timezone time zone of the chain, e.g. Europe/Paris
      *
-     * @return array list of showtimes, instants in UTC ('Y-m-d H:i:s')
+     * @return array list of showtimes, instants in UTC ('Y-m-d H:i:s'), 'version' and 'status' as Pathé sends them
      */
     public function mapShowtimes(PatheShowtimes $showtimes, \DateTimeZone $timezone): array
     {

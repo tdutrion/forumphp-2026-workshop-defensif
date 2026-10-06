@@ -6,6 +6,7 @@ use App\Account\Entity\User;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Entity\Cinema;
+use App\Catalog\ShowtimeVersion;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -40,7 +41,7 @@ final class FilmCatalogTest extends WebTestCase
         $this->store($this->user, $dijon, $lyon, $inDijon, $inLyon, $garance, $digger, $verity, $old,
             ShowtimeBuilder::aShowtime()->of($garance)->at($inDijon)->startingAt('2030-01-10 14:00:00')->build(),
             ShowtimeBuilder::aShowtime()->of($garance)->at($inDijon)->startingAt('2030-01-10 18:00:00')->build(),
-            ShowtimeBuilder::aShowtime()->of($garance)->at($inDijon)->startingAt('2030-01-11 18:00:00')->inVersion('vost')->build(),
+            ShowtimeBuilder::aShowtime()->of($garance)->at($inDijon)->startingAt('2030-01-11 18:00:00')->inVersion(ShowtimeVersion::Vost)->build(),
             ShowtimeBuilder::aShowtime()->of($digger)->at($inDijon)->startingAt('2030-01-10 20:00:00')->build(),
             ShowtimeBuilder::aShowtime()->of($verity)->at($inLyon)->startingAt('2030-01-10 16:00:00')->build(),
             ShowtimeBuilder::aShowtime()->of($verity)->at($inLyon)->startingAt('2030-01-10 21:00:00')->build(),
@@ -151,6 +152,18 @@ final class FilmCatalogTest extends WebTestCase
 
         // Act
         $client->request('GET', '/films?week=next');
+
+        // Assert
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    public function testAnUnknownVersionIsRefused(): void
+    {
+        // Arrange
+        $client = $this->signedInWithCatalog();
+
+        // Act
+        $client->request('GET', '/films?version=vx');
 
         // Assert
         self::assertResponseStatusCodeSame(400);

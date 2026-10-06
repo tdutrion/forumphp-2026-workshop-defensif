@@ -6,6 +6,7 @@ use App\Account\Entity\User;
 use App\Catalog\FilmCatalog;
 use App\Catalog\FilmCatalogQuery;
 use App\Catalog\Repository\CityRepository;
+use App\Catalog\ShowtimeVersion;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -32,6 +33,7 @@ class FilmCatalogController extends AbstractController
             'query' => $query,
             'cities' => $this->cityRepository->findAllForSelect(),
             'sorts' => FilmCatalogQuery::SORTS,
+            'versions' => ShowtimeVersion::cases(),
         ]);
     }
 }

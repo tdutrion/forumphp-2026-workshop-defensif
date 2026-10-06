@@ -21,8 +21,7 @@ final readonly class FilmCatalogQuery
     #[Assert\Regex(pattern: '/^[a-z0-9-]{1,100}$/')]
     public ?string $city;
 
-    #[Assert\Choice(choices: ['vf', 'vost', 'vo', 'vfst'])]
-    public ?string $version;
+    public ?ShowtimeVersion $version;
 
     #[Assert\Choice(choices: self::SORTS)]
     public string $sort;
@@ -43,13 +42,14 @@ final readonly class FilmCatalogQuery
     public int $page;
 
     /**
-     * An empty field of the form ("version=") means no criterion: it becomes null, like a missing one.
+     * An empty field of the form ("genre=") means no criterion: it becomes null, like a missing one
+     * (the Serializer already does it for the version, and refuses an unknown one).
      */
     public function __construct(
         ?string $q = null,
         ?string $genre = null,
         ?string $city = null,
-        ?string $version = null,
+        ?ShowtimeVersion $version = null,
         ?string $sort = null,
         ?string $week = null,
         bool $hideSeen = false,
@@ -59,7 +59,7 @@ final readonly class FilmCatalogQuery
         $this->q = self::nullIfBlank($q);
         $this->genre = self::nullIfBlank($genre);
         $this->city = self::nullIfBlank($city);
-        $this->version = self::nullIfBlank($version);
+        $this->version = $version;
         $this->sort = self::nullIfBlank($sort) ?? 'title';
         $this->week = self::nullIfBlank($week);
         $this->hideSeen = $hideSeen;
@@ -76,7 +76,7 @@ final readonly class FilmCatalogQuery
             'q' => $this->q,
             'genre' => $this->genre,
             'city' => $this->city,
-            'version' => $this->version,
+            'version' => $this->version?->value,
             'sort' => 'title' === $this->sort ? null : $this->sort,
             'week' => $this->week,
             'hide_seen' => $this->hideSeen ? 1 : null,

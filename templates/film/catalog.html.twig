@@ -40,7 +40,7 @@
             <label for="filter-version" class="{{ label }}">{{ 'planner.form.version'|trans }}</label>
             <select id="filter-version" name="version" class="{{ field }}">
                 <option value="">{{ 'planner.form.version_any'|trans }}</option>
-                {% for version in ['vf', 'vost', 'vo', 'vfst'] %}<option value="{{ version }}"{% if query.version == version %} selected{% endif %}>{{ ('planner.form.version.' ~ version)|trans }}</option>{% endfor %}
+                {% for version in versions %}<option value="{{ version.value }}"{% if query.version == version %} selected{% endif %}>{{ version.label|trans }}</option>{% endfor %}
             </select>
             <label class="flex items-center gap-2 text-sm sm:col-start-2">
                 <input type="checkbox" role="switch" name="hide_seen" value="1" class="switch"{% if query.hideSeen %} checked{% endif %}>

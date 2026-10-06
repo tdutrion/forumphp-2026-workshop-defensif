@@ -7,6 +7,7 @@ use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\Film;
+use App\Catalog\ShowtimeVersion;
 use App\Planner\PlannerService;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
@@ -44,7 +45,7 @@ final class PlannerServiceTest extends KernelTestCase
         );
         $this->store(
             $showtime->withId('V1S1')->of($films['f1'])->startingAt(self::DAY.' 14:00:00')->build(),
-            $showtime->withId('V1S2')->of($films['f2'])->startingAt(self::DAY.' 16:30:00')->inVersion('vost')->build(),
+            $showtime->withId('V1S2')->of($films['f2'])->startingAt(self::DAY.' 16:30:00')->inVersion(ShowtimeVersion::Vost)->build(),
             $showtime->withId('V1S3')->of($films['f3'])->startingAt(self::DAY.' 16:40:00')->build(),
             $showtime->withId('V1S4')->of($films['f4'])->startingAt(self::DAY.' 19:00:00')->build(),
             ShowtimeBuilder::aShowtime()->withId('V9S1')->of($films['f5'])->at($vaise)->startingAt(self::DAY.' 15:00:00')->build(),
@@ -154,7 +155,7 @@ final class PlannerServiceTest extends KernelTestCase
         $em->flush();
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => 'vost']), $userId);
+        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => ShowtimeVersion::Vost]), $userId);
 
         // Assert
         $films = array_merge(...$this->filmSets($result));
@@ -177,7 +178,7 @@ final class PlannerServiceTest extends KernelTestCase
         );
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => 'vo']), $userId);
+        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => ShowtimeVersion::Vo]), $userId);
 
         // Assert
         $films = array_merge(...$this->filmSets($result));
@@ -243,7 +244,7 @@ final class PlannerServiceTest extends KernelTestCase
 
         // Act
         $within50Km = $this->planner()->plan($this->criteria(['films' => 1, 'radius' => 50]), $userId);
-        $dubbedOnly = $this->planner()->plan($this->criteria(['version' => 'vf']), $userId);
+        $dubbedOnly = $this->planner()->plan($this->criteria(['version' => ShowtimeVersion::Vf]), $userId);
 
         // Assert
         self::assertNotContains(['f5'], $this->filmSets($within50Km), 'Lyon is more than 150 km from Dijon');

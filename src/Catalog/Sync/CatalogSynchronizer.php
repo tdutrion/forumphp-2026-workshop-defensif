@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Sync;
 
+use App\Catalog\BookingStatus;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
 use App\Catalog\Entity\Film;
@@ -9,6 +10,7 @@ use App\Catalog\Entity\Showtime;
 use App\Catalog\Entity\Work;
 use App\Catalog\Repository\ShowtimeRepository;
 use App\Catalog\Repository\WorkRepository;
+use App\Catalog\ShowtimeVersion;
 use App\Catalog\WorkLinker;
 use App\Sdk\Pathe\CinemaSlug;
 use App\Sdk\Pathe\PatheClient;
@@ -177,6 +179,13 @@ class CatalogSynchronizer
                     if ($data['localDate'] < $today || $data['localDate'] > $lastDay) {
                         continue;
                     }
+                    // Pathé's strings become enums here: an unknown version or status is not guessed.
+                    $version = ShowtimeVersion::tryFrom($data['version']);
+                    $status = BookingStatus::tryFrom($data['status']);
+                    if (null === $version || null === $status) {
+                        $this->logger->warning('Unknown version or status, showtime skipped', ['showtime' => $data['id'], 'version' => $data['version'], 'status' => $data['status']]);
+                        continue;
+                    }
                     $showtime = $this->em->find(Showtime::class, $data['id']) ?? (new Showtime())->setId($data['id']);
                     $showtime
                         ->setFilm($films[$showSlug])
@@ -184,8 +193,8 @@ class CatalogSynchronizer
                         ->setStartsAt(new \DateTimeImmutable($data['startsAt']))
                         ->setEndsAt(new \DateTimeImmutable($data['endsAt']))
                         ->setLocalDate(new \DateTimeImmutable($data['localDate']))
-                        ->setVersion($data['version'])
-                        ->setStatus($data['status'])
+                        ->setVersion($version)
+                        ->setStatus($status)
                         ->setBookingUrl($data['bookingUrl'])
                         ->setReservableUntil(null !== $data['reservableUntil'] ? new \DateTimeImmutable($data['reservableUntil']) : null)
                         ->setAuditorium($data['auditorium'])

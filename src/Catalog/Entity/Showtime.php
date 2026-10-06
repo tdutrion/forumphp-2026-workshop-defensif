@@ -2,7 +2,9 @@
 
 namespace App\Catalog\Entity;
 
+use App\Catalog\BookingStatus;
 use App\Catalog\Repository\ShowtimeRepository;
+use App\Catalog\ShowtimeVersion;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -36,13 +38,11 @@ class Showtime
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $localDate = null;
 
-    /** Version: 'vf', 'vost', 'vo' or 'vfst'. */
-    #[ORM\Column(length: 8)]
-    private ?string $version = null;
+    #[ORM\Column(length: 8, enumType: ShowtimeVersion::class)]
+    private ?ShowtimeVersion $version = null;
 
-    /** Pathé status, e.g. 'available'. */
-    #[ORM\Column(length: 20)]
-    private ?string $status = null;
+    #[ORM\Column(length: 20, enumType: BookingStatus::class)]
+    private ?BookingStatus $status = null;
 
     #[ORM\Column(length: 255)]
     private ?string $bookingUrl = null;
@@ -117,24 +117,24 @@ class Showtime
         return $this;
     }
 
-    public function getVersion(): ?string
+    public function getVersion(): ?ShowtimeVersion
     {
         return $this->version;
     }
 
-    public function setVersion(string $version): static
+    public function setVersion(ShowtimeVersion $version): static
     {
         $this->version = $version;
 
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?BookingStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(BookingStatus $status): static
     {
         $this->status = $status;
 

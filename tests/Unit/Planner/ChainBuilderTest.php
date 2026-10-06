@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Planner;
 
 use App\Planner\ChainBuilder;
+use App\Planner\TravelMode;
 use App\Tests\Builder\ScreeningBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -36,7 +37,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
+        $programmes = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
 
         // Assert: 10 minutes of margin, plus the travel time when changing cinema.
         self::assertEqualsCanonicalizing(['first>same-cinema-ok', 'first>other-cinema-ok'], $this->ids($programmes));
@@ -53,8 +54,8 @@ final class ChainBuilderTest extends TestCase
         $reachable = [];
 
         // Act
-        foreach (['walking', 'cycling', 'transit', 'car'] as $mode) {
-            $reachable[$mode] = $this->ids((new ChainBuilder())->build($showtimes, 2, false, $mode));
+        foreach (TravelMode::cases() as $mode) {
+            $reachable[$mode->value] = $this->ids((new ChainBuilder())->build($showtimes, 2, false, $mode));
         }
 
         // Assert: 10 min of margin, then walking 36 min, cycling 12, transit 9 + 10 of waiting, car 6 + 15 of parking.
@@ -73,8 +74,8 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $withoutAds = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
-        $withAds = (new ChainBuilder())->build($showtimes, 2, true, 'cycling');
+        $withoutAds = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
+        $withAds = (new ChainBuilder())->build($showtimes, 2, true, TravelMode::Cycling);
 
         // Assert
         self::assertSame([], $withoutAds);
@@ -92,7 +93,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
+        $programmes = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
 
         // Assert
         self::assertSame([], $programmes);
@@ -108,7 +109,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $twoFilms = (new ChainBuilder())->build($showtimes, 2, false, 'cycling');
+        $twoFilms = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
         $threeFilms = (new ChainBuilder())->build($showtimes, 3, false);
 
         // Assert
@@ -125,7 +126,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programme = (new ChainBuilder())->build($showtimes, 2, false, 'cycling')[0];
+        $programme = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling)[0];
 
         // Assert: earliest arrival 16:00 + 10 min of margin + 12 min of travel = 16:22; the showtime starts at 16:40.
         self::assertSame(18, $programme['wait']);
