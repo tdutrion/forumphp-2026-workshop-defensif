@@ -1,0 +1,18 @@
+# GitHub Pages site of docs/ (.github/workflows/docs.yml).
+title: ScreenRoute
+description: Plan a film marathon across the cinemas of a city — and a defensive PHP workshop.
+remote_theme: just-the-docs/just-the-docs@v0.12.0
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
+color_scheme: light
+search_enabled: true
+aux_links:
+  Source code: https://github.com/tdutrion/forumphp-2026-workshop-defensif
+footer_content: ScreenRoute is free software, published under the GNU AGPL-3.0.
+# Internal working documents (specs and plans of the features): not published.
+exclude:
+  - superpowers/

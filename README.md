@@ -6,6 +6,10 @@ is clean, tested and secure, but its contracts are deliberately implicit
 (arrays, scalars, `false|result` returns). The exercises are in
 [`docs/exercises.md`](docs/exercises.md).
 
+The documentation (`docs/`) is published at
+https://tdutrion.github.io/forumphp-2026-workshop-defensif/ by the `Documentation` workflow, on
+every change of `docs/` on `main`.
+
 ## Requirements
 
 Docker with Compose v2, `make` and `curl`. Nothing else runs on the host.

@@ -1,3 +1,8 @@
+---
+title: Trainer guide
+nav_order: 4
+---
+
 # Trainer guide — defensive PHP workshop
 
 The application is clean, tested and secure. What improves is how easy it is to

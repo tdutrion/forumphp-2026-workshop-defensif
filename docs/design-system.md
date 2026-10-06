@@ -1,3 +1,8 @@
+---
+title: Design system
+nav_order: 3
+---
+
 # Design system
 
 The web interface uses Tailwind CSS v4 (standalone CLI, no Node.js) with a closed set of tokens

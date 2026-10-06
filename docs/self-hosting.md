@@ -1,7 +1,12 @@
+---
+title: Self-hosting
+nav_order: 2
+---
+
 # Self-hosting ScreenRoute
 
 ScreenRoute is free software, published under the
-[GNU AGPL-3.0](../LICENSE): you can run your own instance, for yourself, your
+[GNU AGPL-3.0](https://github.com/tdutrion/forumphp-2026-workshop-defensif/blob/main/LICENSE): you can run your own instance, for yourself, your
 friends or your company. This guide takes you to a working instance with
 HTTPS, sign-in and an up-to-date catalog, in one of three ways.
 
