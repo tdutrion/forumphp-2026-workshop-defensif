@@ -36,4 +36,17 @@ final class LanguageSwitchTest extends WebTestCase
         // Assert
         self::assertResponseStatusCodeSame(400);
     }
+
+    public function testAMalformedReturnPageFallsBackToThePlanner(): void
+    {
+        // Arrange
+        $client = self::createClient();
+
+        // Act: a route parameter sent as an array, in the parameters and in the query.
+        $client->request('POST', '/locale', ['locale' => 'en', '_return_route' => 'app_film_show', '_return_params' => 'slug[]=x', '_return' => 'slug[]=y']);
+
+        // Assert
+        self::assertResponseStatusCodeSame(303);
+        self::assertResponseRedirects('/');
+    }
 }
