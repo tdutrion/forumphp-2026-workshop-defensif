@@ -2,7 +2,6 @@
 
 namespace App\Tests\Builder;
 
-use App\Account\Entity\LinkedAccount;
 use App\Account\Entity\User;
 
 final class UserBuilder
@@ -43,14 +42,16 @@ final class UserBuilder
 
     public function build(): User
     {
-        $user = (new User())->setEmail($this->email)->setDisplayName($this->displayName);
         $connections = [] === $this->connections ? [['local', $this->email ?? 'ada', true]] : $this->connections;
+        $user = null;
         foreach ($connections as [$provider, $providerUserId, $emailVerified]) {
-            $user->addLinkedAccount((new LinkedAccount())
-                ->setProvider($provider)
-                ->setProviderUserId($providerUserId)
-                ->setEmail($this->email)
-                ->setEmailVerified($emailVerified));
+            $identity = IdentityBuilder::anIdentity()->withId($providerUserId)->withEmail($this->email);
+            $info = ($emailVerified ? $identity : $identity->unverified())->named($this->displayName)->build();
+            if (null === $user) {
+                $user = User::fromProviderIdentity($provider, $info);
+            } else {
+                $user->connect($provider, $info);
+            }
         }
 
         return $user;

@@ -2,8 +2,10 @@
 
 namespace App\Security\UserInfo;
 
+use App\Security\UnverifiedEmail;
 use App\Security\UserInfo;
 use App\Security\UserInfoProvider;
+use App\Security\VerifiedEmail;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
@@ -24,13 +26,29 @@ class OpenIdConnectUserInfoProvider implements UserInfoProvider
     {
         $owner = $client->fetchUserFromToken($accessToken);
         $data = $owner->toArray();
-        $email = $data['email'] ?? null;
 
         return new UserInfo(
             id: (string) $owner->getId(),
-            email: $email,
-            emailVerified: null !== $email && true === ($data['email_verified'] ?? null),
+            email: $this->email($data),
             name: $data['name'] ?? null,
         );
+    }
+
+    /**
+     * @param array<string, mixed> $claims
+     */
+    private function email(array $claims): VerifiedEmail|UnverifiedEmail|null
+    {
+        $email = $claims['email'] ?? null;
+        if (!\is_string($email)) {
+            return null;
+        }
+
+        try {
+            return true === ($claims['email_verified'] ?? null) ? new VerifiedEmail($email) : new UnverifiedEmail($email);
+        } catch (\InvalidArgumentException) {
+            // Not an address: the provider gives no usable email.
+            return null;
+        }
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Account\Entity;
 
+use App\Account\LastConnection;
 use App\Account\Repository\UserRepository;
 use App\Account\Theme;
+use App\Security\UserInfo;
+use App\Security\VerifiedEmail;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -41,11 +44,54 @@ class User implements UserInterface
     #[ORM\OneToMany(targetEntity: LinkedAccount::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     private Collection $linkedAccounts;
 
-    public function __construct()
+    private function __construct()
     {
         $this->id = Uuid::v7();
         $this->createdAt = new \DateTimeImmutable();
         $this->linkedAccounts = new ArrayCollection();
+    }
+
+    /**
+     * An account is born with its first connection: its email is the one the provider verified, if any.
+     */
+    public static function fromProviderIdentity(string $provider, UserInfo $info): self
+    {
+        $user = new self();
+        $user->email = $info->email instanceof VerifiedEmail ? $info->email->value : null;
+        $user->displayName = $info->name ?? $info->email?->value;
+        $user->connect($provider, $info);
+
+        return $user;
+    }
+
+    /**
+     * Another way to sign in to the same account.
+     */
+    public function connect(string $provider, UserInfo $info): void
+    {
+        $this->linkedAccounts->add(new LinkedAccount($this, $provider, $info));
+    }
+
+    /**
+     * @throws LastConnection
+     */
+    public function disconnect(LinkedAccount $linkedAccount): void
+    {
+        if (!$this->linkedAccounts->contains($linkedAccount)) {
+            return;
+        }
+        if ($this->linkedAccounts->count() <= 1) {
+            throw new LastConnection();
+        }
+        $this->linkedAccounts->removeElement($linkedAccount);
+    }
+
+    /**
+     * The email of the account, when it has none yet: only one a provider verified.
+     */
+    public function adoptEmail(VerifiedEmail $email): void
+    {
+        $this->email ??= $email->value;
     }
 
     public function getId(): Uuid
@@ -68,23 +114,9 @@ class User implements UserInterface
         return $this->email;
     }
 
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
     public function getDisplayName(): ?string
     {
         return $this->displayName;
-    }
-
-    public function setDisplayName(?string $displayName): static
-    {
-        $this->displayName = $displayName;
-
-        return $this;
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -96,23 +128,6 @@ class User implements UserInterface
     public function getLinkedAccounts(): Collection
     {
         return $this->linkedAccounts;
-    }
-
-    public function addLinkedAccount(LinkedAccount $linkedAccount): static
-    {
-        if (!$this->linkedAccounts->contains($linkedAccount)) {
-            $this->linkedAccounts->add($linkedAccount);
-            $linkedAccount->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLinkedAccount(LinkedAccount $linkedAccount): static
-    {
-        $this->linkedAccounts->removeElement($linkedAccount);
-
-        return $this;
     }
 
     public function getTheme(): Theme

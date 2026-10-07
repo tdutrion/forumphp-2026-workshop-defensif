@@ -4,6 +4,7 @@ namespace App\Security\UserInfo;
 
 use App\Security\UserInfo;
 use App\Security\UserInfoProvider;
+use App\Security\VerifiedEmail;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
@@ -39,10 +40,15 @@ class GithubUserInfoProvider implements UserInfoProvider
             }
         }
 
+        try {
+            $verified = \is_string($email) ? new VerifiedEmail($email) : null;
+        } catch (\InvalidArgumentException) {
+            $verified = null;
+        }
+
         return new UserInfo(
             id: (string) $owner->getId(),
-            email: $email,
-            emailVerified: null !== $email,
+            email: $verified,
             name: $data['name'] ?? $data['login'] ?? null,
         );
     }

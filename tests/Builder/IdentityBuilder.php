@@ -2,7 +2,9 @@
 
 namespace App\Tests\Builder;
 
+use App\Security\UnverifiedEmail;
 use App\Security\UserInfo;
+use App\Security\VerifiedEmail;
 
 final class IdentityBuilder
 {
@@ -32,6 +34,14 @@ final class IdentityBuilder
         return $clone;
     }
 
+    public function named(string $name): self
+    {
+        $clone = clone $this;
+        $clone->name = $name;
+
+        return $clone;
+    }
+
     public function unverified(): self
     {
         $clone = clone $this;
@@ -42,6 +52,8 @@ final class IdentityBuilder
 
     public function build(): UserInfo
     {
-        return new UserInfo($this->id, $this->email, $this->emailVerified && null !== $this->email, $this->name);
+        $email = null === $this->email ? null : ($this->emailVerified ? new VerifiedEmail($this->email) : new UnverifiedEmail($this->email));
+
+        return new UserInfo($this->id, $email, $this->name);
     }
 }

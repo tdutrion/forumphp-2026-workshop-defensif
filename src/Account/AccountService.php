@@ -2,11 +2,11 @@
 
 namespace App\Account;
 
-use App\Account\Entity\LinkedAccount;
 use App\Account\Entity\User;
 use App\Account\Repository\LinkedAccountRepository;
 use App\Account\Repository\UserRepository;
 use App\Security\UserInfo;
+use App\Security\VerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -26,26 +26,19 @@ class AccountService
      */
     public function loginWithProvider(string $provider, UserInfo $userInfo): User
     {
-        $email = $this->normalizeEmail($userInfo->email);
         $linked = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo->id);
         if (null !== $linked) {
             return $linked->getUser();
         }
 
-        $user = null;
         // Automatic linking only if the provider guarantees the email is verified.
-        if ($userInfo->emailVerified && null !== $email) {
-            $user = $this->userRepository->findOneBy(['email' => $email]);
-        }
-
+        $user = $userInfo->email instanceof VerifiedEmail ? $this->userRepository->findOneBy(['email' => $userInfo->email->value]) : null;
         if (null === $user) {
-            $user = new User();
-            $user->setEmail($userInfo->emailVerified ? $email : null);
-            $user->setDisplayName($userInfo->name ?? $email);
+            $user = User::fromProviderIdentity($provider, $userInfo);
             $this->em->persist($user);
+        } else {
+            $user->connect($provider, $userInfo);
         }
-
-        $user->addLinkedAccount($this->newLinkedAccount($provider, $userInfo, $email));
         $this->em->flush();
 
         return $user;
@@ -58,16 +51,14 @@ class AccountService
      */
     public function linkProvider(User $user, string $provider, UserInfo $userInfo): bool
     {
-        $email = $this->normalizeEmail($userInfo->email);
         $existing = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo->id);
         if (null !== $existing) {
             return $existing->getUser()->getId()->equals($user->getId());
         }
 
-        $user->addLinkedAccount($this->newLinkedAccount($provider, $userInfo, $email));
-        if (null === $user->getEmail() && $userInfo->emailVerified && null !== $email
-            && null === $this->userRepository->findOneBy(['email' => $email])) {
-            $user->setEmail($email);
+        $user->connect($provider, $userInfo);
+        if ($userInfo->email instanceof VerifiedEmail && null === $this->userRepository->findOneBy(['email' => $userInfo->email->value])) {
+            $user->adoptEmail($userInfo->email);
         }
         $this->em->flush();
 
@@ -79,29 +70,22 @@ class AccountService
      */
     public function removeLinkedAccount(User $user, string $linkedAccountId): bool
     {
-        if ($user->getLinkedAccounts()->count() <= 1) {
-            return false;
-        }
-
         foreach ($user->getLinkedAccounts() as $linkedAccount) {
-            if ($linkedAccount->getId()->toRfc4122() === $linkedAccountId) {
-                $user->removeLinkedAccount($linkedAccount);
-                $this->em->flush();
-
-                return true;
+            if ($linkedAccount->getId()->toRfc4122() !== $linkedAccountId) {
+                continue;
             }
+
+            try {
+                $user->disconnect($linkedAccount);
+            } catch (LastConnection) {
+                return false;
+            }
+            $this->em->flush();
+
+            return true;
         }
 
         return false;
-    }
-
-    /**
-     * Emails are stored and compared in lower case (the column is case- and accent-sensitive):
-     * "Ada@Example.org" is "ada@example.org", but "josé@" is never "jose@".
-     */
-    private function normalizeEmail(?string $email): ?string
-    {
-        return null === $email ? null : mb_strtolower($email);
     }
 
     public function changeTheme(User $user, Theme $theme): void
@@ -122,14 +106,5 @@ class AccountService
         $this->em->flush();
 
         return true;
-    }
-
-    private function newLinkedAccount(string $provider, UserInfo $userInfo, ?string $email): LinkedAccount
-    {
-        return (new LinkedAccount())
-            ->setProvider($provider)
-            ->setProviderUserId($userInfo->id)
-            ->setEmail($email)
-            ->setEmailVerified($userInfo->emailVerified);
     }
 }
