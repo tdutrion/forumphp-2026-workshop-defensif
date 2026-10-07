@@ -42,7 +42,9 @@ services:
         protocol: udp
 
   worker:
+    # The image built by the php service: never pulled from a registry.
     image: ${IMAGES_PREFIX:-}workshop-php
+    pull_policy: never
     restart: unless-stopped
     command: ["php", "bin/console", "messenger:consume", "scheduler_catalog", "--time-limit=3600"]
     environment:
