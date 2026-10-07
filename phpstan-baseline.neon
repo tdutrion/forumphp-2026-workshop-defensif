@@ -897,7 +897,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
+			count: 4
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -933,7 +933,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''status'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -945,7 +945,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''version'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -1141,12 +1141,6 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$status of method App\\Catalog\\Entity\\Showtime\:\:setStatus\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#1 \$string of function substr expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1183,7 +1177,13 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$version of method App\\Catalog\\Entity\\Showtime\:\:setVersion\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#1 \$value of static method App\\Catalog\\BookingStatus\:\:tryFrom\(\) expects int\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method App\\Catalog\\ShowtimeVersion\:\:tryFrom\(\) expects int\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1879,7 +1879,7 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
-			message: '#^Parameter \#4 \$travelMode of method App\\Planner\\ChainBuilder\:\:build\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#4 \$travelMode of method App\\Planner\\ChainBuilder\:\:build\(\) expects App\\Planner\\TravelMode, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/PlannerService.php
@@ -1891,7 +1891,7 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
-			message: '#^Parameter \#4 \$version of method App\\Catalog\\Repository\\ShowtimeRepository\:\:findCandidates\(\) expects string\|null, mixed given\.$#'
+			message: '#^Parameter \#4 \$version of method App\\Catalog\\Repository\\ShowtimeRepository\:\:findCandidates\(\) expects App\\Catalog\\ShowtimeVersion\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/PlannerService.php
@@ -3405,7 +3405,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''errors'' on array\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
+			count: 4
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
@@ -3469,6 +3469,12 @@ parameters:
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
+			message: '#^Cannot call method getStatus\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
 			message: '#^Cannot call method getSynopsis\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -3476,6 +3482,12 @@ parameters:
 
 		-
 			message: '#^Cannot call method getTimezone\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot call method getVersion\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
