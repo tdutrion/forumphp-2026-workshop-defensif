@@ -3,18 +3,18 @@
 # and prints its path. Used by make db-load.
 #
 # Usage: bin/catalog-dump [catalog-YYYY-MM-DD.sql.gz]
-#   With a name, that dump is used without asking. Without one, the dumps published on GitHub are
-#   listed and the user picks one; without a terminal, the pinned one (CATALOG_DUMP_DATE) is used.
+#   With a name, that dump is used without asking (no network needed when it is already in data/).
+#   Without one, the dumps published on GitHub are listed, newest first, and the user picks one:
+#   Enter, or no terminal to ask, takes the newest.
 #
-# Environment: CATALOG_REPO (owner/name), CATALOG_RELEASE (release of the pinned dump),
-#   CATALOG_DUMP_DATE (pinned dump, the default choice), GITHUB_TOKEN (optional, raises the API rate limit).
+# Environment: CATALOG_REPO (owner/name), CATALOG_RELEASE (release to download a named dump from
+#   when it is not found in the list), GITHUB_TOKEN (optional, raises the API rate limit).
 #
 # Everything but the chosen path goes to stderr: the caller reads the path from stdout.
 set -eu
 
 repo=${CATALOG_REPO:?CATALOG_REPO is not set}
 release=${CATALOG_RELEASE:-catalog}
-pinned="catalog-${CATALOG_DUMP_DATE:?CATALOG_DUMP_DATE is not set}.sql.gz"
 dir=data
 
 say() { printf '%s\n' "$*" >&2; }
@@ -23,14 +23,18 @@ valid_name() {
     printf '%s' "$1" | grep -Eq '^catalog-[0-9]{4}-[0-9]{2}-[0-9]{2}\.sql\.gz$'
 }
 
-# The download URLs of the catalog dumps of every release, newest dump first.
-published() {
+# The JSON list of the releases of the repository.
+releases() {
     set -- -fsSL --proto '=https' -H 'Accept: application/vnd.github+json'
     if [ -n "${GITHUB_TOKEN:-}" ]; then
         set -- "$@" -H "Authorization: Bearer $GITHUB_TOKEN"
     fi
-    curl "$@" "https://api.github.com/repos/$repo/releases?per_page=100" \
-        | grep -Eo '"browser_download_url": *"https://github\.com/[^"]+/releases/download/[^"/]+/catalog-[0-9]{4}-[0-9]{2}-[0-9]{2}\.sql\.gz"' \
+    curl "$@" "https://api.github.com/repos/$repo/releases?per_page=100"
+}
+
+# The download URLs of the catalog dumps found in a releases JSON (stdin), newest dump first.
+dump_urls() {
+    grep -Eo '"browser_download_url": *"https://github\.com/[^"]+/releases/download/[^"/]+/catalog-[0-9]{4}-[0-9]{2}-[0-9]{2}\.sql\.gz"' \
         | sed -E 's/^"browser_download_url": *"(.*)"$/\1/' \
         | awk -F/ '{ print $NF "\t" $0 }' | sort -r -k1,1 | cut -f2
 }
@@ -41,41 +45,52 @@ url=
 if [ -n "$choice" ]; then
     valid_name "$choice" || { say "\"$choice\" is not a catalog dump name (catalog-YYYY-MM-DD.sql.gz)."; exit 1; }
     if [ ! -f "$dir/$choice" ]; then
-        # Its release, when it is published elsewhere than in the release of the pinned dump.
-        url=$(published | grep -F "/$choice" | head -n 1) || url=
+        # Its release, when it is published elsewhere than in $release.
+        url=$( (releases || true) | dump_urls | grep -F "/$choice" | head -n 1) || url=
     fi
-elif ! urls=$(published) || [ -z "$urls" ]; then
-    say "Could not list the dumps published on github.com/$repo: using the pinned one, $pinned."
-    choice=$pinned
-elif [ ! -t 0 ]; then
-    say "No terminal to ask: using the pinned dump, $pinned."
-    choice=$pinned
 else
-    say "Catalog dumps published on github.com/$repo:"
-    i=0
-    default=1
-    for u in $urls; do
-        i=$((i + 1))
-        name=${u##*/}
-        tag=${u%/*}
-        tag=${tag##*/}
-        notes=
-        [ "$name" = "$pinned" ] && { notes=" (pinned)"; default=$i; }
-        [ -f "$dir/$name" ] && notes="$notes (already downloaded)"
-        say "  $i) $name, release $tag$notes"
-    done
-    printf 'Dump to load [%s]: ' "$default" >&2
-    read -r answer || answer=
-    answer=${answer:-$default}
-    case $answer in
-        '' | *[!0-9]*) say "\"$answer\" is not a number from the list."; exit 1 ;;
-    esac
-    if [ "$answer" -lt 1 ] || [ "$answer" -gt "$i" ]; then
-        say "$answer is not a number from the list."
+    if ! json=$(releases); then
+        say "Could not list the releases of github.com/$repo (network, or the API rate limit: set GITHUB_TOKEN)."
+        say "To load a dump already in $dir/ without the network: make db-load dump=catalog-YYYY-MM-DD.sql.gz"
         exit 1
+    fi
+    urls=$(printf '%s\n' "$json" | dump_urls)
+    if [ -z "$urls" ]; then
+        say "No catalog dump is published on github.com/$repo: build the catalog from pathe.fr with make sync"
+        say "(then make db-dump and make db-upload to publish it)."
+        exit 1
+    fi
+    count=$(printf '%s\n' "$urls" | wc -l)
+    answer=1
+    if [ ! -t 0 ]; then
+        say "No terminal to ask: loading the newest dump."
+    elif [ "$count" -gt 1 ]; then
+        say "Catalog dumps published on github.com/$repo:"
+        i=0
+        for u in $urls; do
+            i=$((i + 1))
+            name=${u##*/}
+            tag=${u%/*}
+            tag=${tag##*/}
+            notes=
+            [ "$i" -eq 1 ] && notes=" (newest)"
+            [ -f "$dir/$name" ] && notes="$notes (already downloaded)"
+            say "  $i) $name, release $tag$notes"
+        done
+        printf 'Dump to load [1]: ' >&2
+        read -r answer || answer=
+        answer=${answer:-1}
+        case $answer in
+            '' | *[!0-9]*) say "\"$answer\" is not a number from the list."; exit 1 ;;
+        esac
+        if [ "$answer" -lt 1 ] || [ "$answer" -gt "$count" ]; then
+            say "$answer is not a number from the list."
+            exit 1
+        fi
     fi
     url=$(printf '%s\n' "$urls" | sed -n "${answer}p")
     choice=${url##*/}
+    say "Loading $choice."
 fi
 
 path="$dir/$choice"

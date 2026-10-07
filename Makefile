@@ -4,12 +4,9 @@ CONSOLE = $(PHP) bin/console
 c ?=
 
 # Catalog dumps are assets of the "catalog" GitHub release, named after the day they were made
-# (catalog-2026-10-05.sql.gz). make db-load lists the published ones and offers the pinned one by
-# default (the only one used without a terminal); make db-dump moves the pin.
-CATALOG_REPO      ?= tdutrion/forumphp-2026-workshop-defensif
-CATALOG_RELEASE   ?= catalog
-CATALOG_DUMP_DATE ?= 2026-10-05
-CATALOG_DUMP      = data/catalog-$(CATALOG_DUMP_DATE).sql.gz
+# (catalog-2026-10-05.sql.gz). make db-load lists the published ones and loads the newest by default.
+CATALOG_REPO    ?= tdutrion/forumphp-2026-workshop-defensif
+CATALOG_RELEASE ?= catalog
 
 .DEFAULT_GOAL := help
 
@@ -67,22 +64,23 @@ lint: ## Validates composer.json, the dependencies (audit), the container, the T
 sync: ## Synchronizes the catalog from pathe.fr, e.g. make sync c="--city=dijon"
 	$(CONSOLE) catalog:sync --no-debug $(c) # debug keeps every SQL backtrace: out of memory on 3 cities
 
-db-dump: ## Writes data/catalog-<today>.sql.gz (catalog data, no schema or users) and pins it
+db-dump: ## Writes data/catalog-<today>.sql.gz (catalog data, no schema or users)
 	@mkdir -p data
 	$(COMPOSE) exec -T database sh -c 'mysqldump --no-create-info --skip-triggers --complete-insert --no-tablespaces -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE" city cinema work film showtime' | gzip -9 > data/catalog-$$(date +%F).sql.gz
-	@sed "s/^CATALOG_DUMP_DATE ?= .*/CATALOG_DUMP_DATE ?= $$(date +%F)/" Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-	@echo "Pinned data/catalog-$$(date +%F).sql.gz: run make db-upload, then commit the Makefile."
+	@echo "Wrote data/catalog-$$(date +%F).sql.gz: run make db-upload to publish it."
 
-db-upload: ## Publishes the pinned catalog dump on the GitHub release (gh CLI, signed in)
-	@test -f $(CATALOG_DUMP) || { echo "$(CATALOG_DUMP) is missing: run make db-dump first"; exit 1; }
+db-upload: ## Publishes the newest dump of data/ on the GitHub release (gh CLI, signed in), e.g. make db-upload dump=catalog-2026-10-05.sql.gz
+	@file=data/$${dump:-$$(ls data 2>/dev/null | grep -E '^catalog-[0-9]{4}-[0-9]{2}-[0-9]{2}\.sql\.gz$$' | sort | tail -n 1)}; \
+	test -f "$$file" && [ "$$file" != data/ ] || { echo "No catalog dump in data/: run make db-dump first"; exit 1; }; \
+	set -x; \
 	gh release view $(CATALOG_RELEASE) --repo $(CATALOG_REPO) >/dev/null 2>&1 || \
 		gh release create $(CATALOG_RELEASE) --repo $(CATALOG_REPO) --title 'Catalog dumps' --latest=false \
-			--notes 'Pathé catalog dumps (cities, cinemas, works, films, showtimes), one asset per day of creation. Loaded by make db-load.'
-	gh release upload $(CATALOG_RELEASE) $(CATALOG_DUMP) --repo $(CATALOG_REPO) --clobber
+			--notes 'Pathé catalog dumps (cities, cinemas, works, films, showtimes), one asset per day of creation. Loaded by make db-load.' && \
+	gh release upload $(CATALOG_RELEASE) "$$file" --repo $(CATALOG_REPO) --clobber
 
-db-load: ## Asks which dump of the GitHub releases to load (downloaded if missing), resets the database (all data!) and imports it, e.g. make db-load dump=catalog-2026-10-05.sql.gz
+db-load: ## Loads the newest dump of the GitHub releases, or the one picked in the list (downloaded if missing): resets the database (all data!) and imports it, e.g. make db-load dump=catalog-2026-10-05.sql.gz
 	@# The dump is chosen (and downloaded) before anything is dropped.
-	@dump=$$(CATALOG_REPO='$(CATALOG_REPO)' CATALOG_RELEASE='$(CATALOG_RELEASE)' CATALOG_DUMP_DATE='$(CATALOG_DUMP_DATE)' bin/catalog-dump $(dump)) && \
+	@dump=$$(CATALOG_REPO='$(CATALOG_REPO)' CATALOG_RELEASE='$(CATALOG_RELEASE)' bin/catalog-dump $(dump)) && \
 	set -x && \
 	$(CONSOLE) doctrine:database:drop --force --if-exists && \
 	$(CONSOLE) doctrine:database:create && \
