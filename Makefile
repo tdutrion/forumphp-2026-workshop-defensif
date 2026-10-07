@@ -4,7 +4,8 @@ CONSOLE = $(PHP) bin/console
 c ?=
 
 # Catalog dumps are assets of the "catalog" GitHub release, named after the day they were made
-# (catalog-2026-10-05.sql.gz): the Makefile pins the one to load, make db-dump moves the pin.
+# (catalog-2026-10-05.sql.gz). make db-load lists the published ones and offers the pinned one by
+# default (the only one used without a terminal); make db-dump moves the pin.
 CATALOG_REPO      ?= tdutrion/forumphp-2026-workshop-defensif
 CATALOG_RELEASE   ?= catalog
 CATALOG_DUMP_DATE ?= 2026-10-05
@@ -72,15 +73,6 @@ db-dump: ## Writes data/catalog-<today>.sql.gz (catalog data, no schema or users
 	@sed "s/^CATALOG_DUMP_DATE ?= .*/CATALOG_DUMP_DATE ?= $$(date +%F)/" Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 	@echo "Pinned data/catalog-$$(date +%F).sql.gz: run make db-upload, then commit the Makefile."
 
-data/catalog-%.sql.gz:
-	@mkdir -p data
-	curl -fSL --proto '=https' -o $@.part 'https://github.com/$(CATALOG_REPO)/releases/download/$(CATALOG_RELEASE)/$(notdir $@)'
-	@mv $@.part $@
-
-db-download: ## Downloads the pinned catalog dump again from the GitHub release
-	rm -f $(CATALOG_DUMP)
-	$(MAKE) $(CATALOG_DUMP)
-
 db-upload: ## Publishes the pinned catalog dump on the GitHub release (gh CLI, signed in)
 	@test -f $(CATALOG_DUMP) || { echo "$(CATALOG_DUMP) is missing: run make db-dump first"; exit 1; }
 	gh release view $(CATALOG_RELEASE) --repo $(CATALOG_REPO) >/dev/null 2>&1 || \
@@ -88,12 +80,15 @@ db-upload: ## Publishes the pinned catalog dump on the GitHub release (gh CLI, s
 			--notes 'Pathé catalog dumps (cities, cinemas, works, films, showtimes), one asset per day of creation. Loaded by make db-load.'
 	gh release upload $(CATALOG_RELEASE) $(CATALOG_DUMP) --repo $(CATALOG_REPO) --clobber
 
-db-load: $(CATALOG_DUMP) ## Resets the database (all data!) then imports the pinned catalog dump (downloaded if missing)
-	$(CONSOLE) doctrine:database:drop --force --if-exists
-	$(CONSOLE) doctrine:database:create
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction
-	$(CONSOLE) cache:pool:clear cache.catalog
-	gunzip -c $(CATALOG_DUMP) | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
+db-load: ## Asks which dump of the GitHub releases to load (downloaded if missing), resets the database (all data!) and imports it, e.g. make db-load dump=catalog-2026-10-05.sql.gz
+	@# The dump is chosen (and downloaded) before anything is dropped.
+	@dump=$$(CATALOG_REPO='$(CATALOG_REPO)' CATALOG_RELEASE='$(CATALOG_RELEASE)' CATALOG_DUMP_DATE='$(CATALOG_DUMP_DATE)' bin/catalog-dump $(dump)) && \
+	set -x && \
+	$(CONSOLE) doctrine:database:drop --force --if-exists && \
+	$(CONSOLE) doctrine:database:create && \
+	$(CONSOLE) doctrine:migrations:migrate --no-interaction && \
+	$(CONSOLE) cache:pool:clear cache.catalog && \
+	gunzip -c "$$dump" | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"'
 
 phpstan-max: ## PHPStan max level (workshop progress measure)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G

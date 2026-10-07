@@ -18,7 +18,7 @@ Docker with Compose v2, `make` and `curl`. Nothing else runs on the host.
 
 ```bash
 make up        # build and start FrankenPHP, MySQL, the worker, the local OIDC provider and phpMyAdmin
-make db-load   # reset the database and import the Pathé catalog (downloaded once from the GitHub release)
+make db-load   # pick a Pathé catalog dump among the GitHub releases, reset the database and import it
 ```
 
 The ports are published on 127.0.0.1 only: the development secrets are public. Set
@@ -70,7 +70,7 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make sync` | Sync the catalog from pathe.fr and link its works to Wikidata (network; `c="--city=dijon"`) |
 | `make console c="work:link <film> <Q-id>"` | Link the work of a film to a Wikidata item by hand (`--none`: stop looking for it) |
 | `make db-dump` | Write `data/catalog-<today>.sql.gz` from the current catalog (works included) and pin it in the Makefile |
-| `make db-download` | Download the pinned dump again from the `catalog` GitHub release |
+| `make db-load` | Pick a dump among the GitHub releases (the pinned one by default; `dump=catalog-<date>.sql.gz` to skip the question), download it if missing, reset the database (all data!) and import it |
 | `make db-upload` | Publish the pinned dump on the `catalog` GitHub release (`gh` CLI, signed in) |
 | `make sh` / `make console c="…"` | Shell / Symfony console in the PHP container |
 
