@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account;
 
 use App\Account\Entity\User;
@@ -56,7 +58,7 @@ class SeenFilmService
     }
 
     /**
-     * @return array slugs of the films already seen
+     * @return list<string> slugs of the films already seen
      */
     public function getSeenFilmSlugs(string $userId): array
     {

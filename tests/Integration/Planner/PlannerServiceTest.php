@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Integration\Planner;
 
 use App\Account\ExcludedCinemaService;
@@ -26,7 +28,7 @@ final class PlannerServiceTest extends KernelTestCase
 {
     use StoresEntities;
 
-    private const DAY = '2030-01-10';
+    private const string DAY = '2030-01-10';
 
     private Cinema $dijon;
 

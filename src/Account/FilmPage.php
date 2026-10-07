@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account;
 
 /**
@@ -8,12 +10,12 @@ namespace App\Account;
 final readonly class FilmPage
 {
     /** The numbers of films per page a user can choose in their settings. */
-    public const PAGE_SIZES = [10, 15, 20, 30];
+    public const array PAGE_SIZES = [10, 15, 20, 30];
 
     /**
-     * @param array $films rows: 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt' (UTC), latest first
-     * @param int   $page  current page, from 1 (a page after the last one shows the last one)
-     * @param int   $pages number of pages, at least 1
+     * @param list<array<string, mixed>> $films rows: 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt' (UTC), latest first
+     * @param int                        $page  current page, from 1 (a page after the last one shows the last one)
+     * @param int                        $pages number of pages, at least 1
      */
     public function __construct(
         public array $films,

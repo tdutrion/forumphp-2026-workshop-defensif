@@ -306,6 +306,10 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   return types and array shapes, typed constants (8.3), `never`,
   `#[\Deprecated]` (8.4) on methods kept for outside callers only
   (`failOnDeprecation` fails the suite as long as the application calls them).
+  In the reference solution: `PatheClient::fail()` is the `never` (it logs and
+  throws, and PHPStan knows nothing follows it), and
+  `FilmRepository::findBySlug()` comes back as a bridge marked `#[\Deprecated]`
+  (exercise 6 had removed it) with a test that expects the deprecation message.
 
 ## 14. Hidden inputs (30 min)
 

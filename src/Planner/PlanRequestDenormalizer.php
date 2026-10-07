@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
@@ -15,7 +17,7 @@ final class PlanRequestDenormalizer implements DenormalizerInterface, Denormaliz
 {
     use DenormalizerAwareTrait;
 
-    private const ALREADY_CALLED = self::class;
+    private const string ALREADY_CALLED = self::class;
 
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {

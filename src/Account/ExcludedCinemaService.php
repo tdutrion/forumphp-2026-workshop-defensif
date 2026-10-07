@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account;
 
 use App\Account\Repository\ExcludedCinemaRepository;
@@ -54,7 +56,7 @@ class ExcludedCinemaService
     }
 
     /**
-     * @return array slugs of the cinemas the user excluded
+     * @return list<string> slugs of the cinemas the user excluded
      */
     public function getExcludedCinemaSlugs(string $userId): array
     {
@@ -62,7 +64,7 @@ class ExcludedCinemaService
     }
 
     /**
-     * @return array list of ['slug' => ..., 'name' => ...] sorted by name
+     * @return list<array{slug: string, name: string}> sorted by name
      */
     public function listExcludedCinemas(string $userId): array
     {

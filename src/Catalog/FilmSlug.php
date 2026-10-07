@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog;
 
 /**
@@ -8,8 +10,8 @@ namespace App\Catalog;
 final readonly class FilmSlug implements \Stringable
 {
     /** Also the requirement of the routes: a URL that cannot hold a film slug is a 404 before any controller runs. */
-    public const PATTERN = '[a-z0-9]+(?:-[a-z0-9]+)*';
-    public const MAX_LENGTH = 150;
+    public const string PATTERN = '[a-z0-9]+(?:-[a-z0-9]+)*';
+    public const int MAX_LENGTH = 150;
 
     public string $value;
 

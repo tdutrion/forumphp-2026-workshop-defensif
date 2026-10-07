@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 use App\Catalog\Repository\CinemaRepository;
@@ -17,7 +19,7 @@ class LocationResolver
      * The GPS position that Pathé gives for a city is not reliable (Dijon is placed 45 km
      * from its center): we take the barycenter of the city's cinemas.
      *
-     * @return array|false ['latitude' => ..., 'longitude' => ...] or false if the city has no located cinema
+     * @return array{latitude: float, longitude: float}|false false if the city has no located cinema
      */
     public function fromCity(string $citySlug): array|false
     {
@@ -38,7 +40,7 @@ class LocationResolver
     /**
      * @param string $json position sent by the browser, e.g. {"lat": 47.32, "lng": 5.04}
      *
-     * @return array|false ['latitude' => ..., 'longitude' => ...] or false if the position is invalid
+     * @return array{latitude: float, longitude: float}|false false if the position is invalid
      */
     public function fromPosition(string $json): array|false
     {

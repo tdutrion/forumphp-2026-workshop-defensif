@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account\Repository;
 
 use App\Account\Entity\UnwantedFilm;
@@ -20,7 +22,7 @@ class UnwantedFilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array slugs of every film, any chain, whose work the user marked (latest first)
+     * @return list<string> slugs of every film, any chain, whose work the user marked (latest first)
      */
     public function findFilmSlugsByUser(string $userId): array
     {
@@ -46,7 +48,7 @@ class UnwantedFilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array rows 'slug', 'title', 'posterUrl', 'synopsis', 'markedAt': one per work (its first film), latest first
+     * @return list<array{slug: string, title: string, posterUrl: string|null, synopsis: string|null, markedAt: string}> one per work (its first film), latest first
      */
     public function findPageByUser(string $userId, int $offset, int $limit): array
     {

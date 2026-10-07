@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Integration\Catalog\Command;
 
 use App\Tests\Builder\PatheApiBuilder;

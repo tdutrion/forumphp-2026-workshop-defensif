@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -16,7 +18,7 @@ class OAuthProviders
     }
 
     /**
-     * @return array names of the enabled providers, e.g. ['local', 'github']
+     * @return list<string> names of the enabled providers, e.g. ['local', 'github']
      */
     public function enabled(): array
     {

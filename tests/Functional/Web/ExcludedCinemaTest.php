@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Functional\Web;
 
 use App\Tests\Builder\CinemaBuilder;
@@ -15,7 +17,7 @@ final class ExcludedCinemaTest extends WebTestCase
 {
     use StoresEntities;
 
-    private const SEARCH = ['plan' => ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2]];
+    private const array SEARCH = ['plan' => ['date' => '2030-01-10', 'city' => 'dijon', 'films' => 2]];
 
     /**
      * Pathé Dijon with four films of 100 minutes on January 10, 2030, and a signed-in user.

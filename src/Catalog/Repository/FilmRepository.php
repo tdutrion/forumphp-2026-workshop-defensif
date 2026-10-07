@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Repository;
 
 use App\Catalog\BookingStatus;
@@ -38,8 +40,22 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array  $slugs     list of slugs
-     * @param string $direction 'ASC' or 'DESC' (sorted by title)
+     * The film as the array that this method used to return, for the callers that live outside this application
+     * (a script, a plugin): the application itself no longer calls it, or its tests would fail on the deprecation.
+     *
+     * @return array<string, mixed>|null the row of findBySlugs(), or null when the catalog has no such film
+     *
+     * @deprecated since the film pages work on Film: use findFilm() or getFilm()
+     */
+    #[\Deprecated('Use findFilm() or getFilm(): they give a Film, not an array.', since: 'exercise 13')]
+    public function findBySlug(string $slug): ?array
+    {
+        return $this->findBySlugs([$slug])[0] ?? null;
+    }
+
+    /**
+     * @param list<string> $slugs     list of slugs
+     * @param string       $direction 'ASC' or 'DESC' (sorted by title)
      *
      * @return array list of films, rows ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis', 'workId', 'wikidataId', 'imdbId', 'tmdbId']
      */
@@ -68,8 +84,8 @@ class FilmRepository extends ServiceEntityRepository
     /**
      * Films that can still be booked (open cinemas), with their number of showtimes and cinemas.
      *
-     * @param array  $excludedSlugs films left out (already seen, not for the user)
-     * @param string $now           UTC instant ('Y-m-d H:i:s')
+     * @param list<string> $excludedSlugs films left out (already seen, not for the user)
+     * @param string       $now           UTC instant ('Y-m-d H:i:s')
      *
      * @return array rows ['slug', 'title', 'duration', 'releaseDate', 'genres' (JSON), 'posterUrl', 'showtimes', 'cinemas']
      */
@@ -114,7 +130,7 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array genres of the films that can still be booked, sorted
+     * @return list<string> genres of the films that can still be booked, sorted
      */
     public function findShowingGenres(string $now): array
     {
@@ -155,7 +171,7 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array [SQL conditions, parameters, parameter types]
+     * @return array{0: string, 1: array<string, mixed>, 2: array<string, ArrayParameterType>} SQL conditions, parameters, parameter types
      */
     private function showingConditions(FilmCatalogQuery $query, array $excludedSlugs, string $now): array
     {

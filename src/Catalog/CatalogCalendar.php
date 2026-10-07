@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog;
 
 use App\Catalog\Repository\ShowtimeRepository;
@@ -12,7 +14,7 @@ use Symfony\Contracts\Cache\CacheInterface;
  */
 class CatalogCalendar
 {
-    public const CACHE_KEY = 'catalog.last_bookable_by_day';
+    public const string CACHE_KEY = 'catalog.last_bookable_by_day';
 
     public function __construct(
         private ShowtimeRepository $showtimeRepository,
@@ -24,7 +26,7 @@ class CatalogCalendar
     /**
      * @param \DateTimeImmutable $now current instant
      *
-     * @return array local days ('Y-m-d') that still have a bookable showtime after $now, in order
+     * @return list<string> local days ('Y-m-d') that still have a bookable showtime after $now, in order
      */
     public function availableDates(\DateTimeImmutable $now): array
     {

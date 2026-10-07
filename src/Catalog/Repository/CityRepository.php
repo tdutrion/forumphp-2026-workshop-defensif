@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Repository;
 
 use App\Catalog\Entity\Cinema;
@@ -18,7 +20,7 @@ class CityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array list of ['slug' => ..., 'name' => ...] sorted by name
+     * @return list<array{slug: string, name: string}> sorted by name
      */
     public function findAllForSelect(): array
     {
@@ -32,7 +34,7 @@ class CityRepository extends ServiceEntityRepository
     /**
      * Where each city is, to choose the city nearest to a browser position: the centre of its open cinemas.
      *
-     * @return array list of ['slug', 'latitude', 'longitude'] (floats), cities without a located cinema left out
+     * @return list<array{slug: string, latitude: float, longitude: float}> cities without a located cinema left out
      */
     public function findCentres(): array
     {

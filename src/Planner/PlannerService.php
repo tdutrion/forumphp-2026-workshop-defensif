@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 use App\Account\ExcludedCinemaService;
@@ -13,8 +15,8 @@ use App\Catalog\Repository\ShowtimeRepository;
  */
 class PlannerService
 {
-    public const DEFAULT_RADIUS_KM = 10;
-    public const MAX_SEED = 999_999_999;
+    public const int DEFAULT_RADIUS_KM = 10;
+    public const int MAX_SEED = 999_999_999;
 
     public function __construct(
         private CinemaRepository $cinemaRepository,
@@ -102,8 +104,8 @@ class PlannerService
      *
      * @param PlanRequest $request only the city and the position are read
      *
-     * @return array list of ['slug', 'name', 'distance' (km), 'excluded' (bool)], nearest first;
-     *               [] if the place is unknown
+     * @return list<array{slug: string, name: string, distance: float, excluded: bool}> nearest first, the distance in km;
+     *                                                                                  [] if the place is unknown
      */
     public function nearbyCinemas(PlanRequest $request, string $userId): array
     {
@@ -131,7 +133,7 @@ class PlannerService
     }
 
     /**
-     * @return array|false ['latitude', 'longitude'] of the city or of the browser position, false if unknown
+     * @return array{latitude: float, longitude: float}|false the city or the browser position, false if unknown
      */
     private function location(PlanRequest $request): array|false
     {

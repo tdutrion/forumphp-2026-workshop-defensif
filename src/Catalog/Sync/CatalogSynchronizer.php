@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Sync;
 
 use App\Catalog\BookingStatus;
@@ -29,7 +31,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  */
 class CatalogSynchronizer
 {
-    private const CHAIN = 'pathe';
+    private const string CHAIN = 'pathe';
 
     public function __construct(
         private PatheClient $client,
@@ -45,12 +47,13 @@ class CatalogSynchronizer
     }
 
     /**
-     * @param array         $citySlugs    cities to synchronize, e.g. ['paris', 'lyon', 'dijon']; empty = every city of the chain
+     * @param list<string>  $citySlugs    cities to synchronize, e.g. ['paris', 'lyon', 'dijon']; empty = every city of the chain
      * @param string|null   $today        first local day synchronized ('Y-m-d'); null = today in the chain's time zone
      * @param int           $days         number of days synchronized
      * @param \Closure|null $stillRunning called before each cinema and each film page, e.g. to keep a lock (a sync of every city takes long)
      *
-     * @return array ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors' (reads that failed and were skipped), 'linked' (works linked to Wikidata)]
+     * @return array{cities: int, cinemas: int, films: int, showtimes: int, deleted: int, errors: int, linked: int}
+     *                                                                                                              errors: reads that failed and were skipped; linked: works linked to Wikidata
      *
      * @throws PatheUnavailableException                if the Pathé reference data (cities, cinemas, films) is unreachable
      * @throws BotBlockedException|RateLimitedException when Pathé refuses us: a partial sync is better than none, but not an insisting one

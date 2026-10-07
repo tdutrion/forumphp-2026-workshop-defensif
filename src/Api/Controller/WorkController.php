@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Api\Controller;
 
 use App\Catalog\Entity\Film;
@@ -16,7 +18,7 @@ use Symfony\Component\Uid\Uuid;
 class WorkController extends AbstractController
 {
     /** Any UUID: the works made by the migration for the films that existed before are not v7. */
-    private const ANY_UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+    private const string ANY_UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 
     #[Route('/api/works/{id}', name: 'api_work', methods: ['GET'], requirements: ['id' => self::ANY_UUID])]
     #[OA\Response(response: 200, description: 'A work common to every chain: its external ids (null when unknown) and its films by chain')]

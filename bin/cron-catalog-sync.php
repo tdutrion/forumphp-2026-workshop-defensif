@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Scheduled catalog sync for shared hosting whose cron runs a PHP file without arguments nor
 // environment (OVHcloud, see docs/self-hosting.md): reads the SetEnv lines of public/.htaccess,
 // then runs "bin/console catalog:sync" in this same process (no exec(), often disabled).

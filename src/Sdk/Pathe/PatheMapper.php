@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sdk\Pathe;
 
 use Psr\Log\LoggerInterface;
@@ -14,6 +16,11 @@ class PatheMapper
     {
     }
 
+    /**
+     * @param array<string, mixed> $raw
+     *
+     * @return array{slug: string, name: string}
+     */
     public function mapCity(array $raw): array
     {
         return [
@@ -23,7 +30,9 @@ class PatheMapper
     }
 
     /**
-     * @return array the cinema's fields, its 'position' a GpsPosition or null
+     * @param array<string, mixed> $raw
+     *
+     * @return array{slug: string, name: string, citySlug: string, open: bool, address: ?string, postalCode: ?string, town: ?string, position: ?GpsPosition, hallCount: ?int}
      */
     public function mapCinema(array $raw): array
     {
@@ -45,7 +54,7 @@ class PatheMapper
     /**
      * Languages of the countries Pathé writes in "nationality" (in French), first country first.
      */
-    private const LANGUAGE_BY_NATIONALITY = [
+    private const array LANGUAGE_BY_NATIONALITY = [
         'France' => 'fr',
         'Etats-Unis' => 'en',
         'Royaume-Uni' => 'en',
@@ -63,7 +72,7 @@ class PatheMapper
      * Original language of a film, guessed from the first country of its nationality
      * ("France, Belgique" gives 'fr'). Null when unknown or ambiguous (Belgique, Canada, Suisse...).
      *
-     * @param array $rawShow a film page (/show/{slug})
+     * @param array<string, mixed> $rawShow a film page (/show/{slug})
      */
     public function mapOriginalLanguage(array $rawShow): ?string
     {
@@ -79,7 +88,7 @@ class PatheMapper
     /**
      * Synopsis of a film as plain text: Pathé may send markup, and the text ends up in the pages.
      *
-     * @param array $rawShow a film page (/show/{slug})
+     * @param array<string, mixed> $rawShow a film page (/show/{slug})
      */
     public function mapSynopsis(array $rawShow): ?string
     {
@@ -96,9 +105,9 @@ class PatheMapper
      * What identifies the film as a work, from its film page: original title, release year and
      * directors (Pathé gives them as one comma-separated string).
      *
-     * @param array $rawShow a film page (/show/{slug})
+     * @param array<string, mixed> $rawShow a film page (/show/{slug})
      *
-     * @return array ['originalTitle' => ?string, 'year' => ?int, 'directors' => list of names]
+     * @return array{originalTitle: ?string, year: ?int, directors: list<string>}
      */
     public function mapFilmDetails(array $rawShow): array
     {

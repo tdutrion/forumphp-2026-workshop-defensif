@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog;
 
 use App\Catalog\Entity\Film;
@@ -13,7 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class WorkMerger
 {
     /** Which status wins when two works merge: a decision by hand, then evidence, then guesses. */
-    private const STRENGTH = ['manual' => 4, 'wikidata' => 3, 'no_match' => 2, 'fingerprint' => 1, 'unlinked' => 0];
+    private const array STRENGTH = ['manual' => 4, 'wikidata' => 3, 'no_match' => 2, 'fingerprint' => 1, 'unlinked' => 0];
 
     public function __construct(private EntityManagerInterface $em)
     {

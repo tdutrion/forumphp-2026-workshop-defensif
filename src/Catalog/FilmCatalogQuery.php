@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog;
 
 use Symfony\Component\Serializer\Attribute\SerializedName;
@@ -10,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 final readonly class FilmCatalogQuery
 {
-    public const SORTS = ['title', 'showtimes', 'release', 'duration'];
+    public const array SORTS = ['title', 'showtimes', 'release', 'duration'];
 
     #[Assert\Length(max: 100)]
     public ?string $q;
@@ -68,7 +70,7 @@ final readonly class FilmCatalogQuery
     }
 
     /**
-     * @return array the criteria as URL parameters, empty ones left out (links of the pagination)
+     * @return array<string, string|int> the criteria as URL parameters, empty ones left out (links of the pagination)
      */
     public function toQuery(): array
     {

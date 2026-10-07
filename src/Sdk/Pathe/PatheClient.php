@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sdk\Pathe;
 
 use Psr\Cache\CacheItemPoolInterface;
@@ -18,9 +20,9 @@ use PsrDiscovery\Discover;
  */
 class PatheClient
 {
-    public const BASE_URL = 'https://www.pathe.fr/api/';
+    public const string BASE_URL = 'https://www.pathe.fr/api/';
     // Pathé blocks crawler-like user agents (HTTP 403).
-    private const USER_AGENT = 'PatheApiExplorer/1.0';
+    private const string USER_AGENT = 'PatheApiExplorer/1.0';
 
     private ClientInterface $httpClient;
     private RequestFactoryInterface $requestFactory;
@@ -80,7 +82,7 @@ class PatheClient
     }
 
     /**
-     * @return array the list of films and events
+     * @return list<array<string, mixed>> the list of films and events
      *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */
@@ -112,9 +114,7 @@ class PatheClient
         try {
             return PatheShowtimes::fromApiResponse($data);
         } catch (\InvalidArgumentException $e) {
-            $this->logger->warning('Unexpected showtimes from Pathé', ['path' => $path, 'error' => $e->getMessage()]);
-
-            throw new PatheUnavailableException($path, 'Unexpected showtimes from Pathé: '.$e->getMessage(), $e);
+            $this->fail($path, 'Unexpected showtimes from Pathé: '.$e->getMessage(), $e);
         }
     }
 
@@ -141,9 +141,7 @@ class PatheClient
         try {
             $response = $this->httpClient->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
-            $this->logger->warning('Pathé call failed', ['path' => $path, 'error' => $e->getMessage()]);
-
-            throw new PatheUnavailableException($path, 'Pathé call failed: '.$e->getMessage(), $e);
+            $this->fail($path, 'Pathé call failed: '.$e->getMessage(), $e);
         }
 
         $status = $response->getStatusCode();
@@ -154,22 +152,16 @@ class PatheClient
             throw new RateLimitedException($path);
         }
         if (200 !== $status) {
-            $this->logger->warning('Unexpected response from Pathé', ['path' => $path, 'status' => $status]);
-
-            throw new PatheUnavailableException($path, \sprintf('Pathé answered HTTP %d.', $status));
+            $this->fail($path, \sprintf('Pathé answered HTTP %d.', $status));
         }
 
         try {
             $data = json_decode((string) $response->getBody(), true, 512, \JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            $this->logger->warning('Pathé did not answer JSON', ['path' => $path, 'error' => $e->getMessage()]);
-
-            throw new PatheUnavailableException($path, 'Pathé did not answer JSON: '.$e->getMessage(), $e);
+            $this->fail($path, 'Pathé did not answer JSON: '.$e->getMessage(), $e);
         }
         if (!is_array($data)) {
-            $this->logger->warning('Pathé did not answer a JSON object or list', ['path' => $path]);
-
-            throw new PatheUnavailableException($path, 'Pathé did not answer a JSON object or list.');
+            $this->fail($path, 'Pathé did not answer a JSON object or list.');
         }
 
         if (null !== $cache && null !== $item) {
@@ -177,5 +169,17 @@ class PatheClient
         }
 
         return $data;
+    }
+
+    /**
+     * Logs a one-off failure and gives it up: this method never returns.
+     *
+     * @throws PatheUnavailableException
+     */
+    private function fail(string $path, string $reason, ?\Throwable $previous = null): never
+    {
+        $this->logger->warning($reason, ['path' => $path]);
+
+        throw new PatheUnavailableException($path, $reason, $previous);
     }
 }

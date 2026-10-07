@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account\Repository;
 
 use App\Account\Entity\ExcludedCinema;
@@ -17,7 +19,7 @@ class ExcludedCinemaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array slugs of the cinemas the user excluded
+     * @return list<string> slugs of the cinemas the user excluded
      */
     public function findCinemaSlugsByUser(string $userId): array
     {
