@@ -101,8 +101,11 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   by hand from the query string in `Api\Controller\PlanController` and turned
   into `{field, message}` errors; the time range as two `'H:i'` strings
   compared as text.
-- **Goal**: `PlanRequest` DTO (readonly, constructor promotion, `#[Assert\...]`,
-  the enums of exercise 2) used as `data_class` of `PlanType` and bound with
+- **Goal**: `PlanRequest` DTO (readonly, constructor promotion except for the
+  text fields normalized in the constructor, `#[Assert\...]`, the enums of
+  exercise 2) with the fields of `PlanType` (`city`/`position`, resolved by
+  `plan()` itself: `planFromForm()` disappears), used as `data_class` of
+  `PlanType` (built at once by its `mapFormsToData()`) and bound with
   `#[MapQueryString(validationFailedStatusCode: 422)]` in
   `Api\Controller\PlanController` (the default status is 404);
   `ApiExceptionListener` renders the violations in the existing problem format
@@ -115,10 +118,11 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
 
 - **Starting point**: `plan(): array|false` (`false` = no showtime, shown as
   `'no_showtime'`) with `'reason'` as a string (`'no_programme'`,
-  `'not_enough_programmes'`, `'fewer_films'`; `'unknown_location'` added by
-  `planFromForm()`), the number of films kept in a loose `'films'` key and the
-  draw in `'seed'`; each caller (`HomeController`, `Api\Controller\PlanController`,
-  `home/index.html.twig`) tests the strings again.
+  `'not_enough_programmes'`, `'fewer_films'`; `'unknown_location'`, returned
+  without a `'films'` key since exercise 4), the number of films kept in a
+  loose `'films'` key and the draw in `'seed'`; each caller (`HomeController`,
+  `Api\Controller\PlanController`, `home/index.html.twig`) tests the strings
+  again.
 - **Goal**: `PlanResult`: a success (programmes, number of films, seed,
   optional `PlanNotice` enum `FewerFilms`/`NotEnoughProgrammes`) or a failure
   (`PlanFailure` enum `NoShowtime`/`NoProgramme`/`UnknownLocation`); the
@@ -136,8 +140,9 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
 - **Goal**: `findFilm(FilmSlug): ?Film` / `getFilm(FilmSlug): Film` pair
   (`FilmSlug` is the catalog's, distinct from the SDK's `ShowSlug`),
   `?? throw new FilmNotFound(...)`, domain exception translated into a 404 in
-  the controller; the film page and `/api/films/{slug}` keep their output (the
-  open-data ids are read through `film.work`).
+  the controller, which receives a `FilmSlug` (a value resolver and a route
+  requirement `FilmSlug::PATTERN`); the film page and `/api/films/{slug}` keep
+  their output (the open-data ids are read through `film.work`).
 - **Trap to show**: a forgotten `findBySlug()` call silently becomes Doctrine's
   magic `findBy(['slug' => …])`, which returns `[]`, never `null`.
 - **Deck**: Part 6 (`find()` vs `get()`).
