@@ -37,7 +37,7 @@ class FilmCatalog
             $query->page,
             $pageSize,
             fn (int $offset, int $limit): array => array_map(static fn (array $film): array => [
-                'genres' => json_decode((string) $film['genres'], true) ?: [],
+                'genres' => json_decode((string) $film['genres'], true, 512, \JSON_THROW_ON_ERROR),
             ] + $film + [
                 'seen' => in_array($film['slug'], $seen, true),
                 'unwanted' => in_array($film['slug'], $unwanted, true),

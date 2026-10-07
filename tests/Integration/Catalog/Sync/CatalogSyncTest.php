@@ -39,7 +39,7 @@ final class CatalogSyncTest extends KernelTestCase
             ->withShowtime('verity-50815', 'cinema-pathe-dijon', '2026-10-04 16:30:00', 'V3345S85483');
     }
 
-    private function synchronize(PatheApiBuilder $api): array|false
+    private function synchronize(PatheApiBuilder $api): array
     {
         self::getContainer()->get(FakePatheApi::class)->serve($api);
 

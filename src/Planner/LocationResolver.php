@@ -42,7 +42,11 @@ class LocationResolver
      */
     public function fromPosition(string $json): array|false
     {
-        $data = json_decode($json, true);
+        // What the browser sends is untrusted: a position that is not JSON is an ordinary answer, not an exception.
+        if (!json_validate($json)) {
+            return false;
+        }
+        $data = json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
         if (!is_array($data) || !isset($data['lat'], $data['lng']) || !is_numeric($data['lat']) || !is_numeric($data['lng'])) {
             return false;
         }

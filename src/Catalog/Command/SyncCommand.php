@@ -3,6 +3,10 @@
 namespace App\Catalog\Command;
 
 use App\Catalog\Sync\CatalogSyncRunner;
+use App\Catalog\Sync\SyncAlreadyRunning;
+use App\Sdk\Pathe\BotBlockedException;
+use App\Sdk\Pathe\PatheUnavailableException;
+use App\Sdk\Pathe\RateLimitedException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,13 +33,11 @@ class SyncCommand extends Command
 
         try {
             $stats = $this->runner->run($input->getOption('city'));
-        } catch (\RuntimeException $e) {
+        } catch (SyncAlreadyRunning|BotBlockedException|RateLimitedException $e) {
             $io->error($e->getMessage());
 
             return Command::FAILURE;
-        }
-
-        if (false === $stats) {
+        } catch (PatheUnavailableException) {
             $io->error('Cannot read the Pathé reference data (cities, cinemas or films).');
 
             return Command::FAILURE;

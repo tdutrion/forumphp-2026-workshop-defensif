@@ -13,9 +13,12 @@ use App\Catalog\Repository\ShowtimeRepository;
 use App\Catalog\Repository\WorkRepository;
 use App\Catalog\ShowtimeVersion;
 use App\Catalog\WorkLinker;
+use App\Sdk\Pathe\BotBlockedException;
 use App\Sdk\Pathe\CinemaSlug;
 use App\Sdk\Pathe\PatheClient;
 use App\Sdk\Pathe\PatheMapper;
+use App\Sdk\Pathe\PatheUnavailableException;
+use App\Sdk\Pathe\RateLimitedException;
 use App\Sdk\Pathe\ShowSlug;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -47,10 +50,12 @@ class CatalogSynchronizer
      * @param int           $days         number of days synchronized
      * @param \Closure|null $stillRunning called before each cinema and each film page, e.g. to keep a lock (a sync of every city takes long)
      *
-     * @return array|false ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors', 'linked' (works linked to Wikidata)],
-     *                     or false if the Pathé reference data is unreachable
+     * @return array ['cities', 'cinemas', 'films', 'showtimes', 'deleted', 'errors' (reads that failed and were skipped), 'linked' (works linked to Wikidata)]
+     *
+     * @throws PatheUnavailableException                if the Pathé reference data (cities, cinemas, films) is unreachable
+     * @throws BotBlockedException|RateLimitedException when Pathé refuses us: a partial sync is better than none, but not an insisting one
      */
-    public function synchronize(array $citySlugs, ?string $today = null, int $days = 7, ?\Closure $stillRunning = null): array|false
+    public function synchronize(array $citySlugs, ?string $today = null, int $days = 7, ?\Closure $stillRunning = null): array
     {
         $chain = $this->chains[self::CHAIN];
         $today ??= (new \DateTimeImmutable('now', new \DateTimeZone($chain['timezone'])))->format('Y-m-d');
@@ -59,9 +64,6 @@ class CatalogSynchronizer
         $rawCities = $this->client->getCities();
         $rawCinemas = $this->client->getCinemas();
         $rawShows = $this->client->getShows();
-        if (false === $rawCities || false === $rawCinemas || false === $rawShows) {
-            return false;
-        }
 
         $cities = [];
         foreach ($rawCities as $raw) {
@@ -143,8 +145,9 @@ class CatalogSynchronizer
             }
 
             $patheCinema = new CinemaSlug($cinemaSlug);
-            $programme = $this->client->getCinemaProgramme($patheCinema);
-            if (false === $programme) {
+            try {
+                $programme = $this->client->getCinemaProgramme($patheCinema);
+            } catch (PatheUnavailableException) {
                 ++$stats['errors'];
                 continue;
             }
@@ -160,8 +163,9 @@ class CatalogSynchronizer
                 }
 
                 $playing[$showSlug] = $films[$showSlug];
-                $showtimes = $this->client->getShowtimes(showSlug: new ShowSlug($showSlug), cinemaSlug: $patheCinema);
-                if (false === $showtimes) {
+                try {
+                    $showtimes = $this->client->getShowtimes(showSlug: new ShowSlug($showSlug), cinemaSlug: $patheCinema);
+                } catch (PatheUnavailableException) {
                     ++$stats['errors'];
                     $complete = false;
                     continue;
@@ -222,8 +226,9 @@ class CatalogSynchronizer
             if (null !== $film->getOriginalLanguage() && null !== $film->getSynopsis() && null !== $film->getWork()->getDirectors()) {
                 continue;
             }
-            $rawShow = $this->client->getShow(new ShowSlug($showSlug));
-            if (false === $rawShow) {
+            try {
+                $rawShow = $this->client->getShow(new ShowSlug($showSlug));
+            } catch (PatheUnavailableException) {
                 $this->logger->warning('Film page unreadable, original language, synopsis and work unknown', ['film' => $showSlug]);
                 continue;
             }

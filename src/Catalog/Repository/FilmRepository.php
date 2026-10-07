@@ -127,7 +127,7 @@ class FilmRepository extends ServiceEntityRepository
             ['status' => BookingStatus::Available->value, 'now' => $now],
         );
         foreach ($rows as $json) {
-            foreach (json_decode((string) $json, true) ?: [] as $genre) {
+            foreach (json_decode((string) $json, true, 512, \JSON_THROW_ON_ERROR) as $genre) {
                 $genres[$genre] = true;
             }
         }

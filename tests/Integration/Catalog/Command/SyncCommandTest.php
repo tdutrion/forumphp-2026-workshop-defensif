@@ -45,6 +45,21 @@ final class SyncCommandTest extends KernelTestCase
         self::assertStringContainsString('Pathé refused the request', $tester->getDisplay());
     }
 
+    public function testExplainsWhenTheReferenceDataIsUnreachable(): void
+    {
+        // Arrange
+        $kernel = self::bootKernel();
+        self::getContainer()->get(FakePatheApi::class)->serve(PatheApiBuilder::aPatheApi()->failing('cinemas', 500));
+        $tester = new CommandTester((new Application($kernel))->find('catalog:sync'));
+
+        // Act
+        $tester->execute(['--city' => ['dijon']]);
+
+        // Assert
+        self::assertSame(Command::FAILURE, $tester->getStatusCode());
+        self::assertStringContainsString('Cannot read the Pathé reference data', $tester->getDisplay());
+    }
+
     public function testASecondSynchronizationWaitsForTheFirstOneToFinish(): void
     {
         // Arrange: another synchronization (scheduled task or command) holds the lock.
