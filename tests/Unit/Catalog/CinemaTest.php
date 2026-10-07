@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Catalog;
 
+use App\Catalog\CinemaChain;
 use App\Catalog\Coordinates;
+use App\Catalog\CountryCode;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use PHPUnit\Framework\TestCase;
@@ -50,15 +52,18 @@ final class CinemaTest extends TestCase
         self::assertTrue($cinema->open);
     }
 
-    public function testFollowsAChainOnlyInAKnownTimeZone(): void
+    public function testFollowsTheCountryTheTimeZoneAndTheLanguageOfItsChain(): void
     {
         // Arrange
         $cinema = CinemaBuilder::aCinema()->in(CityBuilder::aCity()->build())->build();
-
-        // Assert
-        $this->expectException(\DateInvalidTimeZoneException::class);
+        $chain = new CinemaChain('cineworld', 'Cineworld', new CountryCode('GB'), new \DateTimeZone('Europe/London'), 'en');
 
         // Act
-        $cinema->follow('FR', 'Europe/Nowhere', 'fr');
+        $cinema->follow($chain);
+
+        // Assert
+        self::assertSame('GB', $cinema->country->value);
+        self::assertSame('Europe/London', $cinema->timezone->getName());
+        self::assertSame('en', $cinema->language);
     }
 }

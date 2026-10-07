@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Command;
 
 use App\Catalog\CatalogCalendar;
+use App\Catalog\CinemaChainRegistry;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -12,7 +13,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsCommand(name: 'catalog:shift-dates', description: 'Shifts every showtime so that the first day of the catalog becomes today')]
 class ShiftDatesCommand extends Command
@@ -21,9 +21,7 @@ class ShiftDatesCommand extends Command
         private Connection $connection,
         private CatalogCalendar $calendar,
         private ClockInterface $clock,
-        /** @var array<string, array{name: string, country: string, timezone: string, language: string}> the chains of config/packages/chains.yaml */
-        #[Autowire('%app.chains%')]
-        private array $chains,
+        private CinemaChainRegistry $chains,
     ) {
         parent::__construct();
     }
@@ -40,7 +38,7 @@ class ShiftDatesCommand extends Command
         }
 
         // The catalog only holds Pathé for now: "today" is taken in its time zone.
-        $today = $this->clock->now()->setTimezone(new \DateTimeZone($this->chains['pathe']['timezone']));
+        $today = $this->clock->now()->setTimezone($this->chains->get('pathe')->timezone);
         $days = (int) (new \DateTimeImmutable($firstDay))->diff(new \DateTimeImmutable($today->format('Y-m-d')))->format('%r%a');
         if (0 === $days) {
             $io->success('The catalog already starts today.');

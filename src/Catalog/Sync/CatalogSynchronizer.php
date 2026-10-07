@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Sync;
 
 use App\Catalog\BookingStatus;
+use App\Catalog\CinemaChainRegistry;
 use App\Catalog\Coordinates;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
@@ -25,7 +26,6 @@ use App\Sdk\Pathe\ShowSlug;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\ClockInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Copies the cities, cinemas, films and showtimes of the Pathé chain into the catalog.
@@ -43,9 +43,7 @@ class CatalogSynchronizer
         private WorkLinker $workLinker,
         private LoggerInterface $logger,
         private ClockInterface $clock,
-        /** @var array<string, array{name: string, country: string, timezone: string, language: string}> the chains of config/packages/chains.yaml */
-        #[Autowire('%app.chains%')]
-        private array $chains,
+        private CinemaChainRegistry $chains,
     ) {
     }
 
@@ -63,8 +61,8 @@ class CatalogSynchronizer
      */
     public function synchronize(array $citySlugs, ?string $today = null, int $days = 7, ?\Closure $stillRunning = null): array
     {
-        $chain = $this->chains[self::CHAIN];
-        $today ??= $this->clock->now()->setTimezone(new \DateTimeZone($chain['timezone']))->format('Y-m-d');
+        $chain = $this->chains->get(self::CHAIN);
+        $today ??= $this->clock->now()->setTimezone($chain->timezone)->format('Y-m-d');
         $stats = ['cities' => 0, 'cinemas' => 0, 'films' => 0, 'showtimes' => 0, 'deleted' => 0, 'errors' => 0, 'linked' => 0];
 
         $rawCities = $this->client->getCities();
@@ -78,7 +76,7 @@ class CatalogSynchronizer
             }
             $data = $this->mapper->mapCity($raw);
             $city = $this->em->find(City::class, $data['slug']) ?? (new City())->setSlug($data['slug']);
-            $city->setName($data['name'])->setChain(self::CHAIN)->setCountry($chain['country']);
+            $city->setName($data['name'])->setChain(self::CHAIN)->setCountry($chain->country);
             $this->em->persist($city);
             $cities[$data['slug']] = $city;
             ++$stats['cities'];
@@ -91,8 +89,8 @@ class CatalogSynchronizer
                 continue;
             }
             $cinema = $this->em->find(Cinema::class, $data['slug'])
-                ?? Cinema::register($data['slug'], $data['name'], $cities[$data['citySlug']], self::CHAIN, $chain['country'], $chain['timezone'], $chain['language']);
-            $cinema->follow($chain['country'], $chain['timezone'], $chain['language']);
+                ?? Cinema::register($data['slug'], $data['name'], $cities[$data['citySlug']], $chain);
+            $cinema->follow($chain);
             $cinema->describe($data['name'], $cities[$data['citySlug']], $data['address'], $data['postalCode'], $data['town'], $data['hallCount']);
             $cinema->locate(null !== $data['position'] ? new Coordinates($data['position']->latitude, $data['position']->longitude) : null);
             $data['open'] ? $cinema->reopen() : $cinema->close();
@@ -138,7 +136,7 @@ class CatalogSynchronizer
         $this->em->flush();
 
         $lastDay = (new \DateTimeImmutable($today))->modify('+'.($days - 1).' days')->format('Y-m-d');
-        $timezone = new \DateTimeZone($chain['timezone']);
+        $timezone = $chain->timezone;
 
         $playing = [];
         foreach ($cinemas as $cinemaSlug => $cinema) {

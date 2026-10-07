@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Catalog\Entity;
 
+use App\Catalog\CinemaChain;
 use App\Catalog\Coordinates;
+use App\Catalog\CountryCode;
 use App\Catalog\Repository\CinemaRepository;
+use App\Doctrine\CountryCodeType;
+use App\Doctrine\DateTimeZoneType;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CinemaRepository::class)]
@@ -22,13 +26,12 @@ class Cinema
     #[ORM\Column(length: 32)]
     public private(set) string $chain;
 
-    /** ISO 3166-1 alpha-2 country code, e.g. 'FR'. */
-    #[ORM\Column(length: 2)]
-    public private(set) string $country;
+    #[ORM\Column(type: CountryCodeType::NAME, length: 2)]
+    public private(set) CountryCode $country;
 
-    /** IANA time zone of the cinema, e.g. 'Europe/Paris': showtimes are stored in UTC and shown in this zone. */
-    #[ORM\Column(length: 64)]
-    public private(set) string $timezone;
+    /** Showtimes are stored in UTC and shown in the zone of the cinema, which is the chain's unless a cinema says otherwise. */
+    #[ORM\Column(type: DateTimeZoneType::NAME, length: 64)]
+    public private(set) \DateTimeZone $timezone;
 
     /** ISO 639-1 language of the chain, e.g. 'fr': a film made in this language plays in its original version. */
     #[ORM\Column(length: 2)]
@@ -74,14 +77,14 @@ class Cinema
     /**
      * A cinema of a chain, open and without a position until it is said otherwise.
      */
-    public static function register(string $slug, string $name, City $city, string $chain, string $country, string $timezone, string $language): self
+    public static function register(string $slug, string $name, City $city, CinemaChain $chain): self
     {
         $cinema = new self();
         $cinema->slug = $slug;
         $cinema->name = $name;
         $cinema->city = $city;
-        $cinema->chain = $chain;
-        $cinema->follow($country, $timezone, $language);
+        $cinema->chain = $chain->id;
+        $cinema->follow($chain);
 
         return $cinema;
     }
@@ -101,15 +104,12 @@ class Cinema
 
     /**
      * The country, the time zone and the language of the chain the cinema belongs to.
-     *
-     * @throws \DateInvalidTimeZoneException on a time zone that does not exist
      */
-    public function follow(string $country, string $timezone, string $language): void
+    public function follow(CinemaChain $chain): void
     {
-        new \DateTimeZone($timezone);
-        $this->country = $country;
-        $this->timezone = $timezone;
-        $this->language = $language;
+        $this->country = $chain->country;
+        $this->timezone = $chain->timezone;
+        $this->language = $chain->language;
     }
 
     public function locate(?Coordinates $coordinates): void

@@ -451,6 +451,12 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   how a second SDK would plug in (Cineworld, the spec's "QuickBook adapter").
   `CinemaChain`, not `Chain`: the planner's `ChainBuilder` chains programmes.
 
+  In the reference solution: `CinemaChain` has one `country` (what the
+  configuration says today), `CountryCode` and `\DateTimeZone` are stored through
+  two Doctrine types (`country_code`, `date_time_zone`: the columns do not
+  change, no migration), and the "second SDK" sketch is `docs/cinema-chains.md`.
+
+
 ## 19. UI component contracts (20 min) — PHP 8.1, 8.4
 
 - **Starting point**: the anonymous components of `templates/components/` take
