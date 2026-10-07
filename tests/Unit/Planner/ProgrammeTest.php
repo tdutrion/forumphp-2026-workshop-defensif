@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Planner;
 
 use App\Planner\Programme;
+use App\Planner\ScheduledShowtimeList;
 use App\Tests\Builder\ProgrammeBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -24,6 +25,6 @@ final class ProgrammeTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         // Act
-        new Programme([], wait: 0, distance: 0.0, breakMinutes: 0, travelMinutes: 0);
+        new Programme(new ScheduledShowtimeList(), wait: 0, distance: 0.0, breakMinutes: 0, travelMinutes: 0);
     }
 }

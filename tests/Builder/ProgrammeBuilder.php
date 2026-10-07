@@ -4,6 +4,7 @@ namespace App\Tests\Builder;
 
 use App\Planner\Programme;
 use App\Planner\ScheduledShowtime;
+use App\Planner\ScheduledShowtimeList;
 
 /**
  * A programme as ChainBuilder produces it.
@@ -47,10 +48,10 @@ final class ProgrammeBuilder
     public function build(): Programme
     {
         return new Programme(
-            showtimes: array_map(
+            showtimes: new ScheduledShowtimeList(...array_map(
                 static fn (string $film): ScheduledShowtime => ScreeningBuilder::aScreening('showtime-of-'.$film)->ofFilm($film)->build(),
                 $this->films,
-            ),
+            )),
             wait: $this->wait,
             distance: $this->distance,
             breakMinutes: 0,

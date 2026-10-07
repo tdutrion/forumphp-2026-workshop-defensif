@@ -14,7 +14,7 @@ final class PlanResultTest extends TestCase
     public function testASuccessCarriesItsProgrammes(): void
     {
         // Arrange
-        $programmes = new ProgrammeList([ProgrammeBuilder::aProgramme()->waiting(0)->build(), ProgrammeBuilder::aProgramme()->waiting(5)->build()]);
+        $programmes = new ProgrammeList(ProgrammeBuilder::aProgramme()->waiting(0)->build(), ProgrammeBuilder::aProgramme()->waiting(5)->build());
 
         // Act
         $result = PlanResult::success($programmes, films: 2, seed: 42);
@@ -30,7 +30,7 @@ final class PlanResultTest extends TestCase
     public function testASuccessCanCarryARemark(): void
     {
         // Act
-        $result = PlanResult::success(new ProgrammeList([ProgrammeBuilder::aProgramme()->build()]), films: 1, seed: 1, notice: PlanNotice::FewerFilms);
+        $result = PlanResult::success(new ProgrammeList(ProgrammeBuilder::aProgramme()->build()), films: 1, seed: 1, notice: PlanNotice::FewerFilms);
 
         // Assert
         self::assertTrue($result->isSuccess());

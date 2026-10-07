@@ -88,11 +88,11 @@ final class PlannerServiceTest extends KernelTestCase
         // Assert
         self::assertNull($result->reason());
         self::assertSame([['f3', 'f4'], ['f1', 'f2'], ['f2', 'f4']], $this->filmSets($result));
-        $first = $result->programmes->toArray()[0];
+        $first = $result->programmes->first();
         self::assertSame(10, $first->wait);
-        self::assertSame('16:40', $first->showtimes[0]->startTime(), 'stored as 15:40 UTC, shown in Dijon time');
-        self::assertSame('18:40', $first->showtimes[0]->endTime());
-        self::assertSame('cinema-pathe-dijon', $first->showtimes[0]->cinemaSlug);
+        self::assertSame('16:40', $first->showtimes->first()->startTime(), 'stored as 15:40 UTC, shown in Dijon time');
+        self::assertSame('18:40', $first->showtimes->first()->endTime());
+        self::assertSame('cinema-pathe-dijon', $first->showtimes->first()->cinemaSlug);
     }
 
     public function testShowsTheTimesOfEachCinemaInItsOwnTimeZone(): void
@@ -110,7 +110,7 @@ final class PlannerServiceTest extends KernelTestCase
         // Assert
         $times = [];
         foreach ($result->programmes as $programme) {
-            $times[$programme->filmSlugs()[0]] = $programme->showtimes[0]->startTime();
+            $times[$programme->filmSlugs()[0]] = $programme->showtimes->first()->startTime();
         }
         self::assertSame('10:00', $times['f7'] ?? null);
     }

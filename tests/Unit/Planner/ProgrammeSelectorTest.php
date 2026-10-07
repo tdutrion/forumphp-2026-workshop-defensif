@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Planner;
 
 use App\Planner\Programme;
+use App\Planner\ProgrammeList;
 use App\Planner\ProgrammeSelector;
 use App\Tests\Builder\ProgrammeBuilder;
 use PHPUnit\Framework\TestCase;
@@ -12,13 +13,13 @@ final class ProgrammeSelectorTest extends TestCase
     public function testKeepsTheThreeBestProgrammesWithDifferentFilms(): void
     {
         // Arrange
-        $programmes = [
+        $programmes = new ProgrammeList(
             ProgrammeBuilder::aProgramme()->ofFilms('a', 'b')->waiting(30)->build(),
             ProgrammeBuilder::aProgramme()->ofFilms('b', 'a')->waiting(5)->build(),   // same films as the previous one, but better
             ProgrammeBuilder::aProgramme()->ofFilms('a', 'c')->waiting(5)->travelling(2.0)->build(),
             ProgrammeBuilder::aProgramme()->ofFilms('c', 'd')->waiting(40)->build(),
             ProgrammeBuilder::aProgramme()->ofFilms('b', 'c')->waiting(20)->build(),
-        ];
+        );
 
         // Act
         $selected = (new ProgrammeSelector())->select($programmes);
@@ -26,26 +27,29 @@ final class ProgrammeSelectorTest extends TestCase
         // Assert
         self::assertSame(
             [['b', 'a'], ['a', 'c'], ['b', 'c']],
-            array_map(static fn (Programme $programme) => $programme->filmSlugs(), $selected),
+            $selected->map(static fn (Programme $programme): array => $programme->filmSlugs()),
         );
     }
 
     /**
      * Twelve programmes with different films, waiting 1 to 12 minutes.
      */
-    private function twelveProgrammes(): array
+    private function twelveProgrammes(): ProgrammeList
     {
         $programmes = [];
         for ($i = 1; $i <= 12; ++$i) {
             $programmes[] = ProgrammeBuilder::aProgramme()->ofFilms('a'.$i, 'b'.$i)->waiting($i)->build();
         }
 
-        return $programmes;
+        return new ProgrammeList(...$programmes);
     }
 
-    private function waits(array $selected): array
+    /**
+     * @return list<int>
+     */
+    private function waits(ProgrammeList $selected): array
     {
-        return array_column($selected, 'wait');
+        return $selected->map(static fn (Programme $programme): int => $programme->wait);
     }
 
     public function testASeedDrawsThreeOfTheTenBestProgrammesBestFirst(): void

@@ -69,24 +69,21 @@ class PlannerService
         }
 
         $timeRange = $request->timeRange();
-        $showtimes = [];
-        foreach ($rows as $row) {
-            // The database stores UTC instants: the planner compares them, the time zone of the cinema only shows them.
-            $showtime = ScheduledShowtime::fromRow($row);
-            if ($timeRange->contains($showtime->start, $showtime->end, $request->date, $showtime->timezone)) {
-                $showtimes[] = $showtime;
-            }
-        }
+        // The database stores UTC instants: the planner compares them, the time zone of the cinema only shows them.
+        $showtimes = new ScheduledShowtimeList(...array_filter(
+            array_map(ScheduledShowtime::fromRow(...), $rows),
+            static fn (ScheduledShowtime $showtime): bool => $timeRange->contains($showtime->start, $showtime->end, $request->date, $showtime->timezone),
+        ));
 
         // No marathon with that many films: offer programmes with fewer films, down to single films.
         $films = $requested = $request->filmCount();
         $programmes = $this->select($showtimes, $films, $request, $seed);
-        while ([] === $programmes && !$films->isSingle()) {
+        while ($programmes->isEmpty() && !$films->isSingle()) {
             $films = $films->fewer();
             $programmes = $this->select($showtimes, $films, $request, $seed);
         }
 
-        if ([] === $programmes) {
+        if ($programmes->isEmpty()) {
             return PlanResult::failure(PlanFailure::NoProgramme, $films->value, $seed);
         }
 
@@ -96,7 +93,7 @@ class PlannerService
             default => null,
         };
 
-        return PlanResult::success(new ProgrammeList($programmes), $films->value, $seed, $notice);
+        return PlanResult::success($programmes, $films->value, $seed, $notice);
     }
 
     /**
@@ -149,11 +146,9 @@ class PlannerService
     }
 
     /**
-     * @param list<ScheduledShowtime> $showtimes
-     *
-     * @return list<Programme> the best programmes of $films films among the showtimes, drawn with $seed
+     * @return ProgrammeList the best programmes of $films films among the showtimes, drawn with $seed
      */
-    private function select(array $showtimes, FilmCount $films, PlanRequest $request, int $seed): array
+    private function select(ScheduledShowtimeList $showtimes, FilmCount $films, PlanRequest $request, int $seed): ProgrammeList
     {
         return $this->programmeSelector->select(
             $this->chainBuilder->build($showtimes, $films->value, $request->acceptAds, $request->travelMode),

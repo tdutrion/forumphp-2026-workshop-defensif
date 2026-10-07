@@ -4,6 +4,9 @@ namespace App\Tests\Unit\Planner;
 
 use App\Planner\ChainBuilder;
 use App\Planner\Programme;
+use App\Planner\ProgrammeList;
+use App\Planner\ScheduledShowtime;
+use App\Planner\ScheduledShowtimeList;
 use App\Planner\TravelMode;
 use App\Tests\Builder\ScreeningBuilder;
 use PHPUnit\Framework\TestCase;
@@ -21,9 +24,14 @@ final class ChainBuilderTest extends TestCase
         return ScreeningBuilder::aScreening($id)->inCinema('B', 0.0, 0.0269);
     }
 
-    private function ids(array $programmes): array
+    private function ids(ProgrammeList $programmes): array
     {
-        return array_map(static fn (Programme $programme) => implode('>', array_column($programme->showtimes, 'id')), $programmes);
+        return $programmes->map(static fn (Programme $programme): string => implode('>', array_map(static fn (ScheduledShowtime $showtime): string => $showtime->id, $programme->showtimes->toArray())));
+    }
+
+    private function build(array $showtimes, int $count, bool $acceptAds, TravelMode $travelMode = TravelMode::Transit, int $maxNodes = 20000): ProgrammeList
+    {
+        return (new ChainBuilder($maxNodes))->build(new ScheduledShowtimeList(...$showtimes), $count, $acceptAds, $travelMode);
     }
 
     public function testTheNextShowtimeLeavesTimeForTheMarginAndTheTravel(): void
@@ -38,7 +46,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
+        $programmes = $this->build($showtimes, 2, false, TravelMode::Cycling);
 
         // Assert: 10 minutes of margin, plus the travel time when changing cinema.
         self::assertEqualsCanonicalizing(['first>same-cinema-ok', 'first>other-cinema-ok'], $this->ids($programmes));
@@ -56,7 +64,7 @@ final class ChainBuilderTest extends TestCase
 
         // Act
         foreach (TravelMode::cases() as $mode) {
-            $reachable[$mode->value] = $this->ids((new ChainBuilder())->build($showtimes, 2, false, $mode));
+            $reachable[$mode->value] = $this->ids($this->build($showtimes, 2, false, $mode));
         }
 
         // Assert: 10 min of margin, then walking 36 min, cycling 12, transit 9 + 10 of waiting, car 6 + 15 of parking.
@@ -75,14 +83,14 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $withoutAds = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
-        $withAds = (new ChainBuilder())->build($showtimes, 2, true, TravelMode::Cycling);
+        $withoutAds = $this->build($showtimes, 2, false, TravelMode::Cycling);
+        $withAds = $this->build($showtimes, 2, true, TravelMode::Cycling);
 
         // Assert
-        self::assertSame([], $withoutAds);
+        self::assertTrue($withoutAds->isEmpty());
         self::assertSame(['s1>s2'], $this->ids($withAds));
-        self::assertSame(15, $withAds[0]->showtimes[1]->lateMinutes);
-        self::assertSame(0, $withAds[0]->wait);
+        self::assertSame(15, $withAds->first()->showtimes->toArray()[1]->lateMinutes);
+        self::assertSame(0, $withAds->first()->wait);
     }
 
     public function testNeverProposesTheSameFilmTwice(): void
@@ -94,10 +102,10 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
+        $programmes = $this->build($showtimes, 2, false, TravelMode::Cycling);
 
         // Assert
-        self::assertSame([], $programmes);
+        self::assertTrue($programmes->isEmpty());
     }
 
     public function testChainsAcrossMidnight(): void
@@ -110,12 +118,12 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $twoFilms = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling);
-        $threeFilms = (new ChainBuilder())->build($showtimes, 3, false);
+        $twoFilms = $this->build($showtimes, 2, false, TravelMode::Cycling);
+        $threeFilms = $this->build($showtimes, 3, false);
 
         // Assert
         self::assertSame(['early>late', 'early>after'], $this->ids($twoFilms));
-        self::assertSame([], $threeFilms, 'the 23:50 showtime starts before the 21:55 one ends');
+        self::assertTrue($threeFilms->isEmpty(), 'the 23:50 showtime starts before the 21:55 one ends');
     }
 
     public function testMeasuresTheWaitAndTheTravel(): void
@@ -127,14 +135,14 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programme = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling)[0];
+        $programme = $this->build($showtimes, 2, false, TravelMode::Cycling)->first();
 
         // Assert: earliest arrival 16:00 + 10 min of margin + 12 min of travel = 16:22; the showtime starts at 16:40.
         self::assertSame(18, $programme->wait);
         self::assertEqualsWithDelta(2.99, $programme->distance, 0.01);
-        self::assertSame(0, $programme->showtimes[1]->lateMinutes);
-        self::assertSame(40, $programme->showtimes[1]->breakMinutes, 'from the end of the first film (16:00) to the next showtime (16:40)');
-        self::assertSame(12, $programme->showtimes[1]->travelMinutes);
+        self::assertSame(0, $programme->showtimes->toArray()[1]->lateMinutes);
+        self::assertSame(40, $programme->showtimes->toArray()[1]->breakMinutes, 'from the end of the first film (16:00) to the next showtime (16:40)');
+        self::assertSame(12, $programme->showtimes->toArray()[1]->travelMinutes);
         self::assertSame(40, $programme->breakMinutes, 'sum of the breaks shown between the showtimes');
         self::assertSame(12, $programme->travelMinutes);
     }
@@ -153,7 +161,7 @@ final class ChainBuilderTest extends TestCase
         $showtimes[] = $this->inCinemaA('evening-3')->ofFilm('film-evening-3')->startingAt('21:20')->lasting(10)->build();
 
         // Act
-        $programmes = (new ChainBuilder(120))->build($showtimes, 3, false);
+        $programmes = $this->build($showtimes, 3, false, maxNodes: 120);
 
         // Assert: the cap must not be spent on the first showtime of the day alone.
         self::assertContains('evening-1>evening-2>evening-3', $this->ids($programmes));
@@ -169,8 +177,8 @@ final class ChainBuilderTest extends TestCase
         }
 
         // Act
-        $unbounded = (new ChainBuilder())->build($showtimes, 3, false);
-        $bounded = (new ChainBuilder(5))->build($showtimes, 3, false);
+        $unbounded = $this->build($showtimes, 3, false);
+        $bounded = $this->build($showtimes, 3, false, maxNodes: 5);
 
         // Assert
         self::assertGreaterThan(100, \count($unbounded));
@@ -186,7 +194,7 @@ final class ChainBuilderTest extends TestCase
         ];
 
         // Act
-        $programmes = (new ChainBuilder())->build($showtimes, 2, false);
+        $programmes = $this->build($showtimes, 2, false);
 
         // Assert
         self::assertSame([], $this->ids($programmes));
