@@ -949,6 +949,18 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Cannot access property \$latitude on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Cannot access property \$longitude on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Method App\\Catalog\\Sync\\CatalogSynchronizer\:\:__construct\(\) has parameter \$chains with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1111,12 +1123,6 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$showSlug of method App\\Sdk\\Pathe\\PatheClient\:\:getShowtimes\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#1 \$slug of method App\\Catalog\\Entity\\Cinema\:\:setSlug\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1149,7 +1155,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -1171,6 +1177,12 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Parameter \#1 \$value of class App\\Sdk\\Pathe\\ShowSlug constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Parameter \#1 \$version of method App\\Catalog\\Entity\\Showtime\:\:setVersion\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1184,12 +1196,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#2 \$timezone of method App\\Sdk\\Pathe\\PatheMapper\:\:mapShowtimes\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1945,6 +1951,18 @@ parameters:
 			path: src/Planner/ProgrammeSelector.php
 
 		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: src/Sdk/Pathe/GpsPosition.php
+
+		-
+			message: '#^Method App\\Sdk\\Pathe\\GpsPosition\:\:fromApi\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Pathe/GpsPosition.php
+
+		-
 			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:get\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1993,15 +2011,9 @@ parameters:
 			path: src/Sdk/Pathe/PatheClient.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getShowtimes\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Sdk/Pathe/PatheClient.php
-
-		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
-			count: 2
+			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
@@ -2029,18 +2041,6 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
-			message: '#^Cannot access offset ''auditoriumCapacity'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''auditoriumName'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
 			message: '#^Cannot access offset ''days'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -2053,15 +2053,9 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
-			message: '#^Cannot access offset ''endTime'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
 			message: '#^Cannot access offset ''gpsPosition'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
@@ -2071,57 +2065,9 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
-			message: '#^Cannot access offset ''refCmd'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''reservabilityEnd'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''time'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''version'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''x'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot access offset ''y'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
 			message: '#^Cannot access offset 0 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Cannot cast mixed to float\.$#'
-			identifier: cast.double
-			count: 2
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
@@ -2179,12 +2125,6 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapShowtimes\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
 			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapShowtimes\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2221,10 +2161,22 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
+			message: '#^Parameter \#1 \$raw of static method App\\Sdk\\Pathe\\GpsPosition\:\:fromApi\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
 			message: '#^Parameter \#2 \$subject of function preg_match expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
+			message: '#^Method App\\Sdk\\Pathe\\PatheShowtimes\:\:fromApiResponse\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sdk/Pathe/PatheShowtimes.php
 
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
@@ -3453,7 +3405,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''errors'' on array\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 3
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
@@ -3929,3 +3881,9 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Planner/ProgrammeSelectorTest.php
+
+		-
+			message: '#^Parameter \#1 \$raw of static method App\\Sdk\\Pathe\\PatheShowtimes\:\:fromApiResponse\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheShowtimesTest.php
