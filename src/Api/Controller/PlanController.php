@@ -3,6 +3,7 @@
 namespace App\Api\Controller;
 
 use App\Account\Entity\User;
+use App\Planner\PlanFailure;
 use App\Planner\PlannerService;
 use App\Planner\PlanRequest;
 use OpenApi\Attributes as OA;
@@ -48,7 +49,7 @@ class PlanController extends AbstractController
         #[CurrentUser] User $user,
     ): JsonResponse {
         $result = $this->plannerService->plan($request, $user->getUserIdentifier());
-        if (false !== $result && 'unknown_location' === $result['reason']) {
+        if (PlanFailure::UnknownLocation === $result->failure) {
             // The position could not be read, or the city has no open cinema left: invalid input, like the other parameters.
             return new JsonResponse(
                 ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => [['field' => null === $request->city ? 'position' : 'city', 'message' => $this->translator->trans('planner.result.unknown_place')]]],
@@ -56,12 +57,12 @@ class PlanController extends AbstractController
                 ['Content-Type' => 'application/problem+json'],
             );
         }
-        if (false === $result) {
-            return new JsonResponse(['programmes' => [], 'reason' => 'no_showtime']);
+        if (PlanFailure::NoShowtime === $result->failure) {
+            return new JsonResponse(['programmes' => [], 'reason' => $result->reason()]);
         }
 
         $programmes = [];
-        foreach ($result['programmes'] as $programme) {
+        foreach ($result->programmes as $programme) {
             $showtimes = [];
             foreach ($programme['showtimes'] as $showtime) {
                 $showtimes[] = [
@@ -89,6 +90,6 @@ class PlanController extends AbstractController
             ];
         }
 
-        return new JsonResponse(['programmes' => $programmes, 'reason' => $result['reason'], 'films' => $result['films'], 'seed' => $result['seed']]);
+        return new JsonResponse(['programmes' => $programmes, 'reason' => $result->reason(), 'films' => $result->films, 'seed' => $result->seed]);
     }
 }
