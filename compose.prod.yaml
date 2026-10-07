@@ -49,3 +49,8 @@ services:
     environment:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
+    volumes:
+      - database_data:/var/lib/mysql
+
+volumes:
+  database_data:

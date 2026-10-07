@@ -69,10 +69,7 @@ services:
       timeout: 5s
       retries: 20
       start_period: 30s
-    volumes:
-      - database_data:/var/lib/mysql
 
 volumes:
   caddy_data:
   caddy_config:
-  database_data:
