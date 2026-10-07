@@ -37,6 +37,6 @@ final class ShiftDatesCommandTest extends KernelTestCase
         self::assertStringContainsString('3 day(s)', $tester->getDisplay());
         $row = self::getContainer()->get(Connection::class)->fetchAssociative('SELECT local_date, starts_at FROM showtime');
         self::assertSame($today->format('Y-m-d'), $row['local_date']);
-        self::assertSame($showtime->getStartsAt()->modify('+3 days')->format('Y-m-d H:i:s'), $row['starts_at']);
+        self::assertSame($showtime->startsAt->modify('+3 days')->format('Y-m-d H:i:s'), $row['starts_at']);
     }
 }

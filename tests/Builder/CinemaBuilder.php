@@ -2,6 +2,7 @@
 
 namespace App\Tests\Builder;
 
+use App\Catalog\Coordinates;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
 
@@ -84,16 +85,12 @@ final class CinemaBuilder
             throw new \LogicException('A cinema needs a city: call in() first.');
         }
 
-        return (new Cinema())
-            ->setSlug($this->slug)
-            ->setName($this->name ?? 'Cinema '.$this->slug)
-            ->setChain('pathe')
-            ->setCountry('FR')
-            ->setTimezone($this->timezone)
-            ->setLanguage($this->language)
-            ->setCity($this->city)
-            ->setLatitude($this->latitude)
-            ->setLongitude($this->longitude)
-            ->setOpen($this->open);
+        $cinema = Cinema::register($this->slug, $this->name ?? 'Cinema '.$this->slug, $this->city, 'pathe', 'FR', $this->timezone, $this->language);
+        $cinema->locate(new Coordinates($this->latitude, $this->longitude));
+        if (!$this->open) {
+            $cinema->close();
+        }
+
+        return $cinema;
     }
 }

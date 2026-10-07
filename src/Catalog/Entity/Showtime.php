@@ -16,188 +16,131 @@ class Showtime
     /** Pathé showtime identifier, e.g. "V3345S85474" (extracted from the booking link). */
     #[ORM\Id]
     #[ORM\Column(length: 32)]
-    private ?string $id = null;
+    public private(set) string $id;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'film_slug', referencedColumnName: 'slug', nullable: false, onDelete: 'CASCADE')]
-    private ?Film $film = null;
+    public private(set) Film $film;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'cinema_slug', referencedColumnName: 'slug', nullable: false, onDelete: 'CASCADE')]
-    private ?Cinema $cinema = null;
+    public private(set) Cinema $cinema;
 
     /** Session start (start of the ads), in UTC. */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $startsAt = null;
+    public private(set) \DateTimeImmutable $startsAt;
 
     /** End of the film, in UTC. */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $endsAt = null;
+    public private(set) \DateTimeImmutable $endsAt;
 
     /** Calendar day of the session in the cinema's time zone: a session starting at 00:30 local time belongs to that day. */
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $localDate = null;
+    public private(set) \DateTimeImmutable $localDate;
 
     #[ORM\Column(length: 8, enumType: ShowtimeVersion::class)]
-    private ?ShowtimeVersion $version = null;
+    public private(set) ShowtimeVersion $version;
 
     #[ORM\Column(length: 20, enumType: BookingStatus::class)]
-    private ?BookingStatus $status = null;
+    public private(set) BookingStatus $status;
 
     #[ORM\Column(length: 255)]
-    private ?string $bookingUrl = null;
+    public private(set) string $bookingUrl;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $reservableUntil = null;
+    public private(set) ?\DateTimeImmutable $reservableUntil = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $auditorium = null;
+    public private(set) ?string $auditorium = null;
 
-    /** Number of seats, as Pathé sends it (string, e.g. "244"). */
-    #[ORM\Column(length: 10, nullable: true)]
-    private ?string $capacity = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
+    /**
+     * Number of seats. Pathé sends it as a string ("244"): the hook reads it once, here; what is not a
+     * number of seats is an unknown capacity. Doctrine hydrates the column without going through the hook.
+     */
+    #[ORM\Column(nullable: true)]
+    public private(set) ?int $capacity = null {
+        set(int|string|null $value) {
+            if (\is_int($value) && $value < 0) {
+                throw new \InvalidArgumentException(\sprintf('A hall cannot have %d seats.', $value));
+            }
+            $this->capacity = match (true) {
+                \is_string($value) => ctype_digit($value) ? (int) $value : null,
+                default => $value,
+            };
+        }
     }
 
-    public function setId(string $id): static
+    private function __construct()
     {
-        $this->id = $id;
-
-        return $this;
     }
 
-    public function getFilm(): ?Film
-    {
-        return $this->film;
+    /**
+     * @param int|string|null $capacity the number of seats, as a number or as Pathé sends it
+     *
+     * @throws \InvalidArgumentException if the film ends before it starts
+     */
+    public static function schedule(
+        string $id,
+        Film $film,
+        Cinema $cinema,
+        \DateTimeImmutable $startsAt,
+        \DateTimeImmutable $endsAt,
+        \DateTimeImmutable $localDate,
+        ShowtimeVersion $version,
+        BookingStatus $status,
+        string $bookingUrl,
+        ?\DateTimeImmutable $reservableUntil = null,
+        ?string $auditorium = null,
+        int|string|null $capacity = null,
+    ): self {
+        $showtime = new self();
+        $showtime->id = $id;
+        $showtime->film = $film;
+        $showtime->cinema = $cinema;
+        $showtime->reschedule($startsAt, $endsAt, $localDate);
+        $showtime->version = $version;
+        $showtime->status = $status;
+        $showtime->bookingUrl = $bookingUrl;
+        $showtime->reservableUntil = $reservableUntil;
+        $showtime->auditorium = $auditorium;
+        $showtime->capacity = $capacity;
+
+        return $showtime;
     }
 
-    public function setFilm(?Film $film): static
+    /**
+     * @throws \InvalidArgumentException if the film ends before it starts
+     */
+    public function reschedule(\DateTimeImmutable $startsAt, \DateTimeImmutable $endsAt, \DateTimeImmutable $localDate): void
     {
-        $this->film = $film;
-
-        return $this;
-    }
-
-    public function getCinema(): ?Cinema
-    {
-        return $this->cinema;
-    }
-
-    public function setCinema(?Cinema $cinema): static
-    {
-        $this->cinema = $cinema;
-
-        return $this;
-    }
-
-    public function getStartsAt(): ?\DateTimeImmutable
-    {
-        return $this->startsAt;
-    }
-
-    public function setStartsAt(\DateTimeImmutable $startsAt): static
-    {
+        if ($endsAt < $startsAt) {
+            throw new \InvalidArgumentException(\sprintf('Showtime %s ends (%s) before it starts (%s).', $this->id, $endsAt->format('c'), $startsAt->format('c')));
+        }
         $this->startsAt = $startsAt;
-
-        return $this;
-    }
-
-    public function getEndsAt(): ?\DateTimeImmutable
-    {
-        return $this->endsAt;
-    }
-
-    public function setEndsAt(\DateTimeImmutable $endsAt): static
-    {
         $this->endsAt = $endsAt;
-
-        return $this;
+        $this->localDate = $localDate;
     }
 
-    public function getVersion(): ?ShowtimeVersion
-    {
-        return $this->version;
-    }
-
-    public function setVersion(ShowtimeVersion $version): static
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    public function getStatus(): ?BookingStatus
-    {
-        return $this->status;
-    }
-
-    public function setStatus(BookingStatus $status): static
+    public function updateBooking(BookingStatus $status, string $bookingUrl, ?\DateTimeImmutable $reservableUntil): void
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getBookingUrl(): ?string
-    {
-        return $this->bookingUrl;
-    }
-
-    public function setBookingUrl(string $bookingUrl): static
-    {
         $this->bookingUrl = $bookingUrl;
-
-        return $this;
-    }
-
-    public function getReservableUntil(): ?\DateTimeImmutable
-    {
-        return $this->reservableUntil;
-    }
-
-    public function setReservableUntil(?\DateTimeImmutable $reservableUntil): static
-    {
         $this->reservableUntil = $reservableUntil;
-
-        return $this;
     }
 
-    public function getAuditorium(): ?string
+    public function describeScreening(ShowtimeVersion $version, ?string $auditorium, int|string|null $capacity): void
     {
-        return $this->auditorium;
-    }
-
-    public function setAuditorium(?string $auditorium): static
-    {
+        $this->version = $version;
         $this->auditorium = $auditorium;
-
-        return $this;
-    }
-
-    public function getCapacity(): ?string
-    {
-        return $this->capacity;
-    }
-
-    public function setCapacity(?string $capacity): static
-    {
         $this->capacity = $capacity;
-
-        return $this;
     }
 
-    public function getLocalDate(): ?\DateTimeImmutable
+    /**
+     * Whether a seat can still be booked at $now (the same rule as the planner's SQL: the status allows it
+     * and the booking is not closed; whether the cinema is open is a matter of the cinema).
+     */
+    public function isBookableAt(\DateTimeImmutable $now): bool
     {
-        return $this->localDate;
-    }
-
-    public function setLocalDate(\DateTimeImmutable $localDate): static
-    {
-        $this->localDate = $localDate;
-
-        return $this;
+        return $this->status->isBookable() && (null === $this->reservableUntil || $this->reservableUntil > $now);
     }
 }
