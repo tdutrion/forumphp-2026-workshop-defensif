@@ -22,11 +22,10 @@
 <twig:Card>
     <h3 class="mb-4 font-semibold">Buttons</h3>
     <div class="flex flex-wrap gap-2">
-        <twig:Button type="button">Primary</twig:Button>
-        <twig:Button type="button" variant="secondary">Secondary</twig:Button>
-        <twig:Button type="button" variant="danger">Danger</twig:Button>
-        <twig:Button type="button" variant="ghost">Ghost</twig:Button>
-        <twig:Button type="button" variant="accent">Accent</twig:Button>
+        {# Every case of the enum: a variant added to ButtonVariant shows up here by itself. #}
+        {% for variant in enum_cases('App\\Twig\\Components\\ButtonVariant') %}
+            <twig:Button type="button" :variant="variant.value">{{ variant.name }}</twig:Button>
+        {% endfor %}
         <twig:Button type="button" size="sm">Small</twig:Button>
         <twig:Button type="button" size="lg">Large</twig:Button>
         <twig:Button tag="a" href="#" variant="secondary">Link styled as a button</twig:Button>
@@ -71,12 +70,15 @@
 <twig:Card>
     <h3 class="mb-4 font-semibold">Alerts and badges</h3>
     <div class="space-y-2">
-        <twig:Alert type="success">Success message.</twig:Alert>
-        <twig:Alert type="error">Error message.</twig:Alert>
-        <twig:Alert type="info">Information message.</twig:Alert>
+        {% for type in enum_cases('App\\Twig\\Components\\AlertType') %}
+            <twig:Alert :type="type.value">{{ type.name }} message.</twig:Alert>
+        {% endfor %}
     </div>
     <div class="mt-4 flex gap-2">
         <twig:Badge>VF</twig:Badge>
+        {% for tone in enum_cases('App\\Twig\\Components\\BadgeTone') %}
+            <twig:Badge :tone="tone.value">{{ tone.name }}</twig:Badge>
+        {% endfor %}
         <twig:Badge tone="brand">VOST</twig:Badge>
         <twig:Badge tone="warning">Late: 5 min</twig:Badge>
     </div>
