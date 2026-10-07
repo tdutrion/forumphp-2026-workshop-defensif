@@ -153,6 +153,9 @@ class CatalogSynchronizer
 
             $keptIds = [];
             $complete = true;
+            // Kept only to detach them once flushed below: a sync of every cinema must not keep every
+            // showtime of every day in the identity map, or it runs out of memory before the end.
+            $cinemaShowtimes = [];
             foreach ($this->mapper->showSlugsPlayingBetween($programme, $today, $lastDay) as $showSlug) {
                 if (!isset($films[$showSlug])) {
                     continue;
@@ -184,11 +187,15 @@ class CatalogSynchronizer
                         ->setAuditorium($data['auditorium'])
                         ->setCapacity($data['capacity']);
                     $this->em->persist($showtime);
+                    $cinemaShowtimes[] = $showtime;
                     $keptIds[] = $data['id'];
                     ++$stats['showtimes'];
                 }
             }
             $this->em->flush();
+            foreach ($cinemaShowtimes as $showtime) {
+                $this->em->detach($showtime);
+            }
 
             // Vanished showtimes are deleted only when the whole schedule of the cinema could be read.
             if ($complete) {
