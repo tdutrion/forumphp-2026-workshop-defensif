@@ -48,6 +48,9 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   boundary, `array_is_list`) passed to `mapShowtimes(PatheShowtimes, \DateTimeZone)`,
   named arguments. Everything stays in `App\Sdk\Pathe`, which keeps depending on
   PSR only (failures still return `false`: exercise 11). Update the SDK README.
+- **Acceptance test**, to start red:
+  `git checkout origin/exercise/01-pathe-boundary -- tests/Integration/Catalog/Sync/CatalogSyncTest.php`
+  (a response of an unexpected shape is skipped silently: `errors` stays 0).
 - **Deck**: Part 3 (the `getShowtimes → PatheShowtimes` case), Part 5.
 
 ## 2. Enums (15 min) — PHP 8.1
@@ -107,12 +110,19 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `plan()` itself: `planFromForm()` disappears), used as `data_class` of
   `PlanType` (built at once by its `mapFormsToData()`) and bound with
   `#[MapQueryString(validationFailedStatusCode: 422)]` in
-  `Api\Controller\PlanController` (the default status is 404);
+  `Api\Controller\PlanController` (the default status is 404), refusing
+  unknown parameters (`ALLOW_EXTRA_ATTRIBUTES => false` in its
+  `serializationContext`); the date checked against the days with bookable
+  showtimes by an `#[AvailableDate]` constraint (the choices of the former
+  `ChoiceType` did it);
   `ApiExceptionListener` renders the violations in the existing problem format
   (`title`, `errors[{field, message}]`); `plan(PlanRequest, …)`; value objects
   `FilmCount` (with the polyfill 8.6 `clamp()` when falling back to fewer films:
   the 1–8 range itself stays a 422) and `TimeRange`, built from the validated
   DTO (the Serializer cannot build value objects whose constructor throws).
+- **Acceptance test**, to start red:
+  `git checkout origin/exercise/04-planner-input -- tests/Functional/Api/PlanApiTest.php`
+  (an unknown `radius` is reported on the root form `plan`, not on `radius`).
 
 ## 5. Planner output (20 min) — PHP 8.2, 8.5
 
