@@ -134,7 +134,10 @@ class PatheMapper
     }
 
     /**
-     * @return array|false the film's fields, or false if it is an event (no usable showtimes)
+     * @param array<string, mixed> $raw
+     *
+     * @return array{slug: string, title: string, duration: ?int, releaseDate: ?string, genres: list<string>, posterUrl: ?string, contentRating: ?string}|false
+     *                                                                                                                                                          the film's fields, or false if it is an event (no usable showtimes)
      */
     public function mapFilm(array $raw): array|false
     {
@@ -172,7 +175,8 @@ class PatheMapper
      *
      * @param \DateTimeZone $timezone time zone of the chain, e.g. Europe/Paris
      *
-     * @return array list of showtimes, instants in UTC ('Y-m-d H:i:s'), 'version' and 'status' as Pathé sends them
+     * @return list<array{id: string, startsAt: string, endsAt: string, localDate: string, version: string, status: string, bookingUrl: string, reservableUntil: ?string, auditorium: ?string, capacity: int|string|null}>
+     *                                                                                                                                                                                                                     list of showtimes, instants in UTC ('Y-m-d H:i:s'), 'version' and 'status' as Pathé sends them
      */
     public function mapShowtimes(PatheShowtimes $showtimes, \DateTimeZone $timezone): array
     {
@@ -217,6 +221,10 @@ class PatheMapper
 
     /**
      * Slugs of the films scheduled on at least one day between $from and $to (dates 'Y-m-d', inclusive).
+     *
+     * @param array<string, mixed> $programme the programme of a cinema
+     *
+     * @return list<string>
      */
     public function showSlugsPlayingBetween(array $programme, string $from, string $to): array
     {
@@ -224,7 +232,8 @@ class PatheMapper
         foreach ($programme['shows'] ?? [] as $slug => $show) {
             foreach (array_keys($show['days'] ?? []) as $day) {
                 if ($day >= $from && $day <= $to) {
-                    $slugs[] = $slug;
+                    // A key that looks like a number is an int in a PHP array.
+                    $slugs[] = (string) $slug;
                     break;
                 }
             }

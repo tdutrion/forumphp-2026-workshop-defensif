@@ -29,6 +29,9 @@ class WorkLinker
     ) {
     }
 
+    /**
+     * @param list<string>|null $directors
+     */
     public function describe(Film $film, string $originalTitle, ?int $year, ?array $directors): Work
     {
         $work = $film->getWork()->describe($originalTitle, $year, $directors);
@@ -48,6 +51,9 @@ class WorkLinker
         return $merged;
     }
 
+    /**
+     * @param list<Work> $works
+     */
     public function linkDue(array $works, \DateTimeImmutable $now): int
     {
         $linked = 0;
@@ -80,7 +86,7 @@ class WorkLinker
                 $ids = array_unique([...$ids, ...$found]);
             }
         }
-        $films = $this->wikidata->getFilms($ids);
+        $films = $this->wikidata->getFilms(array_values($ids));
         if (false === $films) {
             return false;
         }
@@ -115,6 +121,8 @@ class WorkLinker
     /**
      * A film, released within a year of the chain's date or by the same director; when the chain
      * gives a director, one of the candidate's directors has the same surname.
+     *
+     * @param array{types: list<string>, years: list<int>, directors: list<string>, imdbId: ?string, tmdbId: ?string} $film
      */
     private function matches(Work $work, array $film): bool
     {
@@ -142,6 +150,9 @@ class WorkLinker
         return (string) end($words);
     }
 
+    /**
+     * @param array{types: list<string>, years: list<int>, directors: list<string>, imdbId: ?string, tmdbId: ?string} $film
+     */
     private function attach(Work $work, string $wikidataId, array $film, WorkLinkStatus $status): void
     {
         $owner = $this->workRepository->findOneByWikidataId($wikidataId);

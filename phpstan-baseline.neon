@@ -151,25 +151,7 @@ parameters:
 			path: src/Api/Response/WorkFilmResource.php
 
 		-
-			message: '#^Cannot access offset ''timezone'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Catalog/Command/ShiftDatesCommand.php
-
-		-
-			message: '#^Method App\\Catalog\\Command\\ShiftDatesCommand\:\:__construct\(\) has parameter \$chains with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/Command/ShiftDatesCommand.php
-
-		-
 			message: '#^Parameter \#1 \$datetime of class DateTimeImmutable constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Command/ShiftDatesCommand.php
-
-		-
-			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Command/ShiftDatesCommand.php
@@ -463,397 +445,13 @@ parameters:
 			path: src/Catalog/Repository/WorkRepository.php
 
 		-
-			message: '#^Cannot access offset ''auditorium'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''bookingUrl'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''capacity'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''country'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''endsAt'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 5
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''language'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''localDate'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''reservableUntil'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''slug'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''startsAt'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''timezone'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Cannot access offset ''version'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Method App\\Catalog\\Sync\\CatalogSynchronizer\:\:__construct\(\) has parameter \$chains with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$contentRating of method App\\Catalog\\Entity\\Film\:\:setContentRating\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$country of method App\\Catalog\\Entity\\Cinema\:\:follow\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$country of method App\\Catalog\\Entity\\City\:\:setCountry\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$datetime of class DateTimeImmutable constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 5
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$duration of method App\\Catalog\\Entity\\Film\:\:setDuration\(\) expects int\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$genres of method App\\Catalog\\Entity\\Film\:\:setGenres\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$id of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$originalTitle of method App\\Catalog\\Entity\\Work\:\:describe\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$posterUrl of method App\\Catalog\\Entity\\Film\:\:setPosterUrl\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$raw of method App\\Sdk\\Pathe\\PatheMapper\:\:mapCinema\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$raw of method App\\Sdk\\Pathe\\PatheMapper\:\:mapCity\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$rawShow of method App\\Sdk\\Pathe\\PatheMapper\:\:mapFilmDetails\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$rawShow of method App\\Sdk\\Pathe\\PatheMapper\:\:mapOriginalLanguage\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$rawShow of method App\\Sdk\\Pathe\\PatheMapper\:\:mapSynopsis\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$slug of method App\\Catalog\\Entity\\Film\:\:setSlug\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$string of function substr expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$title of method App\\Catalog\\Entity\\Film\:\:setTitle\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$value of class App\\Sdk\\Pathe\\ShowSlug constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method App\\Catalog\\BookingStatus\:\:tryFrom\(\) expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method App\\Catalog\\ShowtimeVersion\:\:tryFrom\(\) expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#11 \$auditorium of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#12 \$capacity of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#2 \$auditorium of method App\\Catalog\\Entity\\Showtime\:\:describeScreening\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#2 \$bookingUrl of method App\\Catalog\\Entity\\Showtime\:\:updateBooking\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#2 \$timezone of method App\\Catalog\\Entity\\Cinema\:\:follow\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#3 \$capacity of method App\\Catalog\\Entity\\Showtime\:\:describeScreening\(\) expects int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#3 \$language of method App\\Catalog\\Entity\\Cinema\:\:follow\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#5 \$country of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#6 \$timezone of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#7 \$language of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#9 \$bookingUrl of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Possibly invalid array key type mixed\.$#'
-			identifier: offsetAccess.invalidOffset
-			count: 5
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Binary operation "\." between ''catalog/'' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Catalog/Sync/CatalogUpdatePublisher.php
-
-		-
-			message: '#^Method App\\Catalog\\Sync\\CatalogUpdatePublisher\:\:__construct\(\) has parameter \$locales with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/Sync/CatalogUpdatePublisher.php
-
-		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Binary operation "\-" between mixed and int results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Cannot call method getLinkAttemptedAt\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Cannot call method getLinkStatus\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1
 			path: src/Catalog/WorkLinker.php
 
 		-
-			message: '#^Method App\\Catalog\\WorkLinker\:\:attach\(\) has parameter \$film with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Method App\\Catalog\\WorkLinker\:\:describe\(\) has parameter \$directors with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Method App\\Catalog\\WorkLinker\:\:linkDue\(\) has parameter \$works with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Method App\\Catalog\\WorkLinker\:\:matches\(\) has parameter \$film with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_intersect expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
 			message: '#^Parameter \#1 \$array of function end expects array\|object, list\<string\>\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Parameter \#1 \$ids of method App\\Sdk\\Wikidata\\WikidataClient\:\:getFilms\(\) expects list\<string\>, array\<int\<0, max\>, string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Parameter \#1 \$work of method App\\Catalog\\WorkLinker\:\:link\(\) expects App\\Catalog\\Entity\\Work, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Parameter \#2 \$imdbId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/WorkLinker.php
-
-		-
-			message: '#^Parameter \#3 \$tmdbId of method App\\Catalog\\Entity\\Work\:\:setExternalIds\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/WorkLinker.php
@@ -955,38 +553,32 @@ parameters:
 			path: src/Sdk/Pathe/GpsPosition.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:get\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Sdk/Pathe/PatheClient.php
-
-		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:get\(\) should return array but returns mixed\.$#'
+			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:get\(\) should return array\<mixed\> but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheClient.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getCinemaProgramme\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getCinemaProgramme\(\) should return array\<string, mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheClient.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getCinemas\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getCinemas\(\) should return list\<array\<string, mixed\>\> but returns array\<mixed\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheClient.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getCities\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getCities\(\) should return list\<array\<string, mixed\>\> but returns array\<mixed\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheClient.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getShow\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method App\\Sdk\\Pathe\\PatheClient\:\:getShow\(\) should return array\<string, mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheClient.php
 
@@ -1057,6 +649,12 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Sdk/Pathe/PatheMapper.php
+
+		-
 			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapCinema\(\) should return array\{slug\: string, name\: string, citySlug\: string, open\: bool, address\: string\|null, postalCode\: string\|null, town\: string\|null, position\: App\\Sdk\\Pathe\\GpsPosition\|null, \.\.\.\} but returns array\{slug\: mixed, name\: mixed, citySlug\: mixed, open\: bool, address\: mixed, postalCode\: mixed, town\: mixed, position\: App\\Sdk\\Pathe\\GpsPosition\|null, \.\.\.\}\.$#'
 			identifier: return.type
 			count: 1
@@ -1069,32 +667,14 @@ parameters:
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapFilm\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapFilm\(\) should return array\{slug\: string, title\: string, duration\: int\|null, releaseDate\: string\|null, genres\: list\<string\>, posterUrl\: string\|null, contentRating\: string\|null\}\|false but returns array\{slug\: mixed, title\: mixed, duration\: mixed, releaseDate\: mixed, genres\: mixed, posterUrl\: string\|null, contentRating\: mixed\}\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
 
 		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapFilm\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapShowtimes\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:showSlugsPlayingBetween\(\) has parameter \$programme with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Sdk/Pathe/PatheMapper.php
-
-		-
-			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:showSlugsPlayingBetween\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method App\\Sdk\\Pathe\\PatheMapper\:\:mapShowtimes\(\) should return list\<array\{id\: string, startsAt\: string, endsAt\: string, localDate\: string, version\: string, status\: string, bookingUrl\: string, reservableUntil\: string\|null, \.\.\.\}\> but returns list\<array\{id\: string, startsAt\: non\-falsy\-string, endsAt\: non\-falsy\-string, localDate\: non\-falsy\-string, version\: mixed, status\: mixed, bookingUrl\: mixed, reservableUntil\: non\-falsy\-string\|null, \.\.\.\}\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Sdk/Pathe/PatheMapper.php
 
@@ -1337,24 +917,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Web/Controller/DesignSystemController.php
-
-		-
-			message: '#^Method App\\Web\\Controller\\HomeController\:\:__construct\(\) has parameter \$chains with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Web/Controller/HomeController.php
-
-		-
-			message: '#^Method App\\Web\\Controller\\HomeController\:\:__construct\(\) has parameter \$plannedChains with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Web/Controller/HomeController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: array\{name\: mixed, countries\: array\{mixed\}\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Web/Controller/HomeController.php
 
 		-
 			message: '#^Parameter \#1 \$request of method App\\Planner\\PlannerService\:\:nearbyCinemas\(\) expects App\\Planner\\PlanRequest, mixed given\.$#'

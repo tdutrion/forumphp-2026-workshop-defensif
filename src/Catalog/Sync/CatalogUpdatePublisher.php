@@ -21,6 +21,7 @@ class CatalogUpdatePublisher implements CatalogPublisher
     public function __construct(
         private Environment $twig,
         private LoggerInterface $logger,
+        /** @var list<string> */
         #[Autowire('%kernel.enabled_locales%')]
         private array $locales,
         private HubInterface $hub,

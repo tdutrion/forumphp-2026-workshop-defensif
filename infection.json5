@@ -1,0 +1,19 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    // Mutation testing: it changes the code (a > becomes >=, a return disappears...) and checks that a test fails.
+    // A mutant that survives is a line that no test would miss. Slow: run it on one class (make infection).
+    "source": {
+        "directories": ["src"]
+    },
+    "phpUnit": {
+        "configDir": "."
+    },
+    "tmpDir": "var/infection",
+    "logs": {
+        "text": "var/infection/infection.log",
+        "summary": "var/infection/summary.log"
+    },
+    "mutators": {
+        "@default": true
+    }
+}

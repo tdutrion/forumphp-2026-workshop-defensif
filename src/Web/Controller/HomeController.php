@@ -24,8 +24,10 @@ class HomeController extends AbstractController
         private CityRepository $cityRepository,
         private CatalogCalendar $calendar,
         private ClockInterface $clock,
+        /** @var array<string, array{name: string, country: string, timezone: string, language: string}> the chains of config/packages/chains.yaml */
         #[Autowire('%app.chains%')]
         private array $chains,
+        /** @var list<array{name: string, countries: list<string>}> the chains with an unlimited pass, not supported yet */
         #[Autowire('%app.chains_planned%')]
         private array $plannedChains,
     ) {
