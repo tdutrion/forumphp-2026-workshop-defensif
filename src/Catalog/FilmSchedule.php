@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Catalog;
 
 use App\Catalog\Repository\ShowtimeRepository;
+use Symfony\Component\Clock\ClockInterface;
 
 /**
  * The known showtimes of a film, as shown on its page: by cinema, then by local day.
  */
 class FilmSchedule
 {
-    public function __construct(private ShowtimeRepository $showtimeRepository)
+    public function __construct(private ShowtimeRepository $showtimeRepository, private ClockInterface $clock)
     {
     }
 
@@ -22,7 +23,7 @@ class FilmSchedule
      */
     public function forFilm(string $filmSlug): array
     {
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $now = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'));
         $cinemas = [];
         foreach ($this->showtimeRepository->findBookableForFilm($filmSlug, $now->format('Y-m-d H:i:s')) as $row) {
             $cinema = $cinemas[$row['cinemaSlug']] ??= ['slug' => $row['cinemaSlug'], 'name' => $row['cinemaName'], 'city' => $row['cityName'], 'count' => 0, 'days' => []];

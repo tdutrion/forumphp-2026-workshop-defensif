@@ -8,6 +8,7 @@ use App\Account\Repository\UnwantedFilmRepository;
 use App\Catalog\Entity\Film;
 use App\Catalog\Repository\FilmRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -19,6 +20,7 @@ class UnwantedFilmService
         private EntityManagerInterface $em,
         private UnwantedFilmRepository $unwantedFilmRepository,
         private FilmRepository $filmRepository,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -39,7 +41,7 @@ class UnwantedFilmService
                 'id' => Uuid::v7()->toBinary(),
                 'user' => Uuid::fromString($userId)->toBinary(),
                 'work' => $film->getWork()->getId()->toBinary(),
-                'createdAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
+                'createdAt' => $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s'),
             ],
         );
 

@@ -12,9 +12,11 @@ use App\Tests\Builder\UserBuilder;
 use App\Tests\StoresEntities;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 final class PlannerPageTest extends WebTestCase
 {
+    use ClockSensitiveTrait;
     use StoresEntities;
 
     /**
@@ -239,29 +241,57 @@ final class PlannerPageTest extends WebTestCase
         self::assertSame('jeudi 10 janvier 2030', $french);
     }
 
-    public function testTheFormOpensOnTomorrowOnceTodaysLastShowtimeHasPassed(): void
+    /**
+     * Showtimes on 2030-01-10 (14:00 to 14:20 UTC, booking open until the start) and on 2030-01-11, the user signed in.
+     */
+    private function signedInWithATodayAndATomorrow(): KernelBrowser
     {
-        // Arrange: today's only showtime can no longer be booked; tomorrow has one.
         $client = self::createClient();
-        $paris = new \DateTimeZone('Europe/Paris');
-        $today = new \DateTimeImmutable('today', $paris);
         $city = CityBuilder::aCity()->build();
-        $cinema = CinemaBuilder::aCinema()->in($city)->build();
+        $cinema = CinemaBuilder::aCinema()->in($city)->inTimezone('UTC')->build();
         $film = FilmBuilder::aFilm()->lasting(100)->build();
         $user = UserBuilder::aUser()->build();
         $this->store($city, $cinema, $film, $user,
-            ShowtimeBuilder::aShowtime()->withId('V1S1')->of($film)->at($cinema)->startingAt($today->format('Y-m-d').' 00:05:00')
-                ->bookableUntil((new \DateTimeImmutable('-1 minute', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'))->build(),
-            ShowtimeBuilder::aShowtime()->withId('V1S2')->of($film)->at($cinema)->startingAt($today->modify('+1 day')->format('Y-m-d').' 20:00:00')->build(),
+            ShowtimeBuilder::aShowtime()->withId('V1S1')->of($film)->at($cinema)->startingAt('2030-01-10 14:00:00')->bookableUntil('2030-01-10 14:00:00')->build(),
+            ShowtimeBuilder::aShowtime()->withId('V1S2')->of($film)->at($cinema)->startingAt('2030-01-11 20:00:00')->build(),
         );
         $client->loginUser($user);
 
+        return $client;
+    }
+
+    /**
+     * @return list<string> the days offered by the form
+     */
+    private function offeredDates(KernelBrowser $client): array
+    {
+        return $client->request('GET', '/')->filter('#plan_date option')->each(static fn ($option) => $option->attr('value'));
+    }
+
+    public function testTheFormOpensOnTomorrowOnceTodaysLastShowtimeHasPassed(): void
+    {
+        // Arrange: at 14:00:01 UTC, the only showtime of the 10th can no longer be booked.
+        $client = $this->signedInWithATodayAndATomorrow();
+        self::mockTime('2030-01-10 14:00:01 UTC');
+
         // Act
-        $crawler = $client->request('GET', '/');
+        $dates = $this->offeredDates($client);
 
         // Assert
-        $dates = $crawler->filter('#plan_date option')->each(static fn ($option) => $option->attr('value'));
-        self::assertSame([$today->modify('+1 day')->format('Y-m-d')], $dates);
+        self::assertSame(['2030-01-11'], $dates);
+    }
+
+    public function testTheFormStillOffersTodayWhileItsLastShowtimeCanBeBooked(): void
+    {
+        // Arrange: one second before the booking closes.
+        $client = $this->signedInWithATodayAndATomorrow();
+        self::mockTime('2030-01-10 13:59:59 UTC');
+
+        // Act
+        $dates = $this->offeredDates($client);
+
+        // Assert
+        self::assertSame(['2030-01-10', '2030-01-11'], $dates);
     }
 
     public function testTheTravelModeIsAskedWithPublicTransportByDefault(): void

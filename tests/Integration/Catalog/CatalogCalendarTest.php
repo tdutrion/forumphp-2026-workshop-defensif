@@ -17,11 +17,13 @@ use App\Tests\StoresEntities;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Cache\Adapter\DoctrineDbalAdapter;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Contracts\Cache\CacheInterface;
 
 final class CatalogCalendarTest extends KernelTestCase
 {
+    use ClockSensitiveTrait;
     use StoresEntities;
 
     private function catalogCache(): CacheInterface
@@ -33,7 +35,8 @@ final class CatalogCalendarTest extends KernelTestCase
     {
         // Arrange: showtimes tomorrow, inside the week the import reads.
         self::bootKernel();
-        $tomorrow = (new \DateTimeImmutable('tomorrow', new \DateTimeZone('Europe/Paris')))->format('Y-m-d');
+        self::mockTime('2030-01-10 12:00:00 UTC');
+        $tomorrow = '2030-01-11';
         self::getContainer()->get(FakePatheApi::class)->serve(PatheApiBuilder::aPatheApi()
             ->withCity('dijon', 'Dijon')
             ->withCinema('cinema-pathe-dijon', 'dijon', 47.318031, 5.029935)

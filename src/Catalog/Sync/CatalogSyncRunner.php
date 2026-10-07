@@ -18,11 +18,12 @@ class CatalogSyncRunner
 {
     public function __construct(
         private CatalogSynchronizer $synchronizer,
-        private CatalogUpdatePublisher $publisher,
         private LockFactory $lockFactory,
         private CatalogCalendar $calendar,
-        #[Autowire('%env(PATHE_CITIES)%')]
-        private string $defaultCities,
+        /** @var list<string> */
+        #[Autowire('%env(csv:PATHE_CITIES)%')]
+        private array $defaultCities,
+        private CatalogPublisher $publisher = new NullCatalogPublisher(),
     ) {
     }
 
@@ -37,7 +38,7 @@ class CatalogSyncRunner
     public function run(array $citySlugs = []): array
     {
         if ([] === $citySlugs) {
-            $citySlugs = array_values(array_filter(array_map('trim', explode(',', $this->defaultCities)), static fn (string $slug): bool => '' !== $slug));
+            $citySlugs = $this->defaultCities;
         }
 
         // A scheduled sync and a manual one must never write the catalog at the same time. A sync of every

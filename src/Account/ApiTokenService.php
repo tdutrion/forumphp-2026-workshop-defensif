@@ -8,6 +8,7 @@ use App\Account\Entity\ApiToken;
 use App\Account\Entity\User;
 use App\Account\Repository\ApiTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -21,6 +22,7 @@ class ApiTokenService
     public function __construct(
         private EntityManagerInterface $em,
         private ApiTokenRepository $apiTokenRepository,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -35,7 +37,7 @@ class ApiTokenService
             ->setUser($user)
             ->setName($name)
             ->setTokenHash(hash('sha256', $plain))
-            ->setExpiresAt(new \DateTimeImmutable(self::LIFETIME));
+            ->setExpiresAt($this->clock->now()->modify(self::LIFETIME));
         $this->em->persist($token);
         $this->em->flush();
 
@@ -46,7 +48,7 @@ class ApiTokenService
     {
         // The lookup is done on the hash: the plaintext token is never compared nor stored.
         $apiToken = $this->apiTokenRepository->findOneBy(['tokenHash' => hash('sha256', $token)]);
-        if (null === $apiToken || null !== $apiToken->getRevokedAt() || $apiToken->getExpiresAt() <= new \DateTimeImmutable()) {
+        if (null === $apiToken || null !== $apiToken->getRevokedAt() || $apiToken->getExpiresAt() <= $this->clock->now()) {
             return null;
         }
 
@@ -67,7 +69,7 @@ class ApiTokenService
             return false;
         }
 
-        $token->setRevokedAt(new \DateTimeImmutable());
+        $token->setRevokedAt($this->clock->now());
         $this->em->flush();
 
         return true;
@@ -81,7 +83,7 @@ class ApiTokenService
         // UUID v7 values sort by creation date.
         $tokens = $this->apiTokenRepository->findBy(['user' => $user, 'revokedAt' => null], ['id' => 'ASC']);
         // Same rule as findUserByToken(): an expired token no longer opens the account.
-        $now = new \DateTimeImmutable();
+        $now = $this->clock->now();
         $tokens = array_values(array_filter($tokens, static fn (ApiToken $token) => $token->getExpiresAt() > $now));
 
         return array_map(static fn (ApiToken $token) => [

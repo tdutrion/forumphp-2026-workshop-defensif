@@ -29,6 +29,7 @@ class ProgrammeSelector
      */
     public function select(ProgrammeList $programmes, int $max = 3, ?int $seed = null): ProgrammeList
     {
+        \assert($max >= 1, 'At least one programme is asked for.');
         $ranked = $programmes->sortedBy(static fn (Programme $a, Programme $b): int => [$a->wait, $a->distance] <=> [$b->wait, $b->distance]);
 
         $candidates = new ProgrammeList();

@@ -24,6 +24,7 @@ use App\Sdk\Pathe\RateLimitedException;
 use App\Sdk\Pathe\ShowSlug;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
@@ -41,6 +42,7 @@ class CatalogSynchronizer
         private WorkRepository $workRepository,
         private WorkLinker $workLinker,
         private LoggerInterface $logger,
+        private ClockInterface $clock,
         #[Autowire('%app.chains%')]
         private array $chains,
     ) {
@@ -61,7 +63,7 @@ class CatalogSynchronizer
     public function synchronize(array $citySlugs, ?string $today = null, int $days = 7, ?\Closure $stillRunning = null): array
     {
         $chain = $this->chains[self::CHAIN];
-        $today ??= (new \DateTimeImmutable('now', new \DateTimeZone($chain['timezone'])))->format('Y-m-d');
+        $today ??= $this->clock->now()->setTimezone(new \DateTimeZone($chain['timezone']))->format('Y-m-d');
         $stats = ['cities' => 0, 'cinemas' => 0, 'films' => 0, 'showtimes' => 0, 'deleted' => 0, 'errors' => 0, 'linked' => 0];
 
         $rawCities = $this->client->getCities();
@@ -245,7 +247,7 @@ class CatalogSynchronizer
         // Works not linked yet are looked up in Wikidata, at most once a day each; Wikidata failing never stops the sync.
         $stats['linked'] = $this->workLinker->linkDue(
             $this->workRepository->findWorksOfFilms(array_keys($playing)),
-            new \DateTimeImmutable('now', new \DateTimeZone('UTC')),
+            $this->clock->now()->setTimezone(new \DateTimeZone('UTC')),
         );
 
         // Showtimes of past days are of no use to anyone: the catalog must not grow forever.

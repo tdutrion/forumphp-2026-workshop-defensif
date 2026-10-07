@@ -9,6 +9,7 @@ use App\Account\Repository\SeenFilmRepository;
 use App\Catalog\Entity\Film;
 use App\Catalog\Repository\FilmRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -20,6 +21,7 @@ class SeenFilmService
         private EntityManagerInterface $em,
         private SeenFilmRepository $seenFilmRepository,
         private FilmRepository $filmRepository,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -40,7 +42,7 @@ class SeenFilmService
                 'id' => Uuid::v7()->toBinary(),
                 'user' => Uuid::fromString($userId)->toBinary(),
                 'work' => $film->getWork()->getId()->toBinary(),
-                'seenAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
+                'seenAt' => $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s'),
             ],
         );
 

@@ -28,7 +28,7 @@ final class CatalogUpdateNotificationTest extends KernelTestCase
             ->withFilm('digger-51293', 'Digger', 129));
         $publisher = new CatalogUpdatePublisher($container->get(Environment::class), new NullLogger(), ['en', 'fr'], $hub);
 
-        return new CatalogSyncRunner($container->get(CatalogSynchronizer::class), $publisher, $container->get(LockFactory::class), $container->get(CatalogCalendar::class), 'dijon');
+        return new CatalogSyncRunner($container->get(CatalogSynchronizer::class), $container->get(LockFactory::class), $container->get(CatalogCalendar::class), ['dijon'], $publisher);
     }
 
     public function testASyncTellsOpenPagesInTheirLanguage(): void

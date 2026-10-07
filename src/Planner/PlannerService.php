@@ -9,6 +9,7 @@ use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Repository\CinemaRepository;
 use App\Catalog\Repository\ShowtimeRepository;
+use Symfony\Component\Clock\ClockInterface;
 
 /**
  * The "plan a marathon" use case, shared by the website and the API.
@@ -27,6 +28,7 @@ class PlannerService
         private ChainBuilder $chainBuilder,
         private ProgrammeSelector $programmeSelector,
         private LocationResolver $locationResolver,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -57,7 +59,7 @@ class PlannerService
             }
         }
 
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $now = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'));
         $rows = $this->showtimeRepository->findCandidates(
             $request->date,
             $cinemaSlugs,
@@ -85,6 +87,8 @@ class PlannerService
             $programmes = $this->select($showtimes, $films, $request, $seed);
         }
 
+        // The search only ever goes down from the number of films asked for.
+        \assert(!$requested->isFewerThan($films));
         if ($programmes->isEmpty()) {
             return PlanResult::failure(PlanFailure::NoProgramme, $films->value, $seed);
         }

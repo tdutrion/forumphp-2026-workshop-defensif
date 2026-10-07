@@ -10,13 +10,13 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use PsrDiscovery\Discover;
 
 /**
  * Only access point to the (unofficial) pathe.fr API.
  *
- * Standalone library: depends on PSR interfaces only. Collaborators that are not given are
- * discovered among the installed implementations (psr-discovery).
+ * Standalone library: depends on PSR interfaces only, and on nothing it would find by itself: the HTTP
+ * client and the request factory are given, the cache is optional (none = no cache), the logger defaults to
+ * a logger that says nothing.
  */
 class PatheClient
 {
@@ -24,35 +24,15 @@ class PatheClient
     // Pathé blocks crawler-like user agents (HTTP 403).
     private const string USER_AGENT = 'PatheApiExplorer/1.0';
 
-    private ClientInterface $httpClient;
-    private RequestFactoryInterface $requestFactory;
-    private ?CacheItemPoolInterface $cache;
-    private LoggerInterface $logger;
-
     public function __construct(
-        ?ClientInterface $httpClient = null,
-        ?RequestFactoryInterface $requestFactory = null,
-        ?CacheItemPoolInterface $cache = null,
-        ?LoggerInterface $logger = null,
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $requestFactory,
+        private ?CacheItemPoolInterface $cache = null,
+        private LoggerInterface $logger = new NullLogger(),
         private int $delayMs = 1000,
         private int $cacheTtl = 3600,
         private string $baseUrl = self::BASE_URL,
     ) {
-        $httpClient ??= Discover::httpClient();
-        if (!$httpClient instanceof ClientInterface) {
-            throw new \LogicException('No PSR-18 HTTP client found: pass one to PatheClient or install one (symfony/http-client, guzzlehttp/guzzle...).');
-        }
-        $requestFactory ??= Discover::httpRequestFactory();
-        if (!$requestFactory instanceof RequestFactoryInterface) {
-            throw new \LogicException('No PSR-17 request factory found: pass one to PatheClient or install one (nyholm/psr7, guzzlehttp/psr7...).');
-        }
-        $cache ??= Discover::cache();
-        $logger ??= Discover::log();
-
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->cache = $cache instanceof CacheItemPoolInterface ? $cache : null;
-        $this->logger = $logger instanceof LoggerInterface ? $logger : new NullLogger();
     }
 
     /**

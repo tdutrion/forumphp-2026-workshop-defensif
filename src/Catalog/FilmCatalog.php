@@ -8,6 +8,7 @@ use App\Account\FilmPage;
 use App\Account\SeenFilmService;
 use App\Account\UnwantedFilmService;
 use App\Catalog\Repository\FilmRepository;
+use Symfony\Component\Clock\ClockInterface;
 
 /**
  * The films page: the films that can still be booked, selected and sorted by the user.
@@ -18,6 +19,7 @@ class FilmCatalog
         private FilmRepository $filmRepository,
         private SeenFilmService $seenFilmService,
         private UnwantedFilmService $unwantedFilmService,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -29,7 +31,7 @@ class FilmCatalog
      */
     public function browse(FilmCatalogQuery $query, string $userId, int $pageSize): array
     {
-        $now = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
+        $now = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
         $seen = $this->seenFilmService->getSeenFilmSlugs($userId);
         $unwanted = $this->unwantedFilmService->getUnwantedFilmSlugs($userId);
         $excluded = array_merge($query->hideSeen ? $seen : [], $query->hideUnwanted ? $unwanted : []);

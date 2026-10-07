@@ -6,6 +6,7 @@ namespace App\Catalog\Command;
 
 use App\Catalog\CatalogCalendar;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,6 +20,7 @@ class ShiftDatesCommand extends Command
     public function __construct(
         private Connection $connection,
         private CatalogCalendar $calendar,
+        private ClockInterface $clock,
         #[Autowire('%app.chains%')]
         private array $chains,
     ) {
@@ -37,7 +39,7 @@ class ShiftDatesCommand extends Command
         }
 
         // The catalog only holds Pathé for now: "today" is taken in its time zone.
-        $today = new \DateTimeImmutable('today', new \DateTimeZone($this->chains['pathe']['timezone']));
+        $today = $this->clock->now()->setTimezone(new \DateTimeZone($this->chains['pathe']['timezone']));
         $days = (int) (new \DateTimeImmutable($firstDay))->diff(new \DateTimeImmutable($today->format('Y-m-d')))->format('%r%a');
         if (0 === $days) {
             $io->success('The catalog already starts today.');

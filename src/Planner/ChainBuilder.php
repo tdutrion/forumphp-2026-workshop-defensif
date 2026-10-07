@@ -24,6 +24,7 @@ class ChainBuilder
      */
     public function build(ScheduledShowtimeList $showtimes, int $count, bool $acceptAds, TravelMode $travelMode = TravelMode::Transit): ProgrammeList
     {
+        \assert($count >= FilmCount::MIN, 'A programme has at least one film.');
         $candidates = $showtimes->sortedByStart()->toArray();
 
         $programmes = [];
