@@ -35,9 +35,10 @@ knpu_oauth2_client:
             redirect_route: app_connect_check
             redirect_params: { provider: local }
             provider_options:
-                urlAuthorize: '%env(OAUTH_LOCAL_URL_AUTHORIZE)%'
-                urlAccessToken: '%env(OAUTH_LOCAL_URL_TOKEN)%'
-                urlResourceOwnerDetails: '%env(OAUTH_LOCAL_URL_USERINFO)%'
+                # uri: a malformed URL fails with the name of its variable (App\Config\UriEnvVarProcessor).
+                urlAuthorize: '%env(uri:OAUTH_LOCAL_URL_AUTHORIZE)%'
+                urlAccessToken: '%env(uri:OAUTH_LOCAL_URL_TOKEN)%'
+                urlResourceOwnerDetails: '%env(uri:OAUTH_LOCAL_URL_USERINFO)%'
                 scopeSeparator: ' '
                 responseResourceOwnerId: sub
 

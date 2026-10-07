@@ -10,6 +10,7 @@ use App\Security\VerifiedEmail;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
+use Uri\Rfc3986\Uri;
 
 /**
  * GitHub does not do OIDC: the public email from /user is not necessarily verified.
@@ -30,8 +31,10 @@ class GithubUserInfoProvider implements UserInfoProvider
         $owner = $client->fetchUserFromToken($accessToken);
         $data = $owner->toArray();
         $provider = $client->getOAuth2Provider();
+        // /user/emails lives where /user does: the API domain of the provider, GitHub Enterprise included.
+        $emailsUrl = (new Uri($provider->getResourceOwnerDetailsUrl($accessToken)))->resolve('/user/emails');
         $emails = $provider->getParsedResponse(
-            $provider->getAuthenticatedRequest('GET', 'https://api.github.com/user/emails', $accessToken),
+            $provider->getAuthenticatedRequest('GET', $emailsUrl->toString(), $accessToken),
         );
 
         $primary = array_find(
