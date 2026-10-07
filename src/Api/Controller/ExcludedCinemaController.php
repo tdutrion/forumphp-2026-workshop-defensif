@@ -6,6 +6,9 @@ namespace App\Api\Controller;
 
 use App\Account\Entity\User;
 use App\Account\ExcludedCinemaService;
+use App\Api\Response\CinemaResource;
+use App\Api\Response\Responder;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,20 +20,15 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[OA\Tag(name: 'Profile')]
 class ExcludedCinemaController extends AbstractController
 {
-    public function __construct(private ExcludedCinemaService $excludedCinemaService)
+    public function __construct(private ExcludedCinemaService $excludedCinemaService, private Responder $responder)
     {
     }
 
     #[Route('/api/me/excluded-cinemas', name: 'api_excluded_cinemas', methods: ['GET'])]
-    #[OA\Response(response: 200, description: 'Cinemas the planner never uses for this user: slug and name, sorted by name')]
+    #[OA\Response(response: 200, description: 'Cinemas the planner never uses for this user: slug and name, sorted by name', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: new Model(type: CinemaResource::class))))]
     public function list(#[CurrentUser] User $user): JsonResponse
     {
-        $cinemas = [];
-        foreach ($this->excludedCinemaService->listExcludedCinemas($user->getUserIdentifier()) as $cinema) {
-            $cinemas[] = ['slug' => $cinema['slug'], 'name' => $cinema['name']];
-        }
-
-        return new JsonResponse($cinemas);
+        return $this->responder->json(array_map(CinemaResource::fromRow(...), $this->excludedCinemaService->listExcludedCinemas($user->getUserIdentifier())));
     }
 
     #[Route('/api/me/excluded-cinemas/{slug}', name: 'api_excluded_cinema_put', methods: ['PUT'])]

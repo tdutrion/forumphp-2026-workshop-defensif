@@ -1,7 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
-    # Intentional v1 style (spec §8): arrays passed to templates, no strict variables.
-    strict_variables: false
+    # A variable or an attribute that does not exist is an error, not an empty string.
+    strict_variables: true
     form_themes: ['form/theme.html.twig']
     globals:
         # AGPL-3.0: every page links to the source code of this instance (SOURCE_CODE_URL).

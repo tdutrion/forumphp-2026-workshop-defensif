@@ -32,7 +32,7 @@ class UnwantedFilmRepository extends ServiceEntityRepository
             ->join(Film::class, 'f', 'WITH', 'f.work = u.work')
             ->where('u.user = :user')
             ->setParameter('user', $userId, 'uuid')
-            ->orderBy('u.createdAt', 'DESC')
+            ->orderBy('u.createdAt', \SortDirection::Descending)
             ->getQuery()
             ->getSingleColumnResult();
     }

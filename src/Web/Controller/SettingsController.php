@@ -21,7 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Settings of the account: excluded cinemas (excluded here, by name, or from a search), connections, API tokens and colour theme.
@@ -34,7 +35,6 @@ class SettingsController extends AbstractController
         private ApiTokenService $apiTokenService,
         private OAuthProviders $oauthProviders,
         private ExcludedCinemaService $excludedCinemaService,
-        private TranslatorInterface $translator,
         private PostRedirectGet $postRedirectGet,
         private CinemaRepository $cinemaRepository,
     ) {
@@ -67,7 +67,7 @@ class SettingsController extends AbstractController
         }
 
         if (!$this->accountService->removeLinkedAccount($user, $id)) {
-            $this->addFlash('error', $this->translator->trans('settings.cannot_remove_connection'));
+            $this->addFlash('error', t('settings.cannot_remove_connection'));
         }
 
         return $this->redirectToRoute('app_settings');
@@ -82,7 +82,7 @@ class SettingsController extends AbstractController
 
         $name = trim($request->request->getString('name'));
         if ('' === $name || mb_strlen($name) > 100) {
-            $this->addFlash('error', $this->translator->trans('settings.token_name_invalid'));
+            $this->addFlash('error', t('settings.token_name_invalid'));
 
             return $this->redirectToRoute('app_settings');
         }
@@ -100,7 +100,7 @@ class SettingsController extends AbstractController
         }
 
         if (!$this->apiTokenService->revoke($user, $id)) {
-            $this->addFlash('error', $this->translator->trans('settings.token_not_found'));
+            $this->addFlash('error', t('settings.token_not_found'));
         }
 
         return $this->redirectToRoute('app_settings');

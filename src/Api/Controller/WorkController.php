@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Api\Controller;
 
+use App\Api\Response\Responder;
+use App\Api\Response\WorkResource;
 use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Work;
 use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,28 +24,17 @@ class WorkController extends AbstractController
     private const string ANY_UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 
     #[Route('/api/works/{id}', name: 'api_work', methods: ['GET'], requirements: ['id' => self::ANY_UUID])]
-    #[OA\Response(response: 200, description: 'A work common to every chain: its external ids (null when unknown) and its films by chain')]
+    #[OA\Response(response: 200, description: 'A work common to every chain: its external ids (null when unknown) and its films by chain', content: new Model(type: WorkResource::class))]
     #[OA\Response(response: 404, description: 'Unknown work')]
-    public function show(string $id, EntityManagerInterface $em): JsonResponse
+    public function show(string $id, EntityManagerInterface $em, Responder $responder): JsonResponse
     {
         $work = $em->find(Work::class, Uuid::fromString($id));
         if (null === $work) {
             throw new NotFoundHttpException('error.work_not_found');
         }
 
-        $films = array_map(
-            static fn (Film $film): array => ['chain' => $film->getChain(), 'slug' => $film->getSlug(), 'title' => $film->getTitle()],
-            $em->getRepository(Film::class)->findBy(['work' => $work], ['chain' => 'ASC', 'slug' => 'ASC']),
-        );
+        $films = $em->getRepository(Film::class)->findBy(['work' => $work], ['chain' => 'ASC', 'slug' => 'ASC']);
 
-        return new JsonResponse([
-            'id' => $work->getId()->toRfc4122(),
-            'originalTitle' => $work->getOriginalTitle(),
-            'year' => $work->getYear(),
-            'wikidataId' => $work->getWikidataId(),
-            'imdbId' => $work->getImdbId(),
-            'tmdbId' => $work->getTmdbId(),
-            'films' => $films,
-        ]);
+        return $responder->json(WorkResource::fromWork($work, $films));
     }
 }

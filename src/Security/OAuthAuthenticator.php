@@ -23,7 +23,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
-use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Sign-in through any provider configured in knpu_oauth2_client.yaml.
@@ -39,7 +40,6 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
         private AccountService $accountService,
         private Security $security,
         private UrlGeneratorInterface $urlGenerator,
-        private TranslatorInterface $translator,
     ) {
     }
 
@@ -94,13 +94,14 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        // The message keeps its parameters until the layout translates it.
         $message = $exception instanceof CustomUserMessageAuthenticationException
-            ? $exception->getMessageKey()
-            : 'security.sign_in_failed';
+            ? t($exception->getMessageKey(), $exception->getMessageData())
+            : t('security.sign_in_failed');
 
         $session = $request->getSession();
         if ($session instanceof FlashBagAwareSessionInterface) {
-            $session->getFlashBag()->add('error', $this->translator->trans($message));
+            $session->getFlashBag()->add('error', $message);
         }
 
         return new RedirectResponse($this->urlGenerator->generate('app_login'));

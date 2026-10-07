@@ -15,7 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function Symfony\Component\Translation\t;
 
 class ConnectController extends AbstractController
 {
@@ -24,7 +25,6 @@ class ConnectController extends AbstractController
         private OAuthProviders $providers,
         private UserInfoProviders $userInfoProviders,
         private AccountService $accountService,
-        private TranslatorInterface $translator,
     ) {
     }
 
@@ -62,15 +62,15 @@ class ConnectController extends AbstractController
         try {
             $userInfo = $this->userInfoProviders->for($provider)->userInfo($client, $client->getAccessToken());
         } catch (\RuntimeException|\LogicException|IdentityProviderException|ClientExceptionInterface) {
-            $this->addFlash('error', $this->translator->trans('security.linking_failed'));
+            $this->addFlash('error', t('security.linking_failed'));
 
             return $this->redirectToRoute('app_settings');
         }
 
         if ($this->accountService->linkProvider($user, $provider, $userInfo)) {
-            $this->addFlash('success', $this->translator->trans('security.account_linked', ['%provider%' => $provider]));
+            $this->addFlash('success', t('security.account_linked', ['%provider%' => $provider]));
         } else {
-            $this->addFlash('error', $this->translator->trans('security.account_linked_elsewhere', ['%provider%' => $provider]));
+            $this->addFlash('error', t('security.account_linked_elsewhere', ['%provider%' => $provider]));
         }
 
         return $this->redirectToRoute('app_settings');

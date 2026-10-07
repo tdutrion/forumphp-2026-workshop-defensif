@@ -108,8 +108,7 @@ class PlannerService
      *
      * @param PlanRequest $request only the city and the position are read
      *
-     * @return list<array{slug: string, name: string, distance: float, excluded: bool}> nearest first, the distance in km;
-     *                                                                                  [] if the place is unknown
+     * @return list<NearbyCinema> nearest first; [] if the place is unknown
      */
     public function nearbyCinemas(PlanRequest $request, string $userId): array
     {
@@ -123,15 +122,15 @@ class PlannerService
         foreach ($this->cinemaRepository->findOpenWithCoordinates() as $cinema) {
             $distance = Geo::distanceKm($location['latitude'], $location['longitude'], $cinema['latitude'], $cinema['longitude']);
             if ($distance <= self::DEFAULT_RADIUS_KM) {
-                $cinemas[] = [
-                    'slug' => $cinema['slug'],
-                    'name' => $cinema['name'],
-                    'distance' => round($distance, 1),
-                    'excluded' => in_array($cinema['slug'], $excluded, true),
-                ];
+                $cinemas[] = new NearbyCinema(
+                    $cinema['slug'],
+                    $cinema['name'],
+                    round($distance, 1),
+                    in_array($cinema['slug'], $excluded, true),
+                );
             }
         }
-        usort($cinemas, static fn (array $a, array $b) => $a['distance'] <=> $b['distance']);
+        usort($cinemas, static fn (NearbyCinema $a, NearbyCinema $b): int => $a->distance <=> $b->distance);
 
         return $cinemas;
     }

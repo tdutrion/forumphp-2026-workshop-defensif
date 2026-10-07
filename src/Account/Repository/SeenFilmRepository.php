@@ -32,7 +32,7 @@ class SeenFilmRepository extends ServiceEntityRepository
             ->join(Film::class, 'f', 'WITH', 'f.work = s.work')
             ->where('s.user = :user')
             ->setParameter('user', $userId, 'uuid')
-            ->orderBy('s.seenAt', 'DESC')
+            ->orderBy('s.seenAt', \SortDirection::Descending)
             ->getQuery()
             ->getSingleColumnResult();
     }
