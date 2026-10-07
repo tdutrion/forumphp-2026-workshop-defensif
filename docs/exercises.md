@@ -18,9 +18,9 @@ the distance covered: `make phpstan-max` (regenerate the baseline with
 progress measure is lost).
 
 2-hour track (16:00 to 18:00): exercises 1 to 6, timed for experienced
-developers. 8 minutes of welcome, then the six exercises (102 minutes: about
+developers. 8 minutes of welcome, then the six exercises (100 minutes: about
 2 minutes of briefing each, the rest hands-on; exercises 2 and 3 end with a
-1 min 30 discussion), then 10 minutes of wrap-up and questions. The following
+1 min 30 discussion), then 12 minutes of wrap-up and questions. The following
 ones are extensions, in any order. The guide assumes they are done in order: an
 exercise may build on the names an earlier one introduced (a reference solution,
 one branch per exercise, is available to the trainer).
@@ -30,7 +30,7 @@ The code already shows the target style in a few places, to point at:
 enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
 (constructor, `describe()`).
 
-## 1. Pathé boundary (22 min) — PHP 5.0 to 8.1
+## 1. Pathé boundary (10 min) — PHP 5.0 to 8.1
 
 - **Starting point**: `PatheClient::getShowtimes(string $showSlug, string $cinemaSlug): array|false`
   (also `getShow()` and `getCinemaProgramme()`) and
@@ -50,7 +50,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   PSR only (failures still return `false`: exercise 11). Update the SDK README.
 - **Deck**: Part 3 (the `getShowtimes → PatheShowtimes` case), Part 5.
 
-## 2. Enums (13 min) — PHP 8.1
+## 2. Enums (15 min) — PHP 8.1
 
 - **Starting point**: the version strings (`Showtime::$version`, `PlanType::VERSIONS`,
   `FilmCatalogQuery::$version`, the `vost`/`vo` tests in `ShowtimeRepository`
@@ -71,7 +71,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   set that stays a validated string rather than an enum.
 - **Deck**: Part 5 (`BookingStatus`).
 
-## 3. Time (18 min) — PHP 5.5, 8.3, 8.6 (polyfill)
+## 3. Time (20 min) — PHP 5.5, 8.3, 8.6 (polyfill)
 
 - **Starting point**: `PlannerService::plan()` (UTC strings turned into
   integer timestamps), `PlannerService::format()` (a `DateTimeZone` built from
@@ -92,7 +92,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   locally. Instant vs local time: which one should a shift keep?
 - **Deck**: Part 5 (`ScreeningTime`).
 
-## 4. Planner input (18 min) — PHP 8.0, 8.6 (polyfill)
+## 4. Planner input (20 min) — PHP 8.0, 8.6 (polyfill)
 
 - **Starting point**: `PlannerService::plan(array $criteria, string $userId)`
   (`$criteria['radius'] ?? self::DEFAULT_RADIUS_KM`,
@@ -111,7 +111,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   the 1–8 range itself stays a 422) and `TimeRange`, built from the validated
   DTO (the Serializer cannot build value objects whose constructor throws).
 
-## 5. Planner output (18 min) — PHP 8.2, 8.5
+## 5. Planner output (20 min) — PHP 8.2, 8.5
 
 - **Starting point**: `plan(): array|false` (`false` = no showtime, shown as
   `'no_showtime'`) with `'reason'` as a string (`'no_programme'`,
@@ -127,7 +127,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `FilmCount::fewer()`.
 - **Deck**: Part 8 (Result, `#[NoDiscard]`).
 
-## 6. Repositories (13 min) — PHP 7.1, 8.0
+## 6. Repositories (15 min) — PHP 7.1, 8.0
 
 - **Starting point**: `FilmRepository::findBySlug(string): ?array` (a wrapper
   over `findBySlugs()`), whose `null` is tested by `Web\Controller\FilmController`
