@@ -181,12 +181,6 @@ parameters:
 			path: src/Api/Controller/ExcludedCinemaController.php
 
 		-
-			message: '#^Cannot call method format\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Api/Controller/FilmController.php
-
-		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
@@ -535,6 +529,12 @@ parameters:
 			path: src/Catalog/FilmSchedule.php
 
 		-
+			message: '#^Method App\\Catalog\\FilmSlugValueResolver\:\:resolve\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Catalog/FilmSlugValueResolver.php
+
+		-
 			message: '#^Cannot access offset ''cityName'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -651,18 +651,6 @@ parameters:
 		-
 			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:countShowing\(\) has parameter \$excludedSlugs with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/Repository/FilmRepository.php
-
-		-
-			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findBySlug\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Catalog/Repository/FilmRepository.php
-
-		-
-			message: '#^Method App\\Catalog\\Repository\\FilmRepository\:\:findBySlug\(\) should return array\|null but returns mixed\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Catalog/Repository/FilmRepository.php
 
