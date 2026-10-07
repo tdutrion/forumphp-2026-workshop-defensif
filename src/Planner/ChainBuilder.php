@@ -16,16 +16,15 @@ class ChainBuilder
     }
 
     /**
-     * @param array $showtimes candidate showtimes: id, filmSlug, workId (common to every chain), cinemaSlug, latitude, longitude,
-     *                         start and end (ScreeningTime), plus any display keys
-     * @param int   $count     number of films per programme
-     * @param bool  $acceptAds accept arriving up to 15 minutes after the showtime starts
+     * @param list<ScheduledShowtime> $showtimes candidate showtimes
+     * @param int                     $count     number of films per programme
+     * @param bool                    $acceptAds accept arriving up to 15 minutes after the showtime starts
      *
-     * @return array programmes: ['showtimes' => [...], 'wait' => minutes, 'distance' => km]
+     * @return list<Programme>
      */
     public function build(array $showtimes, int $count, bool $acceptAds, TravelMode $travelMode = TravelMode::Transit): array
     {
-        usort($showtimes, static fn (array $a, array $b) => ScreeningTime::compare($a['start'], $b['start']));
+        usort($showtimes, static fn (ScheduledShowtime $a, ScheduledShowtime $b) => ScreeningTime::compare($a->start, $b->start));
 
         $programmes = [];
         $nodes = 0;
@@ -43,6 +42,11 @@ class ChainBuilder
         return $programmes;
     }
 
+    /**
+     * @param list<ScheduledShowtime> $path
+     * @param list<ScheduledShowtime> $showtimes
+     * @param list<Programme>         $programmes
+     */
     private function explore(array $path, int $lastIndex, array $showtimes, int $count, bool $acceptAds, TravelMode $travelMode, array &$programmes, int &$nodes, int $limit): void
     {
         ++$nodes;
@@ -61,16 +65,16 @@ class ChainBuilder
                 return;
             }
             $candidate = $showtimes[$next];
-            if (in_array($candidate['workId'], $works, true) || !$this->canChain($last, $candidate, $acceptAds, $travelMode)) {
+            if (in_array($candidate->workId, $works, true) || !$this->canChain($last, $candidate, $acceptAds, $travelMode)) {
                 continue;
             }
             $this->explore([...$path, $candidate], $next, $showtimes, $count, $acceptAds, $travelMode, $programmes, $nodes, $limit);
         }
     }
 
-    private function canChain(array $previous, array $next, bool $acceptAds, TravelMode $travelMode): bool
+    private function canChain(ScheduledShowtime $previous, ScheduledShowtime $next, bool $acceptAds, TravelMode $travelMode): bool
     {
-        $latestArrival = $acceptAds ? $next['start']->plus($this->ads()) : $next['start'];
+        $latestArrival = $acceptAds ? $next->start->plus($this->ads()) : $next->start;
 
         return !$this->arrival($previous, $next, $travelMode)->isAfter($latestArrival);
     }
@@ -94,19 +98,19 @@ class ChainBuilder
     /**
      * Earliest arrival time at the next showtime.
      */
-    private function arrival(array $previous, array $next, TravelMode $travelMode): ScreeningTime
+    private function arrival(ScheduledShowtime $previous, ScheduledShowtime $next, TravelMode $travelMode): ScreeningTime
     {
-        $arrival = $previous['end']->plus($this->margin());
-        if ($previous['cinemaSlug'] !== $next['cinemaSlug']) {
+        $arrival = $previous->end->plus($this->margin());
+        if ($previous->cinemaSlug !== $next->cinemaSlug) {
             $arrival = $arrival->plus($this->travel($previous, $next, $travelMode));
         }
 
         return $arrival;
     }
 
-    private function travel(array $from, array $to, TravelMode $travelMode): Duration
+    private function travel(ScheduledShowtime $from, ScheduledShowtime $to, TravelMode $travelMode): Duration
     {
-        $distance = Geo::distanceKm($from['latitude'], $from['longitude'], $to['latitude'], $to['longitude']);
+        $distance = Geo::distanceKm($from->position->latitude, $from->position->longitude, $to->position->latitude, $to->position->longitude);
 
         return Duration::fromMinutes((int) ceil($distance / $travelMode->speedKmh() * 60) + $travelMode->fixedMinutes());
     }
@@ -119,38 +123,42 @@ class ChainBuilder
         return $duration->negative ? 0 : intdiv($duration->seconds, 60);
     }
 
-    private function summarize(array $path, TravelMode $travelMode): array
+    /**
+     * @param list<ScheduledShowtime> $path
+     */
+    private function summarize(array $path, TravelMode $travelMode): Programme
     {
         $wait = Duration::fromSeconds(0);
         $distance = 0.0;
-        $path[0]['lateMinutes'] = 0;
-        $path[0]['breakMinutes'] = 0;
-        $path[0]['travelMinutes'] = 0;
+        $showtimes = [$path[0]];
         for ($i = 1, $n = \count($path); $i < $n; ++$i) {
-            $arrival = $this->arrival($path[$i - 1], $path[$i], $travelMode);
-            // Shown between two showtimes: time from the end of the previous film to the next start, and its travel.
-            $path[$i]['breakMinutes'] = $this->minutes($path[$i - 1]['end']->until($path[$i]['start']));
-            $path[$i]['travelMinutes'] = $path[$i - 1]['cinemaSlug'] === $path[$i]['cinemaSlug']
-                ? 0
-                : $this->minutes($this->travel($path[$i - 1], $path[$i], $travelMode));
-            $early = $arrival->until($path[$i]['start']);
+            $previous = $path[$i - 1];
+            $current = $path[$i];
+            $arrival = $this->arrival($previous, $current, $travelMode);
+            $early = $arrival->until($current->start);
             if (!$early->negative) {
                 $wait = $wait->add($early);
             }
-            $path[$i]['lateMinutes'] = $this->minutes($path[$i]['start']->until($arrival));
-            if ($path[$i - 1]['cinemaSlug'] !== $path[$i]['cinemaSlug']) {
-                $distance += Geo::distanceKm($path[$i - 1]['latitude'], $path[$i - 1]['longitude'], $path[$i]['latitude'], $path[$i]['longitude']);
+            $changesCinema = $previous->cinemaSlug !== $current->cinemaSlug;
+            if ($changesCinema) {
+                $distance += Geo::distanceKm($previous->position->latitude, $previous->position->longitude, $current->position->latitude, $current->position->longitude);
             }
+            // Shown between two showtimes: time from the end of the previous film to the next start, and its travel.
+            $showtimes[] = $current->withTransition(
+                lateMinutes: $this->minutes($current->start->until($arrival)),
+                breakMinutes: $this->minutes($previous->end->until($current->start)),
+                travelMinutes: $changesCinema ? $this->minutes($this->travel($previous, $current, $travelMode)) : 0,
+            );
         }
 
-        return [
-            'showtimes' => $path,
+        return new Programme(
+            $showtimes,
             // Score: time really lost waiting (the breaks minus the 10-minute margins and the travel).
-            'wait' => $this->minutes($wait),
-            'distance' => round($distance, 2),
+            wait: $this->minutes($wait),
+            distance: round($distance, 2),
             // Shown to the user: the sum of the breaks between the showtimes, and the travel they include.
-            'breakMinutes' => array_sum(array_column($path, 'breakMinutes')),
-            'travelMinutes' => array_sum(array_column($path, 'travelMinutes')),
-        ];
+            breakMinutes: array_sum(array_column($showtimes, 'breakMinutes')),
+            travelMinutes: array_sum(array_column($showtimes, 'travelMinutes')),
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Planner;
 
 use App\Planner\ChainBuilder;
+use App\Planner\Programme;
 use App\Planner\TravelMode;
 use App\Tests\Builder\ScreeningBuilder;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +23,7 @@ final class ChainBuilderTest extends TestCase
 
     private function ids(array $programmes): array
     {
-        return array_map(static fn (array $programme) => implode('>', array_column($programme['showtimes'], 'id')), $programmes);
+        return array_map(static fn (Programme $programme) => implode('>', array_column($programme->showtimes, 'id')), $programmes);
     }
 
     public function testTheNextShowtimeLeavesTimeForTheMarginAndTheTravel(): void
@@ -80,8 +81,8 @@ final class ChainBuilderTest extends TestCase
         // Assert
         self::assertSame([], $withoutAds);
         self::assertSame(['s1>s2'], $this->ids($withAds));
-        self::assertSame(15, $withAds[0]['showtimes'][1]['lateMinutes']);
-        self::assertSame(0, $withAds[0]['wait']);
+        self::assertSame(15, $withAds[0]->showtimes[1]->lateMinutes);
+        self::assertSame(0, $withAds[0]->wait);
     }
 
     public function testNeverProposesTheSameFilmTwice(): void
@@ -129,13 +130,13 @@ final class ChainBuilderTest extends TestCase
         $programme = (new ChainBuilder())->build($showtimes, 2, false, TravelMode::Cycling)[0];
 
         // Assert: earliest arrival 16:00 + 10 min of margin + 12 min of travel = 16:22; the showtime starts at 16:40.
-        self::assertSame(18, $programme['wait']);
-        self::assertEqualsWithDelta(2.99, $programme['distance'], 0.01);
-        self::assertSame(0, $programme['showtimes'][1]['lateMinutes']);
-        self::assertSame(40, $programme['showtimes'][1]['breakMinutes'], 'from the end of the first film (16:00) to the next showtime (16:40)');
-        self::assertSame(12, $programme['showtimes'][1]['travelMinutes']);
-        self::assertSame(40, $programme['breakMinutes'], 'sum of the breaks shown between the showtimes');
-        self::assertSame(12, $programme['travelMinutes']);
+        self::assertSame(18, $programme->wait);
+        self::assertEqualsWithDelta(2.99, $programme->distance, 0.01);
+        self::assertSame(0, $programme->showtimes[1]->lateMinutes);
+        self::assertSame(40, $programme->showtimes[1]->breakMinutes, 'from the end of the first film (16:00) to the next showtime (16:40)');
+        self::assertSame(12, $programme->showtimes[1]->travelMinutes);
+        self::assertSame(40, $programme->breakMinutes, 'sum of the breaks shown between the showtimes');
+        self::assertSame(12, $programme->travelMinutes);
     }
 
     public function testTheSearchBudgetIsSharedAcrossTheDay(): void

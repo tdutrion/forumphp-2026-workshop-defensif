@@ -64,28 +64,28 @@ class PlanController extends AbstractController
         $programmes = [];
         foreach ($result->programmes as $programme) {
             $showtimes = [];
-            foreach ($programme['showtimes'] as $showtime) {
+            foreach ($programme->showtimes as $showtime) {
                 $showtimes[] = [
-                    'id' => $showtime['id'],
-                    'film' => ['slug' => $showtime['filmSlug'], 'title' => $showtime['filmTitle']],
-                    'cinema' => ['slug' => $showtime['cinemaSlug'], 'name' => $showtime['cinemaName']],
+                    'id' => $showtime->id,
+                    'film' => ['slug' => $showtime->filmSlug, 'title' => $showtime->filmTitle],
+                    'cinema' => ['slug' => $showtime->cinemaSlug, 'name' => $showtime->cinemaName],
                     // ISO 8601 in the cinema's time zone: the offset lets a mobile app convert it.
-                    'startsAt' => $showtime['start']->localTime($showtime['timezone'])->format(\DATE_ATOM),
-                    'endsAt' => $showtime['end']->localTime($showtime['timezone'])->format(\DATE_ATOM),
-                    'version' => $showtime['version'],
-                    'lateMinutes' => $showtime['lateMinutes'],
+                    'startsAt' => $showtime->start->localTime($showtime->timezone)->format(\DATE_ATOM),
+                    'endsAt' => $showtime->end->localTime($showtime->timezone)->format(\DATE_ATOM),
+                    'version' => $showtime->version->value,
+                    'lateMinutes' => $showtime->lateMinutes,
                     // Minutes from the end of the previous film to this showtime, and the travel among them.
-                    'breakMinutes' => $showtime['breakMinutes'],
-                    'travelMinutes' => $showtime['travelMinutes'],
-                    'bookingUrl' => $showtime['bookingUrl'],
+                    'breakMinutes' => $showtime->breakMinutes,
+                    'travelMinutes' => $showtime->travelMinutes,
+                    'bookingUrl' => $showtime->bookingUrl,
                 ];
             }
             $programmes[] = [
                 // wait = minutes really lost waiting (breaks minus the 10-minute margins and the travel): the ranking score.
-                'wait' => $programme['wait'],
-                'breakMinutes' => $programme['breakMinutes'],
-                'travelMinutes' => $programme['travelMinutes'],
-                'distance' => $programme['distance'],
+                'wait' => $programme->wait,
+                'breakMinutes' => $programme->breakMinutes,
+                'travelMinutes' => $programme->travelMinutes,
+                'distance' => $programme->distance,
                 'showtimes' => $showtimes,
             ];
         }

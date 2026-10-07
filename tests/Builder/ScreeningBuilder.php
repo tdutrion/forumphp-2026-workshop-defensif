@@ -2,6 +2,9 @@
 
 namespace App\Tests\Builder;
 
+use App\Catalog\Coordinates;
+use App\Catalog\ShowtimeVersion;
+use App\Planner\ScheduledShowtime;
 use App\Planner\ScreeningTime;
 use Time\Duration;
 
@@ -75,19 +78,23 @@ final class ScreeningBuilder
         return $clone;
     }
 
-    public function build(): array
+    public function build(): ScheduledShowtime
     {
         $start = ScreeningTime::fromUtc($this->day.' '.$this->time);
 
-        return [
-            'id' => $this->id,
-            'filmSlug' => $this->film,
-            'workId' => $this->work ?? $this->film,
-            'cinemaSlug' => $this->cinema,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'start' => $start,
-            'end' => $start->plus(Duration::fromMinutes($this->duration + 20)),
-        ];
+        return new ScheduledShowtime(
+            id: $this->id,
+            filmSlug: $this->film,
+            filmTitle: 'Film '.$this->film,
+            workId: $this->work ?? $this->film,
+            cinemaSlug: $this->cinema,
+            cinemaName: 'Cinema '.$this->cinema,
+            position: new Coordinates($this->latitude, $this->longitude),
+            start: $start,
+            end: $start->plus(Duration::fromMinutes($this->duration + 20)),
+            timezone: new \DateTimeZone('UTC'),
+            version: ShowtimeVersion::Vf,
+            bookingUrl: 'https://s.pathe.fr/fr/'.$this->id.'/booking',
+        );
     }
 }

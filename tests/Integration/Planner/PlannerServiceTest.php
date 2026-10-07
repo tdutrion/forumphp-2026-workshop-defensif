@@ -12,6 +12,7 @@ use App\Planner\PlanFailure;
 use App\Planner\PlannerService;
 use App\Planner\PlanRequest;
 use App\Planner\PlanResult;
+use App\Planner\Programme;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -67,7 +68,7 @@ final class PlannerServiceTest extends KernelTestCase
 
     private function filmSets(PlanResult $result): array
     {
-        return array_column($result->programmes->toArray(), 'filmSlugs');
+        return array_map(static fn (Programme $programme): array => $programme->filmSlugs(), $result->programmes->toArray());
     }
 
     private function planner(): PlannerService
@@ -88,10 +89,10 @@ final class PlannerServiceTest extends KernelTestCase
         self::assertNull($result->reason());
         self::assertSame([['f3', 'f4'], ['f1', 'f2'], ['f2', 'f4']], $this->filmSets($result));
         $first = $result->programmes->toArray()[0];
-        self::assertSame(10, $first['wait']);
-        self::assertSame('16:40', $first['showtimes'][0]['startTime'], 'stored as 15:40 UTC, shown in Dijon time');
-        self::assertSame('18:40', $first['showtimes'][0]['endTime']);
-        self::assertSame('cinema-pathe-dijon', $first['showtimes'][0]['cinemaSlug']);
+        self::assertSame(10, $first->wait);
+        self::assertSame('16:40', $first->showtimes[0]->startTime(), 'stored as 15:40 UTC, shown in Dijon time');
+        self::assertSame('18:40', $first->showtimes[0]->endTime());
+        self::assertSame('cinema-pathe-dijon', $first->showtimes[0]->cinemaSlug);
     }
 
     public function testShowsTheTimesOfEachCinemaInItsOwnTimeZone(): void
@@ -109,7 +110,7 @@ final class PlannerServiceTest extends KernelTestCase
         // Assert
         $times = [];
         foreach ($result->programmes as $programme) {
-            $times[$programme['filmSlugs'][0]] = $programme['showtimes'][0]['startTime'];
+            $times[$programme->filmSlugs()[0]] = $programme->showtimes[0]->startTime();
         }
         self::assertSame('10:00', $times['f7'] ?? null);
     }

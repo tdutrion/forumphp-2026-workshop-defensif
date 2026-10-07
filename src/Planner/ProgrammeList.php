@@ -5,12 +5,12 @@ namespace App\Planner;
 /**
  * The programmes of a plan, best first.
  *
- * @implements \IteratorAggregate<int, array>
+ * @implements \IteratorAggregate<int, Programme>
  */
 final readonly class ProgrammeList implements \Countable, \IteratorAggregate
 {
     /**
-     * @param list<array> $programmes programmes as produced by ChainBuilder::build() and formatted by PlannerService
+     * @param list<Programme> $programmes
      */
     public function __construct(private array $programmes = [])
     {
@@ -34,7 +34,7 @@ final readonly class ProgrammeList implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @return list<array>
+     * @return list<Programme>
      */
     public function toArray(): array
     {

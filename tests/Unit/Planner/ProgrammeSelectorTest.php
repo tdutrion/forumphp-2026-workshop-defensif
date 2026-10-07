@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Planner;
 
+use App\Planner\Programme;
 use App\Planner\ProgrammeSelector;
 use App\Tests\Builder\ProgrammeBuilder;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,7 @@ final class ProgrammeSelectorTest extends TestCase
         // Assert
         self::assertSame(
             [['b', 'a'], ['a', 'c'], ['b', 'c']],
-            array_map(static fn (array $programme) => array_column($programme['showtimes'], 'filmSlug'), $selected),
+            array_map(static fn (Programme $programme) => $programme->filmSlugs(), $selected),
         );
     }
 
