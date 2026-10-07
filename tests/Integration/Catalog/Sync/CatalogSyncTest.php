@@ -164,7 +164,7 @@ final class CatalogSyncTest extends KernelTestCase
         $api = $this->dijon()
             ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 14:00:00', 'V3345S85470', version: 'vx')
             ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 16:00:00', 'V3345S85471', status: 'complet')
-            ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 18:00:00', 'V3345S85472', version: 'vost', status: 'sold_out');
+            ->withShowtime('digger-51293', 'cinema-pathe-dijon', '2026-10-04 18:00:00', 'V3345S85472', version: 'vost', status: 'soldout');
 
         // Act
         $stats = $this->synchronize($api);

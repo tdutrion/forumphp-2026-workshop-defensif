@@ -3,13 +3,14 @@
 namespace App\Catalog;
 
 /**
- * Booking status of a showtime. Pathé documents only 'available' as observed: the other values are
- * expected but unconfirmed, and an unknown one is refused at the boundary (CatalogSynchronizer).
+ * Booking status of a showtime. Pathé documents only 'available' as observed; 'soldout' was found in a
+ * synchronized catalog, 'cancelled' is still a guess. An unknown value is refused at the boundary
+ * (CatalogSynchronizer).
  */
 enum BookingStatus: string
 {
     case Available = 'available';
-    case SoldOut = 'sold_out';
+    case SoldOut = 'soldout';
     case Cancelled = 'cancelled';
 
     public function isBookable(): bool

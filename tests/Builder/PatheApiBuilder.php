@@ -121,7 +121,7 @@ final class PatheApiBuilder
      * @param string      $sessionRef Pathé session reference, e.g. 'V3345S85501'
      * @param string|null $bookingUrl overrides the booking link built from $sessionRef
      * @param string      $version    version as Pathé sends it, e.g. 'vost'
-     * @param string      $status     booking status as Pathé sends it, e.g. 'sold_out'
+     * @param string      $status     booking status as Pathé sends it, e.g. 'soldout'
      */
     public function withShowtime(string $filmSlug, string $cinemaSlug, string $localTime, string $sessionRef, ?string $bookingUrl = null, string $version = 'vf', string $status = 'available'): self
     {
