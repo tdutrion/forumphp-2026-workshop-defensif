@@ -6,6 +6,7 @@ use App\Account\Entity\LinkedAccount;
 use App\Account\Entity\User;
 use App\Account\Repository\LinkedAccountRepository;
 use App\Account\Repository\UserRepository;
+use App\Security\UserInfo;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -22,31 +23,29 @@ class AccountService
 
     /**
      * Finds or creates the account matching an identity returned by a provider.
-     *
-     * @param array $userInfo ['id' => identifier at the provider, 'email' => ?string, 'emailVerified' => bool, 'name' => ?string]
      */
-    public function loginWithProvider(string $provider, array $userInfo): User
+    public function loginWithProvider(string $provider, UserInfo $userInfo): User
     {
-        $userInfo['email'] = $this->normalizeEmail($userInfo['email']);
-        $linked = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo['id']);
+        $email = $this->normalizeEmail($userInfo->email);
+        $linked = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo->id);
         if (null !== $linked) {
             return $linked->getUser();
         }
 
         $user = null;
         // Automatic linking only if the provider guarantees the email is verified.
-        if ($userInfo['emailVerified'] && null !== $userInfo['email']) {
-            $user = $this->userRepository->findOneBy(['email' => $userInfo['email']]);
+        if ($userInfo->emailVerified && null !== $email) {
+            $user = $this->userRepository->findOneBy(['email' => $email]);
         }
 
         if (null === $user) {
             $user = new User();
-            $user->setEmail($userInfo['emailVerified'] ? $userInfo['email'] : null);
-            $user->setDisplayName($userInfo['name'] ?? $userInfo['email']);
+            $user->setEmail($userInfo->emailVerified ? $email : null);
+            $user->setDisplayName($userInfo->name ?? $email);
             $this->em->persist($user);
         }
 
-        $user->addLinkedAccount($this->newLinkedAccount($provider, $userInfo));
+        $user->addLinkedAccount($this->newLinkedAccount($provider, $userInfo, $email));
         $this->em->flush();
 
         return $user;
@@ -57,18 +56,18 @@ class AccountService
      *
      * @return bool false if this identity already belongs to another account
      */
-    public function linkProvider(User $user, string $provider, array $userInfo): bool
+    public function linkProvider(User $user, string $provider, UserInfo $userInfo): bool
     {
-        $userInfo['email'] = $this->normalizeEmail($userInfo['email']);
-        $existing = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo['id']);
+        $email = $this->normalizeEmail($userInfo->email);
+        $existing = $this->linkedAccountRepository->findOneByProviderIdentity($provider, $userInfo->id);
         if (null !== $existing) {
             return $existing->getUser()->getId()->equals($user->getId());
         }
 
-        $user->addLinkedAccount($this->newLinkedAccount($provider, $userInfo));
-        if (null === $user->getEmail() && $userInfo['emailVerified'] && null !== $userInfo['email']
-            && null === $this->userRepository->findOneBy(['email' => $userInfo['email']])) {
-            $user->setEmail($userInfo['email']);
+        $user->addLinkedAccount($this->newLinkedAccount($provider, $userInfo, $email));
+        if (null === $user->getEmail() && $userInfo->emailVerified && null !== $email
+            && null === $this->userRepository->findOneBy(['email' => $email])) {
+            $user->setEmail($email);
         }
         $this->em->flush();
 
@@ -125,12 +124,12 @@ class AccountService
         return true;
     }
 
-    private function newLinkedAccount(string $provider, array $userInfo): LinkedAccount
+    private function newLinkedAccount(string $provider, UserInfo $userInfo, ?string $email): LinkedAccount
     {
         return (new LinkedAccount())
             ->setProvider($provider)
-            ->setProviderUserId($userInfo['id'])
-            ->setEmail($userInfo['email'])
-            ->setEmailVerified($userInfo['emailVerified']);
+            ->setProviderUserId($userInfo->id)
+            ->setEmail($email)
+            ->setEmailVerified($userInfo->emailVerified);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Security\Controller;
 use App\Account\AccountService;
 use App\Account\Entity\User;
 use App\Security\OAuthProviders;
-use App\Security\OAuthUserInfoExtractor;
+use App\Security\UserInfoProviders;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -20,7 +20,7 @@ class ConnectController extends AbstractController
     public function __construct(
         private ClientRegistry $clientRegistry,
         private OAuthProviders $providers,
-        private OAuthUserInfoExtractor $extractor,
+        private UserInfoProviders $userInfoProviders,
         private AccountService $accountService,
         private TranslatorInterface $translator,
     ) {
@@ -39,7 +39,7 @@ class ConnectController extends AbstractController
             $request->getSession()->remove('oauth_link');
         }
 
-        return $this->clientRegistry->getClient($provider)->redirect($this->providers->scopes($provider), []);
+        return $this->clientRegistry->getClient($provider)->redirect($this->userInfoProviders->for($provider)->scopes(), []);
     }
 
     /**
@@ -58,7 +58,7 @@ class ConnectController extends AbstractController
 
         $client = $this->clientRegistry->getClient($provider);
         try {
-            $userInfo = $this->extractor->extract($provider, $client, $client->getAccessToken());
+            $userInfo = $this->userInfoProviders->for($provider)->userInfo($client, $client->getAccessToken());
         } catch (\RuntimeException|\LogicException|IdentityProviderException|ClientExceptionInterface) {
             $this->addFlash('error', $this->translator->trans('security.linking_failed'));
 
