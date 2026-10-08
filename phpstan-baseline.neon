@@ -229,7 +229,7 @@ parameters:
 			path: src/Api/Controller/PlanController.php
 
 		-
-			message: '#^Cannot access offset ''endsAt'' on mixed\.$#'
+			message: '#^Cannot access offset ''end'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Api/Controller/PlanController.php
@@ -265,7 +265,7 @@ parameters:
 			path: src/Api/Controller/PlanController.php
 
 		-
-			message: '#^Cannot access offset ''startsAt'' on mixed\.$#'
+			message: '#^Cannot access offset ''start'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Api/Controller/PlanController.php
@@ -295,21 +295,21 @@ parameters:
 			path: src/Api/Controller/PlanController.php
 
 		-
+			message: '#^Cannot call method format\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Api/Controller/PlanController.php
+
+		-
+			message: '#^Cannot call method localTime\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Api/Controller/PlanController.php
+
+		-
 			message: '#^Parameter \#1 \$data of method App\\Planner\\PlannerService\:\:planFromForm\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Api/Controller/PlanController.php
-
-		-
-			message: '#^Parameter \#1 \$utc of method App\\Api\\Controller\\PlanController\:\:localIso\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Api/Controller/PlanController.php
-
-		-
-			message: '#^Parameter \#2 \$timezone of method App\\Api\\Controller\\PlanController\:\:localIso\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: src/Api/Controller/PlanController.php
 
 		-
@@ -1195,12 +1195,6 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#3 \$year of method App\\Catalog\\WorkLinker\:\:describe\(\) expects int\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1375,36 +1369,6 @@ parameters:
 			path: src/Catalog/WorkMerger.php
 
 		-
-			message: '#^Binary operation "\+" between mixed and 0\|900 results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Planner/ChainBuilder.php
-
-		-
-			message: '#^Binary operation "\+" between mixed and 600 results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Planner/ChainBuilder.php
-
-		-
-			message: '#^Binary operation "\-" between int and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Planner/ChainBuilder.php
-
-		-
-			message: '#^Binary operation "\-" between mixed and int results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Planner/ChainBuilder.php
-
-		-
-			message: '#^Binary operation "\-" between mixed and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Planner/ChainBuilder.php
-
-		-
 			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
@@ -1459,6 +1423,18 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
+			message: '#^Cannot call method plus\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Cannot call method until\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Planner/ChainBuilder.php
+
+		-
 			message: '#^Method App\\Planner\\ChainBuilder\:\:arrival\(\) has parameter \$next with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1467,6 +1443,12 @@ parameters:
 		-
 			message: '#^Method App\\Planner\\ChainBuilder\:\:arrival\(\) has parameter \$previous with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Method App\\Planner\\ChainBuilder\:\:arrival\(\) should return App\\Planner\\ScreeningTime but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Planner/ChainBuilder.php
 
@@ -1525,19 +1507,31 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Method App\\Planner\\ChainBuilder\:\:travelMinutes\(\) has parameter \$from with no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Planner\\ChainBuilder\:\:travel\(\) has parameter \$from with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Method App\\Planner\\ChainBuilder\:\:travelMinutes\(\) has parameter \$to with no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Planner\\ChainBuilder\:\:travel\(\) has parameter \$to with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Parameter \#1 \$from of method App\\Planner\\ChainBuilder\:\:travelMinutes\(\) expects array, mixed given\.$#'
+			message: '#^Parameter \#1 \$a of static method App\\Planner\\ScreeningTime\:\:compare\(\) expects App\\Planner\\ScreeningTime, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$duration of method App\\Planner\\ChainBuilder\:\:minutes\(\) expects Time\\Duration, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$from of method App\\Planner\\ChainBuilder\:\:travel\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/ChainBuilder.php
@@ -1549,9 +1543,15 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Parameter \#1 \$num1 of function intdiv expects int, float\|int\<0, max\> given\.$#'
+			message: '#^Parameter \#1 \$other of method App\\Planner\\ScreeningTime\:\:isAfter\(\) expects App\\Planner\\ScreeningTime, mixed given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$other of method App\\Planner\\ScreeningTime\:\:until\(\) expects App\\Planner\\ScreeningTime, mixed given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Planner/ChainBuilder.php
 
 		-
@@ -1567,7 +1567,13 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Parameter \#2 \$callback of function usort expects callable\(mixed, mixed\)\: int, Closure\(array, array\)\: int\<\-1, 1\> given\.$#'
+			message: '#^Parameter \#2 \$b of static method App\\Planner\\ScreeningTime\:\:compare\(\) expects App\\Planner\\ScreeningTime, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/ChainBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function usort expects callable\(mixed, mixed\)\: int, Closure\(array, array\)\: int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/ChainBuilder.php
@@ -1591,7 +1597,7 @@ parameters:
 			path: src/Planner/ChainBuilder.php
 
 		-
-			message: '#^Parameter \#2 \$to of method App\\Planner\\ChainBuilder\:\:travelMinutes\(\) expects array, mixed given\.$#'
+			message: '#^Parameter \#2 \$to of method App\\Planner\\ChainBuilder\:\:travel\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Planner/ChainBuilder.php
@@ -1630,12 +1636,6 @@ parameters:
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
-			path: src/Planner/PlannerService.php
-
-		-
-			message: '#^Binary operation "\." between ''@'' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1701,13 +1701,31 @@ parameters:
 		-
 			message: '#^Cannot access offset ''timezone'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 4
 			path: src/Planner/PlannerService.php
 
 		-
 			message: '#^Cannot access offset mixed on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Cannot call method format\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Cannot call method isAfter\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Cannot call method localTime\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1807,12 +1825,6 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
-			message: '#^Parameter \#1 \$datetime of class DateTimeImmutable constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Planner/PlannerService.php
-
-		-
 			message: '#^Parameter \#1 \$json of method App\\Planner\\LocationResolver\:\:fromPosition\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1825,6 +1837,12 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
+			message: '#^Parameter \#1 \$other of method App\\Planner\\ScreeningTime\:\:isAfter\(\) expects App\\Planner\\ScreeningTime, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
 			message: '#^Parameter \#1 \$row of method App\\Planner\\PlannerService\:\:isWithinTimeRange\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1832,6 +1850,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Parameter \#1 \$utc of static method App\\Planner\\ScreeningTime\:\:fromUtc\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Planner/PlannerService.php
@@ -1850,6 +1874,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$lng1 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Parameter \#2 \$timezone of class DateTimeImmutable constructor expects DateTimeZone\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: src/Planner/PlannerService.php
@@ -3893,6 +3923,42 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Planner/ProgrammeSelectorTest.php
+
+		-
+			message: '#^Cannot access offset ''showtime'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheMapperTest.php
+
+		-
+			message: '#^Cannot access offset ''time'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheMapperTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheMapperTest.php
+
+		-
+			message: '#^Cannot access offset 2 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheMapperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Sdk\\Pathe\\PatheMapperTest\:\:rawShowtimes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheMapperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Sdk\\Pathe\\PatheMapperTest\:\:rawShowtimes\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Unit/Sdk/Pathe/PatheMapperTest.php
 
 		-
 			message: '#^Parameter \#1 \$raw of static method App\\Sdk\\Pathe\\PatheShowtimes\:\:fromApiResponse\(\) expects array, mixed given\.$#'

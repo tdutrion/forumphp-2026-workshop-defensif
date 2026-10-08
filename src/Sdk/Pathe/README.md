@@ -51,3 +51,4 @@ $mapped = false === $showtimes ? [] : (new PatheMapper())->mapShowtimes(
 - `false` means a one-off failure (logged), an unexpected shape of response included; a `\RuntimeException` means
   Pathé is blocking the caller (HTTP 403/429).
 - Pathé times are naive local times; `PatheMapper::mapShowtimes()` converts them to UTC with the time zone given by the caller.
+  A malformed date skips that showtime only (logged through the optional PSR-3 logger of `PatheMapper`).

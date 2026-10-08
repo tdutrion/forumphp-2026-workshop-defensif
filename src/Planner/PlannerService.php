@@ -74,9 +74,10 @@ class PlannerService
 
         $showtimes = [];
         foreach ($rows as $row) {
-            // The database stores UTC instants: the planner only compares timestamps.
-            $row['start'] = (new \DateTimeImmutable($row['startsAt'], new \DateTimeZone('UTC')))->getTimestamp();
-            $row['end'] = (new \DateTimeImmutable($row['endsAt'], new \DateTimeZone('UTC')))->getTimestamp();
+            // The database stores UTC instants: the planner compares them, the time zone of the cinema only shows them.
+            $row['start'] = ScreeningTime::fromUtc($row['startsAt']);
+            $row['end'] = ScreeningTime::fromUtc($row['endsAt']);
+            $row['timezone'] = new \DateTimeZone($row['timezone']);
             // An empty field of the form means "no limit".
             if ($this->isWithinTimeRange($row, $criteria['date'], ($criteria['from'] ?? null) ?: null, ($criteria['until'] ?? null) ?: null)) {
                 $showtimes[] = $row;
@@ -199,15 +200,14 @@ class PlannerService
         }
 
         // Local instants of the limits: the day of a clock change has 23 or 25 hours.
-        $timezone = new \DateTimeZone($row['timezone']);
-        if (null !== $from && $row['start'] < (new \DateTimeImmutable($date.' '.$from, $timezone))->getTimestamp()) {
+        if (null !== $from && new ScreeningTime(new \DateTimeImmutable($date.' '.$from, $row['timezone']))->isAfter($row['start'])) {
             return false;
         }
         if (null === $until) {
             return true;
         }
 
-        return $row['end'] <= (new \DateTimeImmutable($date.' '.$until, $timezone))->getTimestamp();
+        return !$row['end']->isAfter(new ScreeningTime(new \DateTimeImmutable($date.' '.$until, $row['timezone'])));
     }
 
     /**
@@ -216,9 +216,8 @@ class PlannerService
     private function format(array $programme): array
     {
         foreach ($programme['showtimes'] as $i => $showtime) {
-            $timezone = new \DateTimeZone($showtime['timezone']);
-            $programme['showtimes'][$i]['startTime'] = (new \DateTimeImmutable('@'.$showtime['start']))->setTimezone($timezone)->format('H:i');
-            $programme['showtimes'][$i]['endTime'] = (new \DateTimeImmutable('@'.$showtime['end']))->setTimezone($timezone)->format('H:i');
+            $programme['showtimes'][$i]['startTime'] = $showtime['start']->localTime($showtime['timezone'])->format('H:i');
+            $programme['showtimes'][$i]['endTime'] = $showtime['end']->localTime($showtime['timezone'])->format('H:i');
         }
         $programme['filmSlugs'] = array_column($programme['showtimes'], 'filmSlug');
 
