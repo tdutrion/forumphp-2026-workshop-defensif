@@ -44,6 +44,7 @@ final readonly class ScreeningTime
         return $this->instant->setTimezone($timezone);
     }
 
+    #[\NoDiscard('ScreeningTime is immutable: plus() returns the later time.')]
     public function plus(Duration $duration): self
     {
         $microseconds = self::microseconds($duration);
@@ -54,6 +55,7 @@ final readonly class ScreeningTime
     /**
      * Time from this instant to $other: negative when $other comes first.
      */
+    #[\NoDiscard]
     public function until(self $other): Duration
     {
         $microseconds = self::epochMicroseconds($other->instant) - self::epochMicroseconds($this->instant);

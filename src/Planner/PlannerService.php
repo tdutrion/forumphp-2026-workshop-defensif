@@ -32,17 +32,14 @@ class PlannerService
      * @param PlanRequest $request a validated request (see PlanType and Api\Controller\PlanController)
      * @param string      $userId  user identifier (the films they have already seen are excluded)
      *
-     * @return array|false ['programmes' => [...], 'reason' => null|'not_enough_programmes'|'fewer_films'|'no_programme'|'unknown_location',
-     *                     'films' => number of films per programme (fewer than asked with 'fewer_films'),
-     *                     'seed' => the seed of the draw, to get the same programmes again]
-     *                     (only 'programmes' and 'reason' with 'unknown_location'),
-     *                     or false if no showtime matches the place and date
+     * @return PlanResult programmes (a PlanNotice says when they are not quite what was asked), or a PlanFailure
      */
-    public function plan(PlanRequest $request, string $userId): array|false
+    #[\NoDiscard('A plan that is not read is a search wasted.')]
+    public function plan(PlanRequest $request, string $userId): PlanResult
     {
         $location = $this->location($request);
         if (false === $location) {
-            return ['programmes' => [], 'reason' => 'unknown_location'];
+            return PlanResult::failure(PlanFailure::UnknownLocation);
         }
         $seed = $request->seed ?? random_int(0, self::MAX_SEED);
 
@@ -68,7 +65,7 @@ class PlannerService
             $now->format('Y-m-d H:i:s'),
         );
         if ([] === $rows) {
-            return false;
+            return PlanResult::failure(PlanFailure::NoShowtime);
         }
 
         $timeRange = $request->timeRange();
@@ -91,21 +88,17 @@ class PlannerService
             $programmes = $this->select($showtimes, $films, $request, $seed);
         }
 
-        $reason = null;
         if ([] === $programmes) {
-            $reason = 'no_programme';
-        } elseif ($films->isFewerThan($requested)) {
-            $reason = 'fewer_films';
-        } elseif (\count($programmes) < 3) {
-            $reason = 'not_enough_programmes';
+            return PlanResult::failure(PlanFailure::NoProgramme, $films->value, $seed);
         }
 
-        return [
-            'programmes' => array_map([$this, 'format'], $programmes),
-            'reason' => $reason,
-            'films' => $films->value,
-            'seed' => $seed,
-        ];
+        $notice = match (true) {
+            $films->isFewerThan($requested) => PlanNotice::FewerFilms,
+            \count($programmes) < 3 => PlanNotice::NotEnoughProgrammes,
+            default => null,
+        };
+
+        return PlanResult::success(new ProgrammeList(array_map($this->format(...), $programmes)), $films->value, $seed, $notice);
     }
 
     /**

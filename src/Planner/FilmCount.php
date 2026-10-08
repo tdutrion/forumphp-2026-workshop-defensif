@@ -21,6 +21,7 @@ final readonly class FilmCount
     /**
      * One film fewer, to fall back on when no marathon is possible: never fewer than a single film.
      */
+    #[\NoDiscard('FilmCount is immutable: fewer() returns the smaller count.')]
     public function fewer(): self
     {
         return new self(clamp($this->value - 1, self::MIN, self::MAX));

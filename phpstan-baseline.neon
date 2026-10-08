@@ -189,7 +189,7 @@ parameters:
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
-			count: 2
+			count: 1
 			path: src/Api/Controller/PlanController.php
 
 		-
@@ -201,7 +201,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''breakMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 1
 			path: src/Api/Controller/PlanController.php
 
 		-
@@ -212,12 +212,6 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Api/Controller/PlanController.php
-
-		-
-			message: '#^Cannot access offset ''distance'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Api/Controller/PlanController.php
@@ -253,12 +247,6 @@ parameters:
 			path: src/Api/Controller/PlanController.php
 
 		-
-			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Api/Controller/PlanController.php
-
-		-
 			message: '#^Cannot access offset ''start'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -273,17 +261,11 @@ parameters:
 		-
 			message: '#^Cannot access offset ''travelMinutes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: src/Api/Controller/PlanController.php
-
-		-
-			message: '#^Cannot access offset ''version'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Api/Controller/PlanController.php
 
 		-
-			message: '#^Cannot access offset ''wait'' on mixed\.$#'
+			message: '#^Cannot access offset ''version'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Api/Controller/PlanController.php
@@ -1741,12 +1723,6 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
-			message: '#^Method App\\Planner\\PlannerService\:\:plan\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Planner/PlannerService.php
-
-		-
 			message: '#^Method App\\Planner\\PlannerService\:\:select\(\) has parameter \$showtimes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1765,6 +1741,12 @@ parameters:
 			path: src/Planner/PlannerService.php
 
 		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Planner/PlannerService.php
+
+		-
 			message: '#^Parameter \#1 \$date of method App\\Catalog\\Repository\\ShowtimeRepository\:\:findCandidates\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1774,6 +1756,12 @@ parameters:
 			message: '#^Parameter \#1 \$lat1 of static method App\\Planner\\Geo\:\:distanceKm\(\) expects float, mixed given\.$#'
 			identifier: argument.type
 			count: 2
+			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Parameter \#1 \$programmes of class App\\Planner\\ProgrammeList constructor expects list\<array\>, non\-empty\-array\<array\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Planner/PlannerService.php
 
 		-
@@ -1823,6 +1811,12 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: src/Planner/PlannerService.php
+
+		-
+			message: '#^Method App\\Planner\\ProgrammeList\:\:getIterator\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Planner/ProgrammeList.php
 
 		-
 			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
@@ -2403,7 +2397,7 @@ parameters:
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
-			count: 2
+			count: 1
 			path: src/Web/Controller/HomeController.php
 
 		-
@@ -2420,12 +2414,6 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''filmTitle'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Web/Controller/HomeController.php
-
-		-
-			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Web/Controller/HomeController.php
@@ -3535,12 +3523,6 @@ parameters:
 			path: tests/Integration/Planner/LocationResolverTest.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
 			message: '#^Cannot access offset ''cinemaSlug'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -3553,63 +3535,21 @@ parameters:
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
-			message: '#^Cannot access offset ''filmSlugs'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Cannot access offset ''films'' on array\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Cannot access offset ''programmes'' on array\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Cannot access offset ''reason'' on array\|false\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 5
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Cannot access offset ''showtimes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
 			message: '#^Cannot access offset ''startTime'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
-			message: '#^Cannot access offset ''wait'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
 			message: '#^Cannot access offset 0 on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 6
+			count: 5
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
 			message: '#^Cannot call method setOriginalLanguage\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Integration\\Planner\\PlannerServiceTest\:\:filmSets\(\) has parameter \$result with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
@@ -3625,12 +3565,6 @@ parameters:
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_column expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
 			message: '#^Parameter \#1 \$city of method App\\Tests\\Builder\\CinemaBuilder\:\:in\(\) expects App\\Catalog\\Entity\\City, App\\Catalog\\Entity\\City\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3640,12 +3574,6 @@ parameters:
 			message: '#^Parameter \#1 \$date of class App\\Planner\\PlanRequest constructor expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$result of method App\\Tests\\Integration\\Planner\\PlannerServiceTest\:\:filmSets\(\) expects array, array\|false given\.$#'
-			identifier: argument.type
-			count: 10
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-

@@ -45,4 +45,47 @@ final class FilmCountTest extends TestCase
         self::assertSame(1, $fewer->value);
         self::assertTrue($fewer->isSingle());
     }
+
+    public function testIgnoringTheResultOfFewerIsReported(): void
+    {
+        // Arrange: fewer() returns a new count, it does not change this one; ignoring it is a bug.
+        $warnings = [];
+        set_error_handler(static function (int $level, string $message) use (&$warnings): bool {
+            $warnings[] = $message;
+
+            return true;
+        }, \E_USER_WARNING);
+
+        try {
+            // Act
+            \call_user_func([new FilmCount(3), 'fewer']); // PHPStan would flag a plain call, which is the point
+        } finally {
+            restore_error_handler();
+        }
+
+        // Assert
+        self::assertCount(1, $warnings);
+        self::assertStringContainsString('fewer', $warnings[0]);
+    }
+
+    public function testIgnoringTheResultIntentionallyIsAllowed(): void
+    {
+        // Arrange
+        $warnings = [];
+        set_error_handler(static function (int $level, string $message) use (&$warnings): bool {
+            $warnings[] = $message;
+
+            return true;
+        }, \E_USER_WARNING);
+
+        try {
+            // Act
+            (void) (new FilmCount(3))->fewer();
+        } finally {
+            restore_error_handler();
+        }
+
+        // Assert
+        self::assertSame([], $warnings);
+    }
 }

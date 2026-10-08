@@ -8,8 +8,10 @@ use App\Account\UnwantedFilmService;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\Film;
 use App\Catalog\ShowtimeVersion;
+use App\Planner\PlanFailure;
 use App\Planner\PlannerService;
 use App\Planner\PlanRequest;
+use App\Planner\PlanResult;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -63,9 +65,9 @@ final class PlannerServiceTest extends KernelTestCase
         return new PlanRequest(...$overrides + ['date' => self::DAY, 'position' => '{"lat": 47.318031, "lng": 5.029935}']);
     }
 
-    private function filmSets(array $result): array
+    private function filmSets(PlanResult $result): array
     {
-        return array_column($result['programmes'], 'filmSlugs');
+        return array_column($result->programmes->toArray(), 'filmSlugs');
     }
 
     private function planner(): PlannerService
@@ -83,9 +85,9 @@ final class PlannerServiceTest extends KernelTestCase
         $result = $this->planner()->plan($this->request(), $userId);
 
         // Assert
-        self::assertNull($result['reason']);
+        self::assertNull($result->reason());
         self::assertSame([['f3', 'f4'], ['f1', 'f2'], ['f2', 'f4']], $this->filmSets($result));
-        $first = $result['programmes'][0];
+        $first = $result->programmes->toArray()[0];
         self::assertSame(10, $first['wait']);
         self::assertSame('16:40', $first['showtimes'][0]['startTime'], 'stored as 15:40 UTC, shown in Dijon time');
         self::assertSame('18:40', $first['showtimes'][0]['endTime']);
@@ -106,7 +108,7 @@ final class PlannerServiceTest extends KernelTestCase
 
         // Assert
         $times = [];
-        foreach ($result['programmes'] as $programme) {
+        foreach ($result->programmes as $programme) {
             $times[$programme['filmSlugs'][0]] = $programme['showtimes'][0]['startTime'];
         }
         self::assertSame('10:00', $times['f7'] ?? null);
@@ -194,9 +196,9 @@ final class PlannerServiceTest extends KernelTestCase
 
         // Assert
         self::assertNotContains('f1', array_merge(...$this->filmSets($afternoon)), 'starts before 16:00');
-        self::assertNotEmpty($afternoon['programmes']);
+        self::assertFalse($afternoon->programmes->isEmpty());
         self::assertNotContains('f4', array_merge(...$this->filmSets($beforeDinner)), 'ends after 18:45');
-        self::assertNotEmpty($beforeDinner['programmes']);
+        self::assertFalse($beforeDinner->programmes->isEmpty());
     }
 
     public function testTheTimeRangeIsInLocalTimeOnTheDayTheClocksChange(): void
@@ -211,7 +213,7 @@ final class PlannerServiceTest extends KernelTestCase
         $result = $this->planner()->plan($this->request(['date' => '2030-10-27', 'films' => 1, 'from' => '20:00', 'until' => '22:00']), $userId);
 
         // Assert
-        self::assertNotFalse($result);
+        self::assertTrue($result->isSuccess());
         self::assertSame([['f8']], $this->filmSets($result));
     }
 
@@ -275,12 +277,12 @@ final class PlannerServiceTest extends KernelTestCase
         $anotherDay = $this->planner()->plan($this->request(['date' => '2030-01-11']), $userId);
 
         // Assert
-        self::assertSame('not_enough_programmes', $threeFilms['reason']);
+        self::assertSame('not_enough_programmes', $threeFilms->reason());
         self::assertSame([['f1', 'f2', 'f4'], ['f1', 'f3', 'f4']], $this->filmSets($threeFilms));
-        self::assertSame('fewer_films', $fourFilms['reason'], 'no 4-film marathon: 3-film programmes are offered');
-        self::assertSame(3, $fourFilms['films']);
+        self::assertSame('fewer_films', $fourFilms->reason(), 'no 4-film marathon: 3-film programmes are offered');
+        self::assertSame(3, $fourFilms->films);
         self::assertSame([['f1', 'f2', 'f4'], ['f1', 'f3', 'f4']], $this->filmSets($fourFilms));
-        self::assertFalse($anotherDay, 'no showtime at all on that day');
+        self::assertSame(PlanFailure::NoShowtime, $anotherDay->failure, 'no showtime at all on that day');
     }
 
     public function testFallsBackToSingleFilmsWhenNothingChains(): void
@@ -296,8 +298,8 @@ final class PlannerServiceTest extends KernelTestCase
         $result = $this->planner()->plan($this->request(['films' => 3]), $userId);
 
         // Assert
-        self::assertSame('fewer_films', $result['reason']);
-        self::assertSame(1, $result['films']);
+        self::assertSame('fewer_films', $result->reason());
+        self::assertSame(1, $result->films);
         self::assertSame([['f4']], $this->filmSets($result));
     }
 
@@ -311,8 +313,39 @@ final class PlannerServiceTest extends KernelTestCase
         $single = $this->planner()->plan($this->request(['films' => 1]), $userId);
 
         // Assert
-        self::assertSame(2, $byDefault['films']);
-        self::assertNull($single['reason']);
-        self::assertSame(1, $single['films']);
+        self::assertSame(2, $byDefault->films);
+        self::assertNull($single->reason());
+        self::assertSame(1, $single->films);
+    }
+
+    public function testFailsWhenThePlaceIsUnknown(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+
+        // Act
+        $result = $this->planner()->plan($this->request(['position' => '{"lat": 0}']), $userId);
+
+        // Assert
+        self::assertFalse($result->isSuccess());
+        self::assertSame(PlanFailure::UnknownLocation, $result->failure);
+        self::assertTrue($result->programmes->isEmpty());
+        self::assertSame('unknown_location', $result->reason());
+    }
+
+    public function testFailsWithNoProgrammeWhenTheTimeRangeKeepsNothingThatChains(): void
+    {
+        // Arrange: a window of one minute holds no film at all, yet showtimes exist that day.
+        self::bootKernel();
+        $userId = $this->dijonCatalog();
+
+        // Act
+        $result = $this->planner()->plan($this->request(['films' => 1, 'from' => '03:00', 'until' => '03:01']), $userId);
+
+        // Assert
+        self::assertSame(PlanFailure::NoProgramme, $result->failure);
+        self::assertSame(1, $result->films, 'the search went down to single films');
+        self::assertNotNull($result->seed);
     }
 }

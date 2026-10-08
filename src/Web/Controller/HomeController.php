@@ -54,7 +54,7 @@ class HomeController extends AbstractController
         // Every film and every cinema of the proposed programmes, once, in order of appearance.
         $proposedFilms = [];
         $usedCinemas = [];
-        foreach (false === $result || null === $result ? [] : $result['programmes'] as $programme) {
+        foreach ($result->programmes ?? [] as $programme) {
             foreach ($programme['showtimes'] as $showtime) {
                 $proposedFilms[$showtime['filmSlug']] ??= ['slug' => $showtime['filmSlug'], 'title' => $showtime['filmTitle']];
                 $usedCinemas[$showtime['cinemaSlug']] = true;
@@ -62,7 +62,7 @@ class HomeController extends AbstractController
         }
 
         // The buttons of the page come back to the same draw; "Other programmes" draws again.
-        $seed = \is_array($result) ? ($result['seed'] ?? null) : null;
+        $seed = $result?->seed;
         $query = $request->query->all();
         $returnQuery = $request->getQueryString();
         $otherProgrammesQuery = null;
