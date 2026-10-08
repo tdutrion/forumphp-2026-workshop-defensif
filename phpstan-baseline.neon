@@ -825,25 +825,25 @@ parameters:
 		-
 			message: '#^Cannot access offset ''auditorium'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
 			message: '#^Cannot access offset ''bookingUrl'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
 			message: '#^Cannot access offset ''capacity'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
 			message: '#^Cannot access offset ''country'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 3
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -855,13 +855,13 @@ parameters:
 		-
 			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
+			count: 5
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
 			message: '#^Cannot access offset ''language'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -897,7 +897,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''timezone'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
+			count: 4
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -937,37 +937,13 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$address of method App\\Catalog\\Entity\\Cinema\:\:setAddress\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$auditorium of method App\\Catalog\\Entity\\Showtime\:\:setAuditorium\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$bookingUrl of method App\\Catalog\\Entity\\Showtime\:\:setBookingUrl\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$capacity of method App\\Catalog\\Entity\\Showtime\:\:setCapacity\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#1 \$contentRating of method App\\Catalog\\Entity\\Film\:\:setContentRating\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$country of method App\\Catalog\\Entity\\Cinema\:\:setCountry\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#1 \$country of method App\\Catalog\\Entity\\Cinema\:\:follow\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -997,37 +973,19 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$hallCount of method App\\Catalog\\Entity\\Cinema\:\:setHallCount\(\) expects int\|null, mixed given\.$#'
+			message: '#^Parameter \#1 \$id of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$id of method App\\Catalog\\Entity\\Showtime\:\:setId\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#1 \$latitude of class App\\Catalog\\Coordinates constructor expects float, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$language of method App\\Catalog\\Entity\\Cinema\:\:setLanguage\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$latitude of method App\\Catalog\\Entity\\Cinema\:\:setLatitude\(\) expects float\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$longitude of method App\\Catalog\\Entity\\Cinema\:\:setLongitude\(\) expects float\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$name of method App\\Catalog\\Entity\\Cinema\:\:setName\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#1 \$name of method App\\Catalog\\Entity\\Cinema\:\:describe\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1039,19 +997,7 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$open of method App\\Catalog\\Entity\\Cinema\:\:setOpen\(\) expects bool, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#1 \$originalTitle of method App\\Catalog\\Entity\\Work\:\:describe\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$postalCode of method App\\Catalog\\Entity\\Cinema\:\:setPostalCode\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1081,12 +1027,6 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$slug of method App\\Catalog\\Entity\\Cinema\:\:setSlug\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#1 \$slug of method App\\Catalog\\Entity\\City\:\:setSlug\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1094,6 +1034,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$slug of method App\\Catalog\\Entity\\Film\:\:setSlug\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#1 \$slug of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1111,19 +1057,7 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Parameter \#1 \$timezone of method App\\Catalog\\Entity\\Cinema\:\:setTimezone\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
 			message: '#^Parameter \#1 \$title of method App\\Catalog\\Entity\\Film\:\:setTitle\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Catalog/Sync/CatalogSynchronizer.php
-
-		-
-			message: '#^Parameter \#1 \$town of method App\\Catalog\\Entity\\Cinema\:\:setTown\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1147,7 +1081,67 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
+			message: '#^Parameter \#11 \$auditorium of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#12 \$capacity of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#2 \$auditorium of method App\\Catalog\\Entity\\Showtime\:\:describeScreening\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#2 \$bookingUrl of method App\\Catalog\\Entity\\Showtime\:\:updateBooking\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#2 \$longitude of class App\\Catalog\\Coordinates constructor expects float, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#2 \$name of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
 			message: '#^Parameter \#2 \$originalTitle of method App\\Catalog\\WorkLinker\:\:describe\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#2 \$timezone of method App\\Catalog\\Entity\\Cinema\:\:follow\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#3 \$address of method App\\Catalog\\Entity\\Cinema\:\:describe\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#3 \$capacity of method App\\Catalog\\Entity\\Showtime\:\:describeScreening\(\) expects int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#3 \$language of method App\\Catalog\\Entity\\Cinema\:\:follow\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
@@ -1165,15 +1159,51 @@ parameters:
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Possibly invalid array key type mixed\.$#'
-			identifier: offsetAccess.invalidOffset
-			count: 9
+			message: '#^Parameter \#4 \$postalCode of method App\\Catalog\\Entity\\Cinema\:\:describe\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
-			message: '#^Possibly invalid array key type string\|null\.$#'
+			message: '#^Parameter \#5 \$country of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#5 \$town of method App\\Catalog\\Entity\\Cinema\:\:describe\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#6 \$hallCount of method App\\Catalog\\Entity\\Cinema\:\:describe\(\) expects int\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#6 \$timezone of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#7 \$language of static method App\\Catalog\\Entity\\Cinema\:\:register\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Parameter \#9 \$bookingUrl of static method App\\Catalog\\Entity\\Showtime\:\:schedule\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Catalog/Sync/CatalogSynchronizer.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
-			count: 2
+			count: 10
 			path: src/Catalog/Sync/CatalogSynchronizer.php
 
 		-
@@ -2719,12 +2749,6 @@ parameters:
 			path: tests/Builder/ScreeningBuilder.php
 
 		-
-			message: '#^Parameter \#1 \$timezone of class DateTimeZone constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Builder/ShowtimeBuilder.php
-
-		-
 			message: '#^Binary operation "\." between ''\+'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -3271,20 +3295,8 @@ parameters:
 			path: tests/Integration/Catalog/CatalogCalendarTest.php
 
 		-
-			message: '#^Parameter \#1 \.\.\.\$entities of method App\\Tests\\Integration\\Catalog\\CatalogCalendarTest\:\:store\(\) expects object, App\\Catalog\\Entity\\City\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Integration/Catalog/CatalogCalendarTest.php
-
-		-
 			message: '#^Cannot access offset ''local_date'' on array\<string, mixed\>\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Integration/Catalog/Command/ShiftDatesCommandTest.php
-
-		-
-			message: '#^Cannot call method modify\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Command/ShiftDatesCommandTest.php
 
@@ -3325,38 +3337,68 @@ parameters:
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
-			message: '#^Cannot call method format\(\) on DateTimeImmutable\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Cannot access property \$capacity on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access property \$coordinates on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access property \$country on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access property \$endsAt on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access property \$language on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access property \$localDate on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
+
+		-
+			message: '#^Cannot access property \$open on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: property.nonObject
 			count: 3
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
-			message: '#^Cannot call method getCountry\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Cannot access property \$startsAt on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
-			message: '#^Cannot call method getEndsAt\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Cannot access property \$status on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
-			message: '#^Cannot call method getLanguage\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Cannot access property \$timezone on App\\Catalog\\Entity\\Cinema\|null\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
-			message: '#^Cannot call method getLatitude\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
-
-		-
-			message: '#^Cannot call method getLocalDate\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Cannot access property \$version on App\\Catalog\\Entity\\Showtime\|null\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
@@ -3373,31 +3415,7 @@ parameters:
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
-			message: '#^Cannot call method getStartsAt\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
-
-		-
-			message: '#^Cannot call method getStatus\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
-
-		-
 			message: '#^Cannot call method getSynopsis\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
-
-		-
-			message: '#^Cannot call method getTimezone\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
-
-		-
-			message: '#^Cannot call method getVersion\(\) on App\\Catalog\\Entity\\Showtime\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
@@ -3406,12 +3424,6 @@ parameters:
 			message: '#^Cannot call method getWork\(\) on App\\Catalog\\Entity\\Film\|null\.$#'
 			identifier: method.nonObject
 			count: 4
-			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
-
-		-
-			message: '#^Cannot call method isOpen\(\) on App\\Catalog\\Entity\\Cinema\|null\.$#'
-			identifier: method.nonObject
-			count: 3
 			path: tests/Integration/Catalog/Sync/CatalogSyncTest.php
 
 		-
@@ -3553,12 +3565,6 @@ parameters:
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-
-			message: '#^Parameter \#1 \$city of method App\\Tests\\Builder\\CinemaBuilder\:\:in\(\) expects App\\Catalog\\Entity\\City, App\\Catalog\\Entity\\City\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
 			message: '#^Parameter \#1 \$date of class App\\Planner\\PlanRequest constructor expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3568,18 +3574,6 @@ parameters:
 			message: '#^Parameter \#1 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 7
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \.\.\.\$entities of method App\\Tests\\Integration\\Planner\\PlannerServiceTest\:\:store\(\) expects object, App\\Catalog\\Entity\\City\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Integration/Planner/PlannerServiceTest.php
-
-		-
-			message: '#^Parameter \#3 \.\.\.\$entities of method App\\Tests\\Integration\\Planner\\PlannerServiceTest\:\:store\(\) expects object, App\\Catalog\\Entity\\City\|null given\.$#'
-			identifier: argument.type
-			count: 1
 			path: tests/Integration/Planner/PlannerServiceTest.php
 
 		-

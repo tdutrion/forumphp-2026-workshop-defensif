@@ -36,7 +36,7 @@ class ExcludedCinemaService
             [
                 'id' => Uuid::v7()->toBinary(),
                 'user' => Uuid::fromString($userId)->toBinary(),
-                'cinema' => $cinema->getSlug(),
+                'cinema' => $cinema->slug,
                 'createdAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
             ],
         );

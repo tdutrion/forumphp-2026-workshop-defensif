@@ -44,7 +44,7 @@ final class PlannerServiceTest extends KernelTestCase
         $showtime = ShowtimeBuilder::aShowtime()->at($dijon);
         $user = UserBuilder::aUser()->build();
         $this->store(
-            $dijon->getCity(), $dijon, $vaise->getCity(), $vaise, $user, ...array_values($films),
+            $dijon->city, $dijon, $vaise->city, $vaise, $user, ...array_values($films),
         );
         $this->store(
             $showtime->withId('V1S1')->of($films['f1'])->startingAt(self::DAY.' 14:00:00')->build(),
@@ -101,7 +101,7 @@ final class PlannerServiceTest extends KernelTestCase
         $userId = $this->dijonCatalog();
         $elsewhere = CinemaBuilder::aCinema()->withSlug('cinema-elsewhere')->in(CityBuilder::aCity()->withSlug('elsewhere')->named('Elsewhere')->build())->inTimezone('Europe/London')->build();
         $film = FilmBuilder::aFilm()->withSlug('f7')->lasting(100)->build();
-        $this->store($elsewhere->getCity(), $elsewhere, $film, ShowtimeBuilder::aShowtime()->of($film)->at($elsewhere)->startingAt(self::DAY.' 10:00:00')->build());
+        $this->store($elsewhere->city, $elsewhere, $film, ShowtimeBuilder::aShowtime()->of($film)->at($elsewhere)->startingAt(self::DAY.' 10:00:00')->build());
 
         // Act
         $result = $this->planner()->plan($this->request(['films' => 1]), $userId);
@@ -170,7 +170,7 @@ final class PlannerServiceTest extends KernelTestCase
         $london = CinemaBuilder::aCinema()->withSlug('cinema-in-english')->in(CityBuilder::aCity()->withSlug('elsewhere')->named('Elsewhere')->build())->inTimezone('Europe/London')->speaking('en')->build();
         $english = FilmBuilder::aFilm()->withSlug('english-film')->lasting(100)->inOriginalLanguage('en')->build();
         $french = FilmBuilder::aFilm()->withSlug('french-film')->lasting(100)->inOriginalLanguage('fr')->build();
-        $this->store($london->getCity(), $london, $english, $french,
+        $this->store($london->city, $london, $english, $french,
             ShowtimeBuilder::aShowtime()->of($english)->at($london)->startingAt(self::DAY.' 12:00:00')->build(),
             ShowtimeBuilder::aShowtime()->of($french)->at($london)->startingAt(self::DAY.' 12:00:00')->build(),
         );
@@ -222,7 +222,7 @@ final class PlannerServiceTest extends KernelTestCase
         // Arrange: a second cinema next to Pathé Dijon, which the user excludes.
         self::bootKernel();
         $userId = $this->dijonCatalog();
-        $other = CinemaBuilder::aCinema()->withSlug('cinema-cine-cap-vert')->in($this->dijon->getCity())->at(47.312465, 5.091471)->build();
+        $other = CinemaBuilder::aCinema()->withSlug('cinema-cine-cap-vert')->in($this->dijon->city)->at(47.312465, 5.091471)->build();
         $film = FilmBuilder::aFilm()->withSlug('f8')->lasting(100)->build();
         $this->store($other, $film, ShowtimeBuilder::aShowtime()->of($film)->at($other)->startingAt(self::DAY.' 20:00:00')->build());
         self::getContainer()->get(ExcludedCinemaService::class)->exclude($userId, 'cinema-pathe-dijon');

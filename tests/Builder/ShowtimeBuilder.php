@@ -82,20 +82,21 @@ final class ShowtimeBuilder
             throw new \LogicException('A showtime needs a film and a cinema: call of() and at() first.');
         }
 
-        $local = new \DateTimeImmutable($this->start, new \DateTimeZone($this->cinema->getTimezone()));
+        $local = new \DateTimeImmutable($this->start, new \DateTimeZone($this->cinema->timezone));
         $start = $local->setTimezone(new \DateTimeZone('UTC'));
-        $id = $this->id ?? 'V1S'.abs(crc32($this->film->getSlug().$this->cinema->getSlug().$this->start));
+        $id = $this->id ?? 'V1S'.abs(crc32($this->film->getSlug().$this->cinema->slug.$this->start));
 
-        return (new Showtime())
-            ->setId($id)
-            ->setFilm($this->film)
-            ->setCinema($this->cinema)
-            ->setStartsAt($start)
-            ->setEndsAt($start->modify('+'.($this->film->getDuration() + 20).' minutes'))
-            ->setLocalDate(new \DateTimeImmutable($local->format('Y-m-d')))
-            ->setVersion($this->version)
-            ->setStatus(BookingStatus::Available)
-            ->setBookingUrl('https://s.pathe.fr/fr/'.$id.'/booking')
-            ->setReservableUntil(new \DateTimeImmutable($this->bookableUntil ?? $start->modify('+20 minutes')->format('Y-m-d H:i:s')));
+        return Showtime::schedule(
+            id: $id,
+            film: $this->film,
+            cinema: $this->cinema,
+            startsAt: $start,
+            endsAt: $start->modify('+'.($this->film->getDuration() + 20).' minutes'),
+            localDate: new \DateTimeImmutable($local->format('Y-m-d')),
+            version: $this->version,
+            status: BookingStatus::Available,
+            bookingUrl: 'https://s.pathe.fr/fr/'.$id.'/booking',
+            reservableUntil: new \DateTimeImmutable($this->bookableUntil ?? $start->modify('+20 minutes')->format('Y-m-d H:i:s')),
+        );
     }
 }

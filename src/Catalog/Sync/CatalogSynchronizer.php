@@ -3,6 +3,7 @@
 namespace App\Catalog\Sync;
 
 use App\Catalog\BookingStatus;
+use App\Catalog\Coordinates;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\City;
 use App\Catalog\Entity\Film;
@@ -81,21 +82,12 @@ class CatalogSynchronizer
             if (!isset($cities[$data['citySlug']])) {
                 continue;
             }
-            $cinema = $this->em->find(Cinema::class, $data['slug']) ?? (new Cinema())->setSlug($data['slug']);
-            $cinema
-                ->setName($data['name'])
-                ->setChain(self::CHAIN)
-                ->setCountry($chain['country'])
-                ->setTimezone($chain['timezone'])
-                ->setLanguage($chain['language'])
-                ->setCity($cities[$data['citySlug']])
-                ->setAddress($data['address'])
-                ->setPostalCode($data['postalCode'])
-                ->setTown($data['town'])
-                ->setLatitude($data['position']?->latitude)
-                ->setLongitude($data['position']?->longitude)
-                ->setHallCount($data['hallCount'])
-                ->setOpen($data['open']);
+            $cinema = $this->em->find(Cinema::class, $data['slug'])
+                ?? Cinema::register($data['slug'], $data['name'], $cities[$data['citySlug']], self::CHAIN, $chain['country'], $chain['timezone'], $chain['language']);
+            $cinema->follow($chain['country'], $chain['timezone'], $chain['language']);
+            $cinema->describe($data['name'], $cities[$data['citySlug']], $data['address'], $data['postalCode'], $data['town'], $data['hallCount']);
+            $cinema->locate(null !== $data['position'] ? new Coordinates($data['position']->latitude, $data['position']->longitude) : null);
+            $data['open'] ? $cinema->reopen() : $cinema->close();
             $this->em->persist($cinema);
             $cinemas[$data['slug']] = $cinema;
             ++$stats['cinemas'];
@@ -104,9 +96,9 @@ class CatalogSynchronizer
         // A cinema of a synchronized city that Pathé no longer lists has closed: its showtimes are deleted below.
         if ([] !== $cities) {
             foreach ($this->em->getRepository(Cinema::class)->findBy(['city' => array_keys($cities), 'open' => true]) as $cinema) {
-                if (!isset($cinemas[$cinema->getSlug()])) {
-                    $cinema->setOpen(false);
-                    $cinemas[$cinema->getSlug()] = $cinema;
+                if (!isset($cinemas[$cinema->slug])) {
+                    $cinema->close();
+                    $cinemas[$cinema->slug] = $cinema;
                 }
             }
         }
@@ -145,7 +137,7 @@ class CatalogSynchronizer
             if (null !== $stillRunning) {
                 $stillRunning();
             }
-            if (!$cinema->isOpen()) {
+            if (!$cinema->open) {
                 $stats['deleted'] += $this->showtimeRepository->deleteForCinemasBetween([$cinemaSlug], $today, $lastDay, []);
                 continue;
             }
@@ -186,19 +178,23 @@ class CatalogSynchronizer
                         $this->logger->warning('Unknown version or status, showtime skipped', ['showtime' => $data['id'], 'version' => $data['version'], 'status' => $data['status']]);
                         continue;
                     }
-                    $showtime = $this->em->find(Showtime::class, $data['id']) ?? (new Showtime())->setId($data['id']);
-                    $showtime
-                        ->setFilm($films[$showSlug])
-                        ->setCinema($cinema)
-                        ->setStartsAt(new \DateTimeImmutable($data['startsAt']))
-                        ->setEndsAt(new \DateTimeImmutable($data['endsAt']))
-                        ->setLocalDate(new \DateTimeImmutable($data['localDate']))
-                        ->setVersion($version)
-                        ->setStatus($status)
-                        ->setBookingUrl($data['bookingUrl'])
-                        ->setReservableUntil(null !== $data['reservableUntil'] ? new \DateTimeImmutable($data['reservableUntil']) : null)
-                        ->setAuditorium($data['auditorium'])
-                        ->setCapacity($data['capacity']);
+                    $startsAt = new \DateTimeImmutable($data['startsAt']);
+                    $endsAt = new \DateTimeImmutable($data['endsAt']);
+                    $localDate = new \DateTimeImmutable($data['localDate']);
+                    $reservableUntil = null !== $data['reservableUntil'] ? new \DateTimeImmutable($data['reservableUntil']) : null;
+                    try {
+                        $showtime = $this->em->find(Showtime::class, $data['id']);
+                        if (null === $showtime) {
+                            $showtime = Showtime::schedule($data['id'], $films[$showSlug], $cinema, $startsAt, $endsAt, $localDate, $version, $status, $data['bookingUrl'], $reservableUntil, $data['auditorium'], $data['capacity']);
+                        } else {
+                            $showtime->reschedule($startsAt, $endsAt, $localDate);
+                            $showtime->updateBooking($status, $data['bookingUrl'], $reservableUntil);
+                            $showtime->describeScreening($version, $data['auditorium'], $data['capacity']);
+                        }
+                    } catch (\InvalidArgumentException $e) {
+                        $this->logger->warning('Invalid showtime skipped', ['showtime' => $data['id'], 'error' => $e->getMessage()]);
+                        continue;
+                    }
                     $this->em->persist($showtime);
                     $cinemaShowtimes[] = $showtime;
                     $keptIds[] = $data['id'];

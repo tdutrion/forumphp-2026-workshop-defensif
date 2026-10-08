@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Entity;
 
+use App\Catalog\Coordinates;
 use App\Catalog\Repository\CinemaRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,39 +11,39 @@ class Cinema
 {
     #[ORM\Id]
     #[ORM\Column(length: 100)]
-    private ?string $slug = null;
+    public private(set) string $slug;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    public private(set) string $name;
 
     /** Cinema chain this record comes from, e.g. 'pathe' (see config/packages/chains.yaml). */
     #[ORM\Column(length: 32)]
-    private ?string $chain = null;
+    public private(set) string $chain;
 
     /** ISO 3166-1 alpha-2 country code, e.g. 'FR'. */
     #[ORM\Column(length: 2)]
-    private ?string $country = null;
+    public private(set) string $country;
 
     /** IANA time zone of the cinema, e.g. 'Europe/Paris': showtimes are stored in UTC and shown in this zone. */
     #[ORM\Column(length: 64)]
-    private ?string $timezone = null;
+    public private(set) string $timezone;
 
     /** ISO 639-1 language of the chain, e.g. 'fr': a film made in this language plays in its original version. */
     #[ORM\Column(length: 2)]
-    private ?string $language = null;
+    public private(set) string $language;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'city_slug', referencedColumnName: 'slug', nullable: false)]
-    private ?City $city = null;
+    public private(set) City $city;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address = null;
+    public private(set) ?string $address = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    private ?string $postalCode = null;
+    public private(set) ?string $postalCode = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $town = null;
+    public private(set) ?string $town = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $latitude = null;
@@ -50,177 +51,78 @@ class Cinema
     #[ORM\Column(nullable: true)]
     private ?float $longitude = null;
 
+    /**
+     * Where the cinema is, null when the chain gives no position. Doctrine has no nullable embeddable:
+     * the value object is a view over the two columns, which raw SQL reads as they are.
+     */
+    public ?Coordinates $coordinates {
+        get => null === $this->latitude || null === $this->longitude ? null : new Coordinates($this->latitude, $this->longitude);
+    }
+
     #[ORM\Column(nullable: true)]
-    private ?int $hallCount = null;
+    public private(set) ?int $hallCount = null;
 
     #[ORM\Column]
-    private bool $open = true;
+    public private(set) bool $open = true;
 
-    public function getSlug(): ?string
+    private function __construct()
     {
-        return $this->slug;
     }
 
-    public function setSlug(string $slug): static
+    /**
+     * A cinema of a chain, open and without a position until it is said otherwise.
+     */
+    public static function register(string $slug, string $name, City $city, string $chain, string $country, string $timezone, string $language): self
     {
-        $this->slug = $slug;
+        $cinema = new self();
+        $cinema->slug = $slug;
+        $cinema->name = $name;
+        $cinema->city = $city;
+        $cinema->chain = $chain;
+        $cinema->follow($country, $timezone, $language);
 
-        return $this;
+        return $cinema;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
+    /**
+     * What the chain says about the cinema itself.
+     */
+    public function describe(string $name, City $city, ?string $address, ?string $postalCode, ?string $town, ?int $hallCount): void
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getCity(): ?City
-    {
-        return $this->city;
-    }
-
-    public function setCity(?City $city): static
-    {
         $this->city = $city;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): static
-    {
         $this->address = $address;
-
-        return $this;
-    }
-
-    public function getPostalCode(): ?string
-    {
-        return $this->postalCode;
-    }
-
-    public function setPostalCode(?string $postalCode): static
-    {
         $this->postalCode = $postalCode;
-
-        return $this;
-    }
-
-    public function getTown(): ?string
-    {
-        return $this->town;
-    }
-
-    public function setTown(?string $town): static
-    {
         $this->town = $town;
-
-        return $this;
-    }
-
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): static
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): static
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    public function getHallCount(): ?int
-    {
-        return $this->hallCount;
-    }
-
-    public function setHallCount(?int $hallCount): static
-    {
         $this->hallCount = $hallCount;
-
-        return $this;
     }
 
-    public function isOpen(): bool
+    /**
+     * The country, the time zone and the language of the chain the cinema belongs to.
+     *
+     * @throws \DateInvalidTimeZoneException on a time zone that does not exist
+     */
+    public function follow(string $country, string $timezone, string $language): void
     {
-        return $this->open;
-    }
-
-    public function setOpen(bool $open): static
-    {
-        $this->open = $open;
-
-        return $this;
-    }
-
-    public function getChain(): ?string
-    {
-        return $this->chain;
-    }
-
-    public function setChain(string $chain): static
-    {
-        $this->chain = $chain;
-
-        return $this;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): static
-    {
+        new \DateTimeZone($timezone);
         $this->country = $country;
-
-        return $this;
-    }
-
-    public function getTimezone(): ?string
-    {
-        return $this->timezone;
-    }
-
-    public function setTimezone(string $timezone): static
-    {
         $this->timezone = $timezone;
-
-        return $this;
-    }
-
-    public function getLanguage(): ?string
-    {
-        return $this->language;
-    }
-
-    public function setLanguage(string $language): static
-    {
         $this->language = $language;
+    }
 
-        return $this;
+    public function locate(?Coordinates $coordinates): void
+    {
+        $this->latitude = $coordinates?->latitude;
+        $this->longitude = $coordinates?->longitude;
+    }
+
+    public function close(): void
+    {
+        $this->open = false;
+    }
+
+    public function reopen(): void
+    {
+        $this->open = true;
     }
 }

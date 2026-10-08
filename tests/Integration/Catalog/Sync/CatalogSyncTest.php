@@ -64,14 +64,15 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertSame(0, $stats['errors']);
         self::assertSame(['dijon'], array_map(static fn (City $city) => $city->getSlug(), $this->em()->getRepository(City::class)->findAll()));
         $cinema = $this->em()->find(Cinema::class, 'cinema-pathe-dijon');
-        self::assertEqualsWithDelta(47.318031, $cinema->getLatitude(), 0.000001, 'Pathé "x" is the latitude');
-        self::assertSame('Europe/Paris', $cinema->getTimezone());
-        self::assertSame('FR', $cinema->getCountry());
+        self::assertEqualsWithDelta(47.318031, $cinema->coordinates?->latitude, 0.000001, 'Pathé "x" is the latitude');
+        self::assertSame('Europe/Paris', $cinema->timezone);
+        self::assertSame('FR', $cinema->country);
         self::assertNull($this->em()->find(Film::class, 'ma-mini-seance-55477'), 'events are not films');
         $late = $this->em()->find(Showtime::class, 'V3345S85501');
-        self::assertSame('2026-10-04 19:40:00', $late->getStartsAt()->format('Y-m-d H:i:s'), '21:40 in Paris (summer time) is 19:40 UTC');
-        self::assertSame('2026-10-04 22:09:00', $late->getEndsAt()->format('Y-m-d H:i:s'), 'the film ends at 00:09, Paris time');
-        self::assertSame('2026-10-04', $late->getLocalDate()->format('Y-m-d'), 'it still belongs to October 4 locally');
+        self::assertSame('2026-10-04 19:40:00', $late->startsAt->format('Y-m-d H:i:s'), '21:40 in Paris (summer time) is 19:40 UTC');
+        self::assertSame('2026-10-04 22:09:00', $late->endsAt->format('Y-m-d H:i:s'), 'the film ends at 00:09, Paris time');
+        self::assertSame('2026-10-04', $late->localDate->format('Y-m-d'), 'it still belongs to October 4 locally');
+        self::assertSame(244, $late->capacity, 'Pathé sends "244", the catalog keeps a number of seats');
         self::assertNull($this->em()->find(Showtime::class, 'V3345S85470'), 'a booking link outside s.pathe.fr is never stored');
     }
 
@@ -117,10 +118,10 @@ final class CatalogSyncTest extends KernelTestCase
 
         // Assert
         $this->em()->clear();
-        self::assertFalse($this->em()->find(Cinema::class, 'cinema-pathe-dijon-sud')->isOpen());
+        self::assertFalse($this->em()->find(Cinema::class, 'cinema-pathe-dijon-sud')->open);
         self::assertNull($this->em()->find(Showtime::class, 'V3346S1'), 'its showtimes are no longer offered');
-        self::assertTrue($this->em()->find(Cinema::class, 'cinema-pathe-dijon')->isOpen());
-        self::assertTrue($this->em()->find(Cinema::class, 'cinema-pathe-vaise')->isOpen(), 'Lyon was not synchronized');
+        self::assertTrue($this->em()->find(Cinema::class, 'cinema-pathe-dijon')->open);
+        self::assertTrue($this->em()->find(Cinema::class, 'cinema-pathe-vaise')->open, 'Lyon was not synchronized');
     }
 
     public function testKeepsTheShowtimesOfACinemaWhoseScheduleCouldNotBeFullyRead(): void
@@ -174,8 +175,8 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertNull($this->em()->find(Showtime::class, 'V3345S85470'), 'unknown version');
         self::assertNull($this->em()->find(Showtime::class, 'V3345S85471'), 'unknown status');
         $soldOut = $this->em()->find(Showtime::class, 'V3345S85472');
-        self::assertSame(ShowtimeVersion::Vost, $soldOut->getVersion());
-        self::assertSame(BookingStatus::SoldOut, $soldOut->getStatus());
+        self::assertSame(ShowtimeVersion::Vost, $soldOut->version);
+        self::assertSame(BookingStatus::SoldOut, $soldOut->status);
     }
 
     public function testOnlySecurePosterLinksAreStored(): void
@@ -233,7 +234,7 @@ final class CatalogSyncTest extends KernelTestCase
         $this->em()->clear();
         self::assertSame('fr', $this->em()->find(Film::class, 'la-bataille-1')->getOriginalLanguage());
         self::assertSame('en', $this->em()->find(Film::class, 'digger-51293')->getOriginalLanguage());
-        self::assertSame('fr', $this->em()->find(Cinema::class, 'cinema-pathe-dijon')->getLanguage(), 'the language of the chain');
+        self::assertSame('fr', $this->em()->find(Cinema::class, 'cinema-pathe-dijon')->language, 'the language of the chain');
     }
 
     public function testTheSynopsisOfAFilmComesFromItsPageAsPlainText(): void

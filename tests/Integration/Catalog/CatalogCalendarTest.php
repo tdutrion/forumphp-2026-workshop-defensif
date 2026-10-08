@@ -91,7 +91,7 @@ final class CatalogCalendarTest extends KernelTestCase
         self::bootKernel();
         $cinema = CinemaBuilder::aCinema()->in(CityBuilder::aCity()->build())->build();
         $film = FilmBuilder::aFilm()->build();
-        $this->store($cinema->getCity(), $cinema, $film, ShowtimeBuilder::aShowtime()->of($film)->at($cinema)->startingAt('2030-01-10 14:00:00')->build());
+        $this->store($cinema->city, $cinema, $film, ShowtimeBuilder::aShowtime()->of($film)->at($cinema)->startingAt('2030-01-10 14:00:00')->build());
         $connection = self::getContainer()->get(Connection::class);
         $showtimes = self::getContainer()->get(ShowtimeRepository::class);
         $worker = new CatalogCalendar($showtimes, new DoctrineDbalAdapter($connection, 'catalog'));
