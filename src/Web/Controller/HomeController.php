@@ -6,12 +6,12 @@ namespace App\Web\Controller;
 
 use App\Account\Entity\User;
 use App\Catalog\CatalogCalendar;
+use App\Catalog\CinemaChainRegistry;
 use App\Catalog\Repository\CityRepository;
 use App\Planner\PlannerService;
 use App\Web\Form\PlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -24,12 +24,7 @@ class HomeController extends AbstractController
         private CityRepository $cityRepository,
         private CatalogCalendar $calendar,
         private ClockInterface $clock,
-        /** @var array<string, array{name: string, country: string, timezone: string, language: string}> the chains of config/packages/chains.yaml */
-        #[Autowire('%app.chains%')]
-        private array $chains,
-        /** @var list<array{name: string, countries: list<string>}> the chains with an unlimited pass, not supported yet */
-        #[Autowire('%app.chains_planned%')]
-        private array $plannedChains,
+        private CinemaChainRegistry $chains,
     ) {
     }
 
@@ -39,8 +34,8 @@ class HomeController extends AbstractController
         // Same address for everyone: visitors discover the service, signed-in users plan.
         if (null === $user) {
             return $this->render('landing/index.html.twig', [
-                'supportedChains' => array_map(static fn (array $chain): array => ['name' => $chain['name'], 'countries' => [$chain['country']]], array_values($this->chains)),
-                'plannedChains' => $this->plannedChains,
+                'supportedChains' => $this->chains->supported(),
+                'plannedChains' => $this->chains->planned(),
             ]);
         }
 

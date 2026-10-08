@@ -99,7 +99,7 @@
                         {% for chain in supportedChains %}
                             <li data-chain-supported class="text-lg">
                                 <span class="font-semibold">{{ chain.name }}</span>
-                                <span class="text-ink-muted">· {{ chain.countries|map(code => code|country_name(app.request.locale))|join(', ') }}</span>
+                                <span class="text-ink-muted">· {{ chain.country.name(app.request.locale) }}</span>
                             </li>
                         {% endfor %}
                     </ul>
@@ -114,7 +114,7 @@
                         {% for chain in plannedChains %}
                             <li data-chain-planned class="rounded-control bg-surface-muted px-2.5 py-1 text-sm text-ink-muted">
                                 <span class="font-medium text-ink">{{ chain.name }}</span>
-                                · {{ chain.countries|map(code => code|country_name(app.request.locale))|join(', ') }}
+                                · {{ chain.countries|map(code => code.name(app.request.locale))|join(', ') }}
                             </li>
                         {% endfor %}
                     </ul>

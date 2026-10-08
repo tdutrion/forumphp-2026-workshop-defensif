@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Builder;
 
+use App\Catalog\CountryCode;
 use App\Catalog\Entity\City;
 
 final class CityBuilder
@@ -34,6 +35,6 @@ final class CityBuilder
 
     public function build(): City
     {
-        return (new City())->setSlug($this->slug)->setName($this->name)->setChain('pathe')->setCountry('FR');
+        return (new City())->setSlug($this->slug)->setName($this->name)->setChain('pathe')->setCountry(new CountryCode('FR'));
     }
 }

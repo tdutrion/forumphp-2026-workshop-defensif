@@ -66,8 +66,8 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertSame(['dijon'], array_map(static fn (City $city) => $city->getSlug(), $this->em()->getRepository(City::class)->findAll()));
         $cinema = $this->em()->find(Cinema::class, 'cinema-pathe-dijon');
         self::assertEqualsWithDelta(47.318031, $cinema->coordinates?->latitude, 0.000001, 'Pathé "x" is the latitude');
-        self::assertSame('Europe/Paris', $cinema->timezone);
-        self::assertSame('FR', $cinema->country);
+        self::assertSame('Europe/Paris', $cinema->timezone->getName());
+        self::assertSame('FR', $cinema->country->value);
         self::assertNull($this->em()->find(Film::class, 'ma-mini-seance-55477'), 'events are not films');
         $late = $this->em()->find(Showtime::class, 'V3345S85501');
         self::assertSame('2026-10-04 19:40:00', $late->startsAt->format('Y-m-d H:i:s'), '21:40 in Paris (summer time) is 19:40 UTC');

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Catalog\Entity;
 
+use App\Catalog\CountryCode;
 use App\Catalog\Repository\CityRepository;
+use App\Doctrine\CountryCodeType;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
@@ -21,9 +23,8 @@ class City
     #[ORM\Column(length: 32)]
     private ?string $chain = null;
 
-    /** ISO 3166-1 alpha-2 country code, e.g. 'FR'. */
-    #[ORM\Column(length: 2)]
-    private ?string $country = null;
+    #[ORM\Column(type: CountryCodeType::NAME, length: 2)]
+    private ?CountryCode $country = null;
 
     public function getSlug(): ?string
     {
@@ -61,12 +62,12 @@ class City
         return $this;
     }
 
-    public function getCountry(): ?string
+    public function getCountry(): ?CountryCode
     {
         return $this->country;
     }
 
-    public function setCountry(string $country): static
+    public function setCountry(CountryCode $country): static
     {
         $this->country = $country;
 

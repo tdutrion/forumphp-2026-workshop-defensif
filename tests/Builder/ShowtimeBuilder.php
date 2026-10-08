@@ -84,7 +84,7 @@ final class ShowtimeBuilder
             throw new \LogicException('A showtime needs a film and a cinema: call of() and at() first.');
         }
 
-        $local = new \DateTimeImmutable($this->start, new \DateTimeZone($this->cinema->timezone));
+        $local = new \DateTimeImmutable($this->start, $this->cinema->timezone);
         $start = $local->setTimezone(new \DateTimeZone('UTC'));
         $id = $this->id ?? 'V1S'.abs(crc32($this->film->getSlug().$this->cinema->slug.$this->start));
 
