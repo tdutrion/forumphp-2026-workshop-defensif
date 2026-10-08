@@ -2,11 +2,15 @@
 
 namespace App\Tests\Builder;
 
+use App\Planner\Programme;
+use App\Planner\ScheduledShowtime;
+
 /**
  * A programme as ChainBuilder produces it.
  */
 final class ProgrammeBuilder
 {
+    /** @var list<string> */
     private array $films = ['film-1', 'film-2'];
     private int $wait = 0;
     private float $distance = 0.0;
@@ -40,12 +44,17 @@ final class ProgrammeBuilder
         return $clone;
     }
 
-    public function build(): array
+    public function build(): Programme
     {
-        return [
-            'showtimes' => array_map(static fn (string $film) => ['filmSlug' => $film, 'workId' => $film, 'lateMinutes' => 0], $this->films),
-            'wait' => $this->wait,
-            'distance' => $this->distance,
-        ];
+        return new Programme(
+            showtimes: array_map(
+                static fn (string $film): ScheduledShowtime => ScreeningBuilder::aScreening('showtime-of-'.$film)->ofFilm($film)->build(),
+                $this->films,
+            ),
+            wait: $this->wait,
+            distance: $this->distance,
+            breakMinutes: 0,
+            travelMinutes: 0,
+        );
     }
 }

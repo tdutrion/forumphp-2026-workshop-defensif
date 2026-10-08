@@ -55,9 +55,9 @@ class HomeController extends AbstractController
         $proposedFilms = [];
         $usedCinemas = [];
         foreach ($result->programmes ?? [] as $programme) {
-            foreach ($programme['showtimes'] as $showtime) {
-                $proposedFilms[$showtime['filmSlug']] ??= ['slug' => $showtime['filmSlug'], 'title' => $showtime['filmTitle']];
-                $usedCinemas[$showtime['cinemaSlug']] = true;
+            foreach ($programme->showtimes as $showtime) {
+                $proposedFilms[$showtime->filmSlug] ??= ['slug' => $showtime->filmSlug, 'title' => $showtime->filmTitle];
+                $usedCinemas[$showtime->cinemaSlug] = true;
             }
         }
 

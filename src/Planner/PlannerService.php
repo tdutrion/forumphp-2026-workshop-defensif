@@ -72,11 +72,9 @@ class PlannerService
         $showtimes = [];
         foreach ($rows as $row) {
             // The database stores UTC instants: the planner compares them, the time zone of the cinema only shows them.
-            $row['start'] = ScreeningTime::fromUtc($row['startsAt']);
-            $row['end'] = ScreeningTime::fromUtc($row['endsAt']);
-            $row['timezone'] = new \DateTimeZone($row['timezone']);
-            if ($timeRange->contains($row['start'], $row['end'], $request->date, $row['timezone'])) {
-                $showtimes[] = $row;
+            $showtime = ScheduledShowtime::fromRow($row);
+            if ($timeRange->contains($showtime->start, $showtime->end, $request->date, $showtime->timezone)) {
+                $showtimes[] = $showtime;
             }
         }
 
@@ -98,7 +96,7 @@ class PlannerService
             default => null,
         };
 
-        return PlanResult::success(new ProgrammeList(array_map($this->format(...), $programmes)), $films->value, $seed, $notice);
+        return PlanResult::success(new ProgrammeList($programmes), $films->value, $seed, $notice);
     }
 
     /**
@@ -151,7 +149,9 @@ class PlannerService
     }
 
     /**
-     * @return array the best programmes of $films films among the showtimes, drawn with $seed
+     * @param list<ScheduledShowtime> $showtimes
+     *
+     * @return list<Programme> the best programmes of $films films among the showtimes, drawn with $seed
      */
     private function select(array $showtimes, FilmCount $films, PlanRequest $request, int $seed): array
     {
@@ -159,19 +159,5 @@ class PlannerService
             $this->chainBuilder->build($showtimes, $films->value, $request->acceptAds, $request->travelMode),
             seed: $seed,
         );
-    }
-
-    /**
-     * Times are shown in the local time of each cinema (its chain's time zone).
-     */
-    private function format(array $programme): array
-    {
-        foreach ($programme['showtimes'] as $i => $showtime) {
-            $programme['showtimes'][$i]['startTime'] = $showtime['start']->localTime($showtime['timezone'])->format('H:i');
-            $programme['showtimes'][$i]['endTime'] = $showtime['end']->localTime($showtime['timezone'])->format('H:i');
-        }
-        $programme['filmSlugs'] = array_column($programme['showtimes'], 'filmSlug');
-
-        return $programme;
     }
 }

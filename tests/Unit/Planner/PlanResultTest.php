@@ -6,6 +6,7 @@ use App\Planner\PlanFailure;
 use App\Planner\PlanNotice;
 use App\Planner\PlanResult;
 use App\Planner\ProgrammeList;
+use App\Tests\Builder\ProgrammeBuilder;
 use PHPUnit\Framework\TestCase;
 
 final class PlanResultTest extends TestCase
@@ -13,7 +14,7 @@ final class PlanResultTest extends TestCase
     public function testASuccessCarriesItsProgrammes(): void
     {
         // Arrange
-        $programmes = new ProgrammeList([['wait' => 0], ['wait' => 5]]);
+        $programmes = new ProgrammeList([ProgrammeBuilder::aProgramme()->waiting(0)->build(), ProgrammeBuilder::aProgramme()->waiting(5)->build()]);
 
         // Act
         $result = PlanResult::success($programmes, films: 2, seed: 42);
@@ -29,7 +30,7 @@ final class PlanResultTest extends TestCase
     public function testASuccessCanCarryARemark(): void
     {
         // Act
-        $result = PlanResult::success(new ProgrammeList([['wait' => 0]]), films: 1, seed: 1, notice: PlanNotice::FewerFilms);
+        $result = PlanResult::success(new ProgrammeList([ProgrammeBuilder::aProgramme()->build()]), films: 1, seed: 1, notice: PlanNotice::FewerFilms);
 
         // Assert
         self::assertTrue($result->isSuccess());

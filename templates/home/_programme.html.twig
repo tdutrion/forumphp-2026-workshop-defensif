@@ -21,7 +21,7 @@
                 <p class="text-sm font-semibold text-brand-700">{{ showtime.startTime }} – {{ showtime.endTime }}</p>
                 <a href="{{ path('app_film_show', {slug: showtime.filmSlug}) }}" class="font-medium hover:underline">{{ showtime.filmTitle }}</a>
                 <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
-                    <twig:Badge>{{ showtime.version|upper }}</twig:Badge>
+                    <twig:Badge>{{ showtime.version.value|upper }}</twig:Badge>
                     {{ showtime.cinemaName }}
                     {% if showtime.lateMinutes > 0 %}<twig:Badge tone="warning">{{ 'planner.programme.late'|trans({'%minutes%': showtime.lateMinutes}) }}</twig:Badge>{% endif %}
                 </p>

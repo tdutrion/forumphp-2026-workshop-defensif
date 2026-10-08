@@ -19,15 +19,15 @@ class ProgrammeSelector
     }
 
     /**
-     * @param array    $programmes programmes produced by ChainBuilder::build()
-     * @param int|null $seed       null: the $max best ones; otherwise $max drawn among the pool of best
-     *                             ones, always the same for the same seed (a new seed, other programmes)
+     * @param list<Programme> $programmes programmes produced by ChainBuilder::build()
+     * @param int|null        $seed       null: the $max best ones; otherwise $max drawn among the pool of best
+     *                                    ones, always the same for the same seed (a new seed, other programmes)
      *
-     * @return array at most $max programmes, from least wait to most wait (then from least travel to most travel)
+     * @return list<Programme> at most $max programmes, from least wait to most wait (then from least travel to most travel)
      */
     public function select(array $programmes, int $max = 3, ?int $seed = null): array
     {
-        $score = static fn (array $a, array $b) => [$a['wait'], $a['distance']] <=> [$b['wait'], $b['distance']];
+        $score = static fn (Programme $a, Programme $b) => [$a->wait, $a->distance] <=> [$b->wait, $b->distance];
         usort($programmes, $score);
 
         $candidates = [];
@@ -35,7 +35,7 @@ class ProgrammeSelector
         $wanted = null === $seed ? $max : max($max, $this->pool);
         foreach ($programmes as $programme) {
             // Programmes are different when their works differ (whatever the chain of each film).
-            $works = array_column($programme['showtimes'], 'workId');
+            $works = $programme->workIds();
             sort($works);
             $key = implode('|', $works);
             if (isset($workSets[$key])) {
