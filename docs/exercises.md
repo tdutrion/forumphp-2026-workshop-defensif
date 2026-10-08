@@ -331,6 +331,15 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   collaborators defaulting to a Null Object (`NullLogger`) rather than
   discovery, `assert()` on the planner's internal invariants (active in
   development and tests only).
+  In the reference solution: a `CatalogPublisher` interface (`#[AsAlias]` on
+  the Mercure publisher) with `NullCatalogPublisher` as the default of
+  `CatalogSyncRunner`; the SDK clients take their PSR-18 client and PSR-17
+  factory (no discovery: `psr-discovery/*` is gone from `composer.json`), an
+  optional cache and a `NullLogger`; `phpunit.dist.xml` forces
+  `zend.assertions=1`. Left on purpose, to discuss: `usleep()` in the SDKs,
+  `random_int()` for the seed, `new \DateTimeImmutable()` in the entity
+  constructors.
+
 
 ## 15. URLs and transformations (35 min) — PHP 8.5
 

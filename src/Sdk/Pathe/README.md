@@ -7,7 +7,8 @@ or on a framework, so it could move to its own Composer package as is.
 ## Dependencies
 
 - `psr/http-client` (PSR-18), `psr/http-factory` (PSR-17), `psr/cache` (PSR-6), `psr/log` (PSR-3)
-- `psr-discovery/*-implementations`: finds the implementations that are not given to the constructor
+Nothing is discovered: the PSR-18 client and the PSR-17 factory are given to the constructor; the PSR-6 cache is
+optional (none, no cache) and the PSR-3 logger defaults to a `NullLogger`.
 
 ## Usage
 
@@ -20,8 +21,8 @@ use App\Sdk\Pathe\PatheUnavailableException;
 use App\Sdk\Pathe\RateLimitedException;
 use App\Sdk\Pathe\ShowSlug;
 
-// Everything discovered: first PSR-18 client and PSR-17 factory installed, cache and logger if any.
-$pathe = new PatheClient();
+// The two collaborators it cannot do without; no cache, no logs.
+$pathe = new PatheClient(httpClient: $psr18Client, requestFactory: $psr17RequestFactory);
 
 // Everything explicit (what the Symfony application does).
 $pathe = new PatheClient(
@@ -53,7 +54,7 @@ $mapped = (new PatheMapper())->mapShowtimes(
 
 ## Rules
 
-- Only `Psr\*`, `PsrDiscovery\*` and `App\Sdk\Pathe\*` may be imported.
+- Only `Psr\*` and `App\Sdk\Pathe\*` may be imported.
 - Slugs are value objects (`ShowSlug`, `CinemaSlug`): an invalid slug throws an `\InvalidArgumentException`
   when it is built, and a film cannot be passed where a cinema is expected.
 - Pathé's shapes are normalized once, here: `PatheShowtimes::fromApiResponse()` turns `[]` or showtimes indexed
@@ -61,6 +62,6 @@ $mapped = (new PatheMapper())->mapShowtimes(
 - Every failure is a `PatheApiException` (abstract, a `\RuntimeException`), whose subclass says what to do:
   `BotBlockedException` (HTTP 403) and `RateLimitedException` (HTTP 429) mean Pathé refuses the caller, so stop;
   `PatheUnavailableException` is a one-off failure (network, error status, answer that is not JSON or not the
-  expected shape), logged, that the caller may skip. A missing PSR-18/17 implementation is a `\LogicException`.
+  expected shape), logged, that the caller may skip.
 - Pathé times are naive local times; `PatheMapper::mapShowtimes()` converts them to UTC with the time zone given by the caller.
   A malformed date skips that showtime only (logged through the optional PSR-3 logger of `PatheMapper`).

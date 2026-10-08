@@ -12,8 +12,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 class OAuthProviders
 {
     public function __construct(
-        #[Autowire('%env(OAUTH_PROVIDERS)%')]
-        private string $providers,
+        /** @var list<string> */
+        #[Autowire('%env(csv:OAUTH_PROVIDERS)%')]
+        private array $providers,
     ) {
     }
 
@@ -22,6 +23,6 @@ class OAuthProviders
      */
     public function enabled(): array
     {
-        return array_values(array_filter(array_map('trim', explode(',', $this->providers))));
+        return $this->providers;
     }
 }

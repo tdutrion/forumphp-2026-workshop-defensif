@@ -88,4 +88,13 @@ final class ProgrammeSelectorTest extends TestCase
         // Assert
         self::assertSame($this->waits($first), $this->waits($second));
     }
+
+    public function testAskingForNoProgrammeIsABugOfTheCaller(): void
+    {
+        // Assert: the internal invariant is an assertion, active in development and tests only
+        $this->expectException(\AssertionError::class);
+
+        // Act
+        (new ProgrammeSelector())->select(new ProgrammeList(), 0);
+    }
 }

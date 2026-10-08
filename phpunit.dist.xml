@@ -13,6 +13,9 @@
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+        <!-- The assert() calls on the internal invariants are checked in the tests, as in development (not in production). -->
+        <ini name="zend.assertions" value="1" />
+        <ini name="assert.exception" value="1" />
         <!-- No symfony/dotenv: the container environment comes from .env (compose.override.yaml);
              the test values are forced over it here. -->
         <server name="APP_ENV" value="test" force="true" />

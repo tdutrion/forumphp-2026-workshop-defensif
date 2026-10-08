@@ -13,7 +13,6 @@ use App\Catalog\Entity\Showtime;
 use App\Catalog\ShowtimeVersion;
 use App\Catalog\Sync\CatalogSynchronizer;
 use App\Catalog\Sync\CatalogSyncRunner;
-use App\Catalog\Sync\CatalogUpdatePublisher;
 use App\Tests\Builder\PatheApiBuilder;
 use App\Tests\Builder\ShowtimeBuilder;
 use App\Tests\Builder\WikidataApiBuilder;
@@ -311,10 +310,9 @@ final class CatalogSyncTest extends KernelTestCase
         $container = self::getContainer();
         $runner = new CatalogSyncRunner(
             $container->get(CatalogSynchronizer::class),
-            $container->get(CatalogUpdatePublisher::class),
             $container->get(LockFactory::class),
             $container->get(CatalogCalendar::class),
-            ' ',
+            [],
         );
 
         // Act
@@ -344,10 +342,9 @@ final class CatalogSyncTest extends KernelTestCase
         $container = self::getContainer();
         $runner = new CatalogSyncRunner(
             $container->get(CatalogSynchronizer::class),
-            $container->get(CatalogUpdatePublisher::class),
             new LockFactory($store),
             $container->get(CatalogCalendar::class),
-            '',
+            [],
         );
 
         // Act

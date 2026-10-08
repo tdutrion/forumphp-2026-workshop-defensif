@@ -10,7 +10,6 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use PsrDiscovery\Discover;
 
 /**
  * Only access point to the Wikidata action API (CC0 data). Wikidata asks for a User-Agent naming
@@ -20,35 +19,16 @@ class WikidataClient
 {
     public const string BASE_URL = 'https://www.wikidata.org/w/api.php';
 
-    private ClientInterface $httpClient;
-    private RequestFactoryInterface $requestFactory;
-    private ?CacheItemPoolInterface $cache;
-    private LoggerInterface $logger;
-
     public function __construct(
         private string $userAgent,
-        ?ClientInterface $httpClient = null,
-        ?RequestFactoryInterface $requestFactory = null,
-        ?CacheItemPoolInterface $cache = null,
-        ?LoggerInterface $logger = null,
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $requestFactory,
+        private ?CacheItemPoolInterface $cache = null,
+        private LoggerInterface $logger = new NullLogger(),
         private WikidataMapper $mapper = new WikidataMapper(),
         private int $delayMs = 500,
         private int $cacheTtl = 86400,
     ) {
-        $httpClient ??= Discover::httpClient();
-        if (!$httpClient instanceof ClientInterface) {
-            throw new \RuntimeException('No PSR-18 HTTP client found: pass one to WikidataClient or install one.');
-        }
-        $requestFactory ??= Discover::httpRequestFactory();
-        if (!$requestFactory instanceof RequestFactoryInterface) {
-            throw new \RuntimeException('No PSR-17 request factory found: pass one to WikidataClient or install one.');
-        }
-        $cache ??= Discover::cache();
-        $logger ??= Discover::log();
-        $this->httpClient = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->cache = $cache instanceof CacheItemPoolInterface ? $cache : null;
-        $this->logger = $logger instanceof LoggerInterface ? $logger : new NullLogger();
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Catalog\Repository\CityRepository;
 use App\Planner\PlannerService;
 use App\Web\Form\PlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +23,7 @@ class HomeController extends AbstractController
         private PlannerService $plannerService,
         private CityRepository $cityRepository,
         private CatalogCalendar $calendar,
+        private ClockInterface $clock,
         #[Autowire('%app.chains%')]
         private array $chains,
         #[Autowire('%app.chains_planned%')]
@@ -41,7 +43,7 @@ class HomeController extends AbstractController
         }
 
         $form = $this->createForm(PlanType::class, null, [
-            'dates' => $this->calendar->availableDates(new \DateTimeImmutable('now', new \DateTimeZone('UTC'))),
+            'dates' => $this->calendar->availableDates($this->clock->now()),
             'cities' => $this->cityRepository->findAllForSelect(),
         ]);
         $form->handleRequest($request);

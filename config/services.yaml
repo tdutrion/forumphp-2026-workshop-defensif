@@ -73,6 +73,7 @@ when@test:
             public: true
         # The Wikidata SDK talks to the fake Wikidata API, without delay.
         App\Sdk\Wikidata\WikidataClient:
+            autowire: true
             public: true
             arguments:
                 $userAgent: 'ScreenRoute/test'

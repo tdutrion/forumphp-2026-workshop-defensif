@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Validator;
 
 use App\Catalog\CatalogCalendar;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -12,7 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 final class AvailableDateValidator extends ConstraintValidator
 {
-    public function __construct(private CatalogCalendar $calendar)
+    public function __construct(private CatalogCalendar $calendar, private ClockInterface $clock)
     {
     }
 
@@ -29,7 +30,7 @@ final class AvailableDateValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        if (!\in_array($value, $this->calendar->availableDates(new \DateTimeImmutable('now', new \DateTimeZone('UTC'))), true)) {
+        if (!\in_array($value, $this->calendar->availableDates($this->clock->now()), true)) {
             $this->context->buildViolation($constraint->message)->addViolation();
         }
     }

@@ -8,6 +8,7 @@ use App\Account\Repository\ExcludedCinemaRepository;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Repository\CinemaRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -19,6 +20,7 @@ class ExcludedCinemaService
         private EntityManagerInterface $em,
         private ExcludedCinemaRepository $excludedCinemaRepository,
         private CinemaRepository $cinemaRepository,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -39,7 +41,7 @@ class ExcludedCinemaService
                 'id' => Uuid::v7()->toBinary(),
                 'user' => Uuid::fromString($userId)->toBinary(),
                 'cinema' => $cinema->slug,
-                'createdAt' => (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
+                'createdAt' => $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s'),
             ],
         );
 

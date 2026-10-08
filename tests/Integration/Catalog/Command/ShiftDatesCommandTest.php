@@ -12,18 +12,22 @@ use App\Tests\StoresEntities;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 final class ShiftDatesCommandTest extends KernelTestCase
 {
+    use ClockSensitiveTrait;
     use StoresEntities;
 
     public function testShiftsTheCatalogSoThatItStartsToday(): void
     {
         // Arrange
         $kernel = self::bootKernel();
-        $today = new \DateTimeImmutable('today', new \DateTimeZone('Europe/Paris'));
+        // Late in the evening in UTC, already tomorrow in Paris: "today" is the day of the chain, not of the server.
+        self::mockTime('2030-01-10 23:30:00 UTC');
+        $today = new \DateTimeImmutable('2030-01-11', new \DateTimeZone('Europe/Paris'));
         $city = CityBuilder::aCity()->build();
         $cinema = CinemaBuilder::aCinema()->in($city)->build();
         $film = FilmBuilder::aFilm()->build();
