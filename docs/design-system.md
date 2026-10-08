@@ -27,15 +27,15 @@ palette is removed (`--color-*: initial`), so `bg-red-500` produces nothing.
 
 | Component | Props | Notes |
 |---|---|---|
-| `<twig:Button>` | `variant`: primary, secondary, danger, ghost, accent; `size`: sm, md, lg; `tag`: button, a | pass `type`, `href`, `class` as attributes |
+| `<twig:Button>` | `variant` (`ButtonVariant`): primary, secondary, danger, ghost, accent; `size` (`ButtonSize`): sm, md, lg; `tag` (`ButtonTag`): button, a | an unknown value is a mistake of the template: it fails in development and in the tests (`assert()`), instead of an unstyled button. Pass `type`, `href`, `class` as attributes |
 | `<twig:ButtonGroup>` | | Flowbite-like group: joined buttons sharing their borders. Without a primary action: one row. With one (`data-primary`, first): the buttons are stacked, full width, the primary action on top. Toggles carry `aria-pressed`. Add `button-group-sm` for a compact group (tables) |
 | `<twig:Icon>` | `name`: ticket, check, eye-slash, link, film, sun, moon, chevron-down, ellipsis-vertical, map-pin, clock, language, arrow-path, code-bracket, server-stack, shield-check, sparkles | inline outline SVG, decorative (`aria-hidden`) |
 | `<twig:Logo>` | `wordmark`: true (default) or false | the ScreenRoute symbol, a clapperboard whose slate carries the route in S, from a start ring to a white arrow, in the brand colours whatever the theme; the app icon and favicon are the same drawing, `assets/images/logo.svg` |
 | `<twig:Dropdown>` | `label`; `align`: start, end; `compact` (a "⋮" button) | a `<details>` menu, closed by the `dropdown` Stimulus controller on a click outside or Escape; its links and buttons are dressed as menu items |
 | `<twig:Pagination>` | `page`, `pages`, `route`, `query` | GET links that keep the page in the URL; nothing when there is one page |
 | `<twig:Card>` | | a `<section>` |
-| `<twig:Alert>` | `type`: success, error, info | renders the `flash flash-{type}` hooks |
-| `<twig:Badge>` | `tone`: neutral, brand, warning (accent orange) | |
+| `<twig:Alert>` | `type` (`AlertType`): success, error, info | an unknown type fails like a button's variant; renders the `flash flash-{type}` hooks |
+| `<twig:Badge>` | `tone` (`BadgeTone`): neutral, brand, warning (accent orange) | an unknown tone fails like a button's variant |
 | Switch (`class="switch"`) | on `<input type="checkbox" role="switch">` | a native checkbox drawn as an on/off toggle (CSS only, `assets/styles/app.css`): it posts like a checkbox, without JavaScript. Every `CheckboxType` gets it from the form theme |
 
 Themes: the tokens are redefined for the dark theme on any element carrying `data-theme="dark"`

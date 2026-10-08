@@ -1,4 +1,3 @@
-{% props variant = 'primary', size = 'md', tag = 'button' %}
 {% set button = html_cva(
     base: 'inline-flex items-center justify-center gap-2 rounded-control font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-50',
     variants: {
@@ -16,6 +15,6 @@
         },
     },
 ) %}
-<{{ tag }} {{ attributes.defaults({class: button.apply({variant: variant, size: size})}) }}>
+<{{ this.tag.value }} {{ attributes.defaults({class: button.apply({variant: this.variant.value, size: this.size.value})}) }}>
     {%- block content %}{% endblock -%}
-</{{ tag }}>
+</{{ this.tag.value }}>

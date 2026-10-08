@@ -1,4 +1,3 @@
-{% props type = 'info' %}
 {% set alert = html_cva(
     base: 'flash rounded-control px-4 py-3 text-sm ring-1',
     variants: {
@@ -9,6 +8,6 @@
         },
     },
 ) %}
-<p role="{{ type == 'error' ? 'alert' : 'status' }}" {{ attributes.defaults({class: alert.apply({type: type})}) }}>
+<p role="{{ this.type.value == 'error' ? 'alert' : 'status' }}" {{ attributes.defaults({class: alert.apply({type: this.type.value})}) }}>
     {%- block content %}{% endblock -%}
 </p>
