@@ -7,63 +7,9 @@ parameters:
 			path: src/Account/AccountService.php
 
 		-
-			message: '#^Method App\\Account\\AccountService\:\:linkProvider\(\) has parameter \$userInfo with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Method App\\Account\\AccountService\:\:loginWithProvider\(\) has parameter \$userInfo with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
 			message: '#^Method App\\Account\\AccountService\:\:loginWithProvider\(\) should return App\\Account\\Entity\\User but returns App\\Account\\Entity\\User\|null\.$#'
 			identifier: return.type
 			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Method App\\Account\\AccountService\:\:newLinkedAccount\(\) has parameter \$userInfo with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Parameter \#1 \$displayName of method App\\Account\\Entity\\User\:\:setDisplayName\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Parameter \#1 \$email of method App\\Account\\AccountService\:\:normalizeEmail\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Parameter \#1 \$email of method App\\Account\\Entity\\LinkedAccount\:\:setEmail\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Parameter \#1 \$emailVerified of method App\\Account\\Entity\\LinkedAccount\:\:setEmailVerified\(\) expects bool, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Parameter \#1 \$providerUserId of method App\\Account\\Entity\\LinkedAccount\:\:setProviderUserId\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Account/AccountService.php
-
-		-
-			message: '#^Parameter \#2 \$providerUserId of method App\\Account\\Repository\\LinkedAccountRepository\:\:findOneByProviderIdentity\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: src/Account/AccountService.php
 
 		-
@@ -1921,52 +1867,58 @@ parameters:
 			path: src/Security/OAuthProviders.php
 
 		-
-			message: '#^Method App\\Security\\OAuthProviders\:\:scopes\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Security/OAuthProviders.php
-
-		-
 			message: '#^Cannot access offset ''email'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: src/Security/OAuthUserInfoExtractor.php
+			path: src/Security/UserInfo/GithubUserInfoProvider.php
 
 		-
 			message: '#^Cannot access offset ''primary'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: src/Security/OAuthUserInfoExtractor.php
+			path: src/Security/UserInfo/GithubUserInfoProvider.php
 
 		-
 			message: '#^Cannot access offset ''verified'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: src/Security/OAuthUserInfoExtractor.php
+			path: src/Security/UserInfo/GithubUserInfoProvider.php
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 2
-			path: src/Security/OAuthUserInfoExtractor.php
+			count: 1
+			path: src/Security/UserInfo/GithubUserInfoProvider.php
 
 		-
-			message: '#^Method App\\Security\\OAuthUserInfoExtractor\:\:extract\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Parameter \$email of class App\\Security\\UserInfo constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
-			path: src/Security/OAuthUserInfoExtractor.php
+			path: src/Security/UserInfo/GithubUserInfoProvider.php
 
 		-
-			message: '#^Method App\\Security\\OAuthUserInfoExtractor\:\:fromGithub\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Parameter \$name of class App\\Security\\UserInfo constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
-			path: src/Security/OAuthUserInfoExtractor.php
+			path: src/Security/UserInfo/GithubUserInfoProvider.php
 
 		-
-			message: '#^Method App\\Security\\OAuthUserInfoExtractor\:\:fromOpenIdConnect\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
-			path: src/Security/OAuthUserInfoExtractor.php
+			path: src/Security/UserInfo/OpenIdConnectUserInfoProvider.php
+
+		-
+			message: '#^Parameter \$email of class App\\Security\\UserInfo constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/UserInfo/OpenIdConnectUserInfoProvider.php
+
+		-
+			message: '#^Parameter \$name of class App\\Security\\UserInfo constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Security/UserInfo/OpenIdConnectUserInfoProvider.php
 
 		-
 			message: '#^Method App\\Web\\Controller\\DesignSystemController\:\:exampleForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
@@ -2111,12 +2063,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Builder/FilmBuilder.php
-
-		-
-			message: '#^Method App\\Tests\\Builder\\IdentityBuilder\:\:build\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Builder/IdentityBuilder.php
 
 		-
 			message: '#^Cannot assign new offset to array\|string\.$#'
@@ -3113,6 +3059,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Sdk/WikidataClientTest.php
+
+		-
+			message: '#^Parameter \#1 \$expected of static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Security/UserInfoProvidersTest.php
 
 		-
 			message: '#^Method App\\Tests\\Unit\\Planner\\ChainBuilderTest\:\:ids\(\) has parameter \$programmes with no value type specified in iterable type array\.$#'

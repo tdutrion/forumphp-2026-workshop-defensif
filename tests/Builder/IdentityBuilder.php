@@ -2,6 +2,8 @@
 
 namespace App\Tests\Builder;
 
+use App\Security\UserInfo;
+
 final class IdentityBuilder
 {
     private string $id = '42';
@@ -38,11 +40,8 @@ final class IdentityBuilder
         return $clone;
     }
 
-    /**
-     * @return array ['id', 'email', 'emailVerified', 'name']
-     */
-    public function build(): array
+    public function build(): UserInfo
     {
-        return ['id' => $this->id, 'email' => $this->email, 'emailVerified' => $this->emailVerified, 'name' => $this->name];
+        return new UserInfo($this->id, $this->email, $this->emailVerified && null !== $this->email, $this->name);
     }
 }

@@ -33,7 +33,7 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
     public function __construct(
         private ClientRegistry $clientRegistry,
         private OAuthProviders $providers,
-        private OAuthUserInfoExtractor $extractor,
+        private UserInfoProviders $userInfoProviders,
         private AccountService $accountService,
         private Security $security,
         private UrlGeneratorInterface $urlGenerator,
@@ -72,7 +72,7 @@ class OAuthAuthenticator extends OAuth2Authenticator implements AuthenticationEn
         }
 
         try {
-            $userInfo = $this->extractor->extract($provider, $client, $accessToken);
+            $userInfo = $this->userInfoProviders->for($provider)->userInfo($client, $accessToken);
         } catch (IdentityProviderException|ClientExceptionInterface|\UnexpectedValueException) {
             throw new CustomUserMessageAuthenticationException('security.provider_not_responding');
         }
