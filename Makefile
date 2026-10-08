@@ -91,10 +91,16 @@ db-load: ## Loads the newest dump of the GitHub releases, or the one picked in t
 	gunzip -c "$$dump" | $(COMPOSE) exec -T database sh -c 'mysql -u"$$MYSQL_USER" -p"$$MYSQL_PASSWORD" "$$MYSQL_DATABASE"' && \
 	$(CONSOLE) cache:pool:clear cache.catalog
 
+exercise: ## Starts exercise n from the reference solution of the previous one (your work is stashed), e.g. make exercise n=4
+	@bin/exercise-start $(n)
+	$(PHP) composer install --no-interaction --quiet
+	$(CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
+	$(CONSOLE) cache:clear
+
 phpstan-max: ## PHPStan max level (workshop progress measure)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G
 
 phpstan-baseline: ## Regenerates the max-level baseline
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G --generate-baseline phpstan-baseline.neon
 
-.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load phpstan-max phpstan-baseline
+.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load exercise phpstan-max phpstan-baseline
