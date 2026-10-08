@@ -1,0 +1,40 @@
+#!/bin/sh
+# Puts the working copy on the starting point of an exercise: the reference solution of the
+# previous one (main for exercise 1), on a local branch atelier/NN. Used by make exercise.
+#
+# Usage: bin/exercise-start N
+#   Uncommitted work, untracked files included, is kept in a stash first (git stash list).
+#   The catalog dumps of data/ are ignored by git, so they stay where they are.
+set -eu
+
+say() { printf '%s\n' "$*" >&2; }
+
+case ${1:-} in
+    '' | *[!0-9]*) say "Usage: make exercise n=N (1 to 19)"; exit 1 ;;
+esac
+n=$(expr "$1" + 0 || true)
+if [ "$n" -lt 1 ] || [ "$n" -gt 19 ]; then
+    say "There is no exercise $n: they go from 1 to 19."
+    exit 1
+fi
+
+git fetch --quiet origin
+if [ "$n" -eq 1 ]; then
+    start=origin/main
+else
+    previous=$(printf '%02d' $((n - 1)))
+    start=$(git for-each-ref --format='%(refname:short)' "refs/remotes/origin/exercise/$previous-*" | head -n 1)
+    if [ -z "$start" ]; then
+        say "No branch origin/exercise/$previous-… on the remote: is the repository up to date?"
+        exit 1
+    fi
+fi
+
+if [ -n "$(git status --porcelain)" ]; then
+    git stash push --include-untracked --quiet -m "before exercise $n"
+    say "Your work is kept in the stash: git stash list, then git stash pop to get it back."
+fi
+
+branch=atelier/$(printf '%02d' "$n")
+git switch --quiet --force-create "$branch" "$start"
+say "Exercise $n starts from $start, on the local branch $branch."

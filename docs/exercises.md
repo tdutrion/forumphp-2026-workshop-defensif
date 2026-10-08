@@ -22,8 +22,12 @@ developers. 8 minutes of welcome, then the six exercises (100 minutes: about
 2 minutes of briefing each, the rest hands-on; exercises 2 and 3 end with a
 1 min 30 discussion), then 12 minutes of wrap-up and questions. The following
 ones are extensions, in any order. The guide assumes they are done in order: an
-exercise may build on the names an earlier one introduced (a reference solution,
-one branch per exercise, is available to the trainer).
+exercise may build on the names an earlier one introduced. Each exercise has a
+reference solution, one branch per exercise: anyone behind starts the next
+exercise with `make exercise n=N`, which stashes their work and switches to the
+reference solution of the previous one (exercises 1 to 6 add no migration and no
+dependency, so it is instant). Each exercise of the track also gives an
+acceptance test to bring in at the start, red until the exercise is done.
 
 The code already shows the target style in a few places, to point at:
 `FilmCatalogQuery` (readonly DTO bound with `#[MapQueryString]`), the backed
@@ -68,7 +72,15 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `enum BookingStatus: string` with `isBookable()`, `tryFrom()` at the boundary
   (an unknown value skips the showtime and is logged), `enumType` in the
   Doctrine mapping, `EnumType` in the form, exhaustive `match`. The raw SQL
-  queries pass `->value`.
+  queries pass `->value`. The cases are the values Pathé sends and the catalog
+  stores: `BookingStatus` `available`, `soldout`, `cancelled` (check with a
+  `SELECT DISTINCT status` before mapping: a guessed `sold_out` breaks the
+  hydration of the dev catalog while the tests stay green); `ShowtimeVersion`
+  `vf`, `vost`, `vo`, `vfst`, with `isOriginal()` for the `vost`/`vo` tests of
+  the repositories.
+- **Acceptance test**, to start red:
+  `git checkout origin/exercise/02-enums -- tests/Unit/Planner/TravelModeTest.php tests/Unit/Catalog/BookingStatusTest.php tests/Unit/Catalog/ShowtimeVersionTest.php`
+  (the enums do not exist yet).
 - **Discussion topic**: why the languages (`Cinema::$language`,
   `Film::$originalLanguage`, the nationality table of `PatheMapper`) are an open
   set that stays a validated string rather than an enum.
@@ -89,7 +101,14 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   constant: a private method or a promoted property); precise date exceptions
   (`DateMalformedStringException`, `DateInvalidTimeZoneException`, 8.3) caught
   at the boundary. "Now" stays `new \DateTimeImmutable('now')` until
-  exercise 14. The JSON times of `/api/plans` do not change.
+  exercise 14. The JSON times of `/api/plans` do not change. The polyfill's
+  `Duration` is new to everyone: `fromMinutes()`, `fromHours()`, `add()`,
+  `negate()`, `Duration::compare()`, the public `seconds` and `nanoseconds`
+  (no bridge to `DateInterval`: `plus()` adds the seconds by hand).
+- **Acceptance test**, to start red:
+  `git checkout origin/exercise/03-time -- tests/Unit/Planner/ScreeningTimeTest.php tests/Unit/Sdk/Pathe/PatheMapperTest.php`
+  (`ScreeningTime` also needs `compare()` and `isAfter()`, and `PatheMapper` an
+  optional PSR-3 logger to log the skipped showtimes).
 - **Discussion topic**: `catalog:shift-dates` shifts showtimes by whole days;
   across a daylight saving change, a 21:40 showtime becomes 20:40 or 22:40
   locally. Instant vs local time: which one should a shift keep?
@@ -111,8 +130,12 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `PlanType` (built at once by its `mapFormsToData()`) and bound with
   `#[MapQueryString(validationFailedStatusCode: 422)]` in
   `Api\Controller\PlanController` (the default status is 404), refusing
-  unknown parameters (`ALLOW_EXTRA_ATTRIBUTES => false` in its
-  `serializationContext`); the date checked against the days with bookable
+  unknown parameters (`ALLOW_EXTRA_ATTRIBUTES => false` and
+  `COLLECT_EXTRA_ATTRIBUTES_ERRORS => true` in its `serializationContext`:
+  without the second one, the Serializer throws and the API answers 500); an
+  empty parameter (`films=`, `travelMode=`) still means "not given", which the
+  ObjectNormalizer refuses for an `int` or an enum: a denormalizer dedicated to
+  `PlanRequest` drops the empty values first (`PlanRequestDenormalizer`); the date checked against the days with bookable
   showtimes by an `#[AvailableDate]` constraint (the choices of the former
   `ChoiceType` did it);
   `ApiExceptionListener` renders the violations in the existing problem format
@@ -122,7 +145,8 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   DTO (the Serializer cannot build value objects whose constructor throws).
 - **Acceptance test**, to start red:
   `git checkout origin/exercise/04-planner-input -- tests/Functional/Api/PlanApiTest.php`
-  (an unknown `radius` is reported on the root form `plan`, not on `radius`).
+  (an unknown `radius` is reported on the root form `plan`, not on `radius`;
+  the same file checks that empty parameters mean "not given").
 
 ## 5. Planner output (20 min) — PHP 8.2, 8.5
 
@@ -137,8 +161,13 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   optional `PlanNotice` enum `FewerFilms`/`NotEnoughProgrammes`) or a failure
   (`PlanFailure` enum `NoShowtime`/`NoProgramme`/`UnknownLocation`); the
   programmes stay arrays (exercise 8 makes them objects); the API JSON keeps its
-  shape (`reason` = the enum value); `#[\NoDiscard]` on `plan()` and on
-  `FilmCount::fewer()`.
+  shape (`reason` = the enum value); `#[\NoDiscard]` on `plan()` and on the withers:
+  `FilmCount::fewer()`, `ScreeningTime::plus()`.
+- **Acceptance test**, to start red:
+  `git checkout origin/exercise/05-planner-output -- tests/Unit/Planner/PlanResultTest.php`
+  (`PlanResult` with `isSuccess()`, `reason()`, a `ProgrammeList` with
+  `isEmpty()`, `PlanFailure::messageKey()`; a success without programme is an
+  `InvalidArgumentException`).
 - **Deck**: Part 8 (Result, `#[NoDiscard]`).
 
 ## 6. Repositories (15 min) — PHP 7.1, 8.0
@@ -155,6 +184,13 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   their output (the open-data ids are read through `film.work`).
 - **Trap to show**: a forgotten `findBySlug()` call silently becomes Doctrine's
   magic `findBy(['slug' => …])`, which returns `[]`, never `null`.
+- **Trap to expect**: an autoconfigured value resolver has priority 0, after
+  the built-in `RequestAttributeValueResolver` (100), which passes the raw
+  string: a `TypeError`, so a 500 instead of a 404. Give it a priority above
+  100 (`#[AutoconfigureTag('controller.argument_value_resolver', ['priority' => 150])]`).
+- **Acceptance test**, to start red:
+  `git checkout origin/exercise/06-repositories -- tests/Unit/Catalog/FilmSlugTest.php tests/Unit/Catalog/FilmSlugValueResolverTest.php tests/Integration/Catalog/FilmRepositoryTest.php`
+  (`FilmSlug` also has a `MAX_LENGTH` of 150).
 - **Deck**: Part 6 (`find()` vs `get()`).
 
 ## 7. Entities (45 min) — PHP 8.4
@@ -183,12 +219,16 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   in `ChainBuilder::summarize()` and `PlannerService::format()`, read by key in
   `ProgrammeSelector`, `Api\Controller\PlanController` and
   `home/_programme.html.twig`.
-- **Goal**: `final readonly class Programme` (and `ScheduledShowtime`) in
+- **Goal**: `final readonly class Programme` and `ScheduledShowtime` (the
+  candidate showtimes of the search, built once from the SQL rows) in
   `PlanResult`; withers with `clone with` (8.5), defined in the class (a
   readonly property cannot be cloned with from outside) and carrying
-  `#[\NoDiscard]`; deep cloning of the showtimes in `__clone` (8.3); `final`
-  property promotion (8.5): why it adds nothing in a `final` class. The JSON of
-  `/api/plans` and the page stay identical.
+  `#[\NoDiscard]` (`ScheduledShowtime::withTransition()`); `final` property
+  promotion (8.5): why it adds nothing in a `final` class; deep cloning (8.3,
+  `__clone` may reinitialize a readonly property): not needed here because
+  every part of a programme is immutable, to discuss (when would a `__clone`
+  be needed? a `DateTime` in a readonly object). The JSON of `/api/plans` and
+  the page stay identical.
 - **Deck**: Part 4.
 
 ## 9. OAuth providers (40 min) — PHP 8.3
@@ -229,21 +269,31 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   network: replaces `false`, caught per cinema by the synchronizer, so a
   partial sync stays partial); a distinct exception for the lock; targeted
   `catch` and multi-catch; `@throws` checked by PHPStan (`exceptions.check` in
-  `phpstan.dist.neon`); `JsonException`; `json_validate()` (8.3). The Wikidata
+  `phpstan.dist.neon`, with `PatheApiException` as the only checked exception
+  class: by default every exception but `Error` is checked, and `make phpstan`
+  turns red everywhere); `JsonException` (`JSON_THROW_ON_ERROR` for the genres
+  of `FilmCatalog`/`FilmRepository`, our own data); `json_validate()` (8.3) in
+  `LocationResolver`, where invalid JSON from the browser stays an ordinary
+  `false`. The Wikidata
   SDK keeps `false`: its failure never stops a sync.
 - **Deck**: Part 8.
 
 ## 12. Collections (30 min) — PHP 5.6, 8.1, 8.4, 8.5
 
-- **Starting point**: the candidate screenings of `ChainBuilder::build(array $showtimes, …)`
-  (rows of `ShowtimeRepository::findCandidates()`), the `$path` arrays of
-  `ChainBuilder::explore()` (`$path[\count($path) - 1]`,
+- **Starting point**: the candidate showtimes of
+  `ChainBuilder::build(array $showtimes, …)` (`ScheduledShowtime`, exercise 8),
+  the `$path` arrays of `ChainBuilder::explore()` (`$path[\count($path) - 1]`,
   `in_array(…, array_column($path, 'workId'))`), the lists of programmes in
-  `ProgrammeSelector` and `PlanResult`.
-- **Goal**: `ScreeningList` (typed variadic constructor `Screening ...$screenings`,
-  `Countable&IteratorAggregate`) and `ProgrammeList` on the same pattern,
-  `array_find` / `array_any` / `array_all` (8.4), `array_first` / `array_last`
-  (8.5), PHPStan generics (`@template`, `list<Screening>`), first-class callables.
+  `ProgrammeSelector`, `ProgrammeList` (a bare `list<Programme>` since
+  exercise 8) and `Programme::$showtimes`.
+- **Goal**: `ScheduledShowtimeList` (typed variadic constructor
+  `ScheduledShowtime ...$showtimes`, `Countable&IteratorAggregate`) and
+  `ProgrammeList` on the same pattern, immutable (`with()`, `sortedByStart()`,
+  `take()` carry `#[\NoDiscard]`); `array_any` (8.4) for "is this work already
+  in the path", `array_first` / `array_last` (8.5) for the ends, `array_find`
+  (8.4) wherever a loop looks for one element (the primary verified email of
+  GitHub); PHPStan generics (`@implements \IteratorAggregate<int, Programme>`,
+  `list<…>`), first-class callables (`ScheduledShowtime::fromRow(...)`).
 
 ## 13. Type system (30 min) — PHP 7.0 to 8.4
 
@@ -298,14 +348,19 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
     guarantee there is nothing to encode: `resolve()` does not encode) and
     `withQuery()`, the PSR-17 factory receives `$uri->toString()`; the cache key
     stays derived from the path; the same `withQuery()` in `WikidataClient`;
-  - the GitHub emails endpoint resolved from the provider's API domain; the
-    local provider URLs through a custom `%env(https_uri:…)%` processor that
-    fails on a malformed URL;
+  - the GitHub emails endpoint resolved from the provider's API domain (the
+    URL of `/user`, `resolve('/user/emails')`: GitHub Enterprise included); the
+    local provider URLs through a custom `%env(uri:…)%` processor that fails,
+    with the name of the variable, on anything that is not an absolute http(s)
+    URL with a host (not `https_uri`: the offline provider is plain http);
   - `Uri\Rfc3986\Uri::parse()` to read the scheme, host and path of the
     booking link (the id is a path segment);
   - `ext-uri` declared in `composer.json` (always present in PHP 8.5, but the
     contract becomes explicit);
   - pipe operator `|>` to chain the mapper's transformations.
+- **Trap to show**: `Uri::parse('http:///x')` succeeds, with an *empty* host
+  (not `null`), and `new Uri('')` does not throw: checking `null === getHost()`
+  is not enough.
 - **Discussion topic**: RFC 3986 (`Uri\Rfc3986\Uri`) for server-to-server
   calls, WHATWG (`Uri\WhatWg\Url`) for what mimics a browser; what
   `rawurlencode()` used to do by hand, and what guarantees it now.
