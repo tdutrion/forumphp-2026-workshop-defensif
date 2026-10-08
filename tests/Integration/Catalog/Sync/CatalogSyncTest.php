@@ -138,6 +138,23 @@ final class CatalogSyncTest extends KernelTestCase
         self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85483'));
     }
 
+    public function testShowtimesOfAnUnexpectedShapeCountAsAFailedRead(): void
+    {
+        // Arrange
+        self::bootKernel();
+        $this->synchronize($this->dijon());
+        $unexpected = $this->dijon()->failing('show/verity-50815/showtimes/cinema-pathe-dijon', 200, '[{"time": "2026-10-04 16:30:00"}]');
+
+        // Act
+        $stats = $this->synchronize($unexpected);
+
+        // Assert
+        $this->em()->clear();
+        self::assertSame(1, $stats['errors']);
+        self::assertSame(0, $stats['deleted']);
+        self::assertNotNull($this->em()->find(Showtime::class, 'V3345S85483'));
+    }
+
     public function testOnlySecurePosterLinksAreStored(): void
     {
         // Arrange

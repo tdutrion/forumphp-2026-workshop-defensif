@@ -10,8 +10,10 @@ use App\Catalog\Entity\Work;
 use App\Catalog\Repository\ShowtimeRepository;
 use App\Catalog\Repository\WorkRepository;
 use App\Catalog\WorkLinker;
+use App\Sdk\Pathe\CinemaSlug;
 use App\Sdk\Pathe\PatheClient;
 use App\Sdk\Pathe\PatheMapper;
+use App\Sdk\Pathe\ShowSlug;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -88,8 +90,8 @@ class CatalogSynchronizer
                 ->setAddress($data['address'])
                 ->setPostalCode($data['postalCode'])
                 ->setTown($data['town'])
-                ->setLatitude($data['latitude'])
-                ->setLongitude($data['longitude'])
+                ->setLatitude($data['position']?->latitude)
+                ->setLongitude($data['position']?->longitude)
                 ->setHallCount($data['hallCount'])
                 ->setOpen($data['open']);
             $this->em->persist($cinema);
@@ -134,6 +136,7 @@ class CatalogSynchronizer
         $this->em->flush();
 
         $lastDay = date('Y-m-d', strtotime($today.' +'.($days - 1).' days'));
+        $timezone = new \DateTimeZone($chain['timezone']);
 
         $playing = [];
         foreach ($cinemas as $cinemaSlug => $cinema) {
@@ -145,7 +148,8 @@ class CatalogSynchronizer
                 continue;
             }
 
-            $programme = $this->client->getCinemaProgramme($cinemaSlug);
+            $patheCinema = new CinemaSlug($cinemaSlug);
+            $programme = $this->client->getCinemaProgramme($patheCinema);
             if (false === $programme) {
                 ++$stats['errors'];
                 continue;
@@ -162,14 +166,14 @@ class CatalogSynchronizer
                 }
 
                 $playing[$showSlug] = $films[$showSlug];
-                $rawShowtimes = $this->client->getShowtimes($showSlug, $cinemaSlug);
-                if (false === $rawShowtimes) {
+                $showtimes = $this->client->getShowtimes(showSlug: new ShowSlug($showSlug), cinemaSlug: $patheCinema);
+                if (false === $showtimes) {
                     ++$stats['errors'];
                     $complete = false;
                     continue;
                 }
 
-                foreach ($this->mapper->mapShowtimes($rawShowtimes, $chain['timezone']) as $data) {
+                foreach ($this->mapper->mapShowtimes(showtimes: $showtimes, timezone: $timezone) as $data) {
                     if ($data['localDate'] < $today || $data['localDate'] > $lastDay) {
                         continue;
                     }
@@ -213,7 +217,7 @@ class CatalogSynchronizer
             if (null !== $film->getOriginalLanguage() && null !== $film->getSynopsis() && null !== $film->getWork()->getDirectors()) {
                 continue;
             }
-            $rawShow = $this->client->getShow($showSlug);
+            $rawShow = $this->client->getShow(new ShowSlug($showSlug));
             if (false === $rawShow) {
                 $this->logger->warning('Film page unreadable, original language, synopsis and work unknown', ['film' => $showSlug]);
                 continue;
