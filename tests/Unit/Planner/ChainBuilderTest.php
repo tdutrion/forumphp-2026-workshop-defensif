@@ -201,4 +201,40 @@ final class ChainBuilderTest extends TestCase
         // Assert
         self::assertSame([], $this->ids($programmes));
     }
+
+    public function testTheTravelTimeIsRoundedUpToTheNextMinute(): void
+    {
+        // Arrange: cinema C is 3.01 km from A, 12.05 minutes by bike: the margin of 10 and 13 minutes of travel
+        // (not 12) put the earliest arrival at 16:23 for a film that ends at 16:00.
+        $inCinemaC = static fn (string $id): ScreeningBuilder => ScreeningBuilder::aScreening($id)->inCinema('C', 0.0, 0.02709);
+        $showtimes = [
+            $this->inCinemaA('first')->ofFilm('film-1')->startingAt('14:00')->lasting(100)->build(),
+            $inCinemaC('at-16-22')->ofFilm('film-2')->startingAt('16:22')->lasting(90)->build(),
+            $inCinemaC('at-16-23')->ofFilm('film-3')->startingAt('16:23')->lasting(90)->build(),
+        ];
+
+        // Act
+        $programmes = $this->build($showtimes, 2, false, TravelMode::Cycling);
+
+        // Assert
+        self::assertSame(['first>at-16-23'], $this->ids($programmes));
+    }
+
+    public function testTheDistanceOfAProgrammeAddsUpEveryChangeOfCinema(): void
+    {
+        // Arrange: A, then B (2.99 km away), then back to A.
+        $showtimes = [
+            $this->inCinemaA('one')->ofFilm('film-1')->startingAt('10:00')->lasting(60)->build(),
+            $this->inCinemaB('two')->ofFilm('film-2')->startingAt('12:00')->lasting(60)->build(),
+            $this->inCinemaA('three')->ofFilm('film-3')->startingAt('14:00')->lasting(60)->build(),
+        ];
+
+        // Act
+        $programme = $this->build($showtimes, 3, false, TravelMode::Cycling)->first();
+
+        // Assert
+        self::assertNotNull($programme);
+        self::assertEqualsWithDelta(5.98, $programme->distance, 0.02);
+        self::assertSame(24, $programme->travelMinutes, 'two journeys of 12 minutes');
+    }
 }

@@ -36,6 +36,8 @@ class PatheClient
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */
     public function getCities(): array
@@ -44,6 +46,8 @@ class PatheClient
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */
     public function getCinemas(): array
@@ -53,6 +57,8 @@ class PatheClient
 
     /**
      * Detail page of a film: the only place where Pathé gives its nationality. Cached like the reference data.
+     *
+     * @return array<string, mixed>
      *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */
@@ -73,6 +79,8 @@ class PatheClient
 
     /**
      * A cinema's programme: which films play on which days (without the times).
+     *
+     * @return array<string, mixed>
      *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */
@@ -100,6 +108,8 @@ class PatheClient
 
     /**
      * @param bool $cacheable reference data that changes rarely: kept $cacheTtl seconds when a cache is available
+     *
+     * @return array<array-key, mixed>
      *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */

@@ -103,7 +103,11 @@ acceptance: ## Brings in the acceptance tests of exercise n (1 to 6), red until 
 phpstan-max: ## PHPStan max level (workshop progress measure)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G
 
+infection: ## Mutation testing of one class (slow), e.g. make infection c=src/Planner/ChainBuilder.php
+	@# Coverage needs Xdebug, which is off by default; --threads=1: the tests share one database.
+	$(COMPOSE) exec -T -e XDEBUG_MODE=coverage php vendor/bin/infection --threads=1 --show-mutations --min-msi=0 $(c)
+
 phpstan-baseline: ## Regenerates the max-level baseline
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G --generate-baseline phpstan-baseline.neon
 
-.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load exercise acceptance phpstan-max phpstan-baseline
+.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load exercise acceptance phpstan-max infection phpstan-baseline

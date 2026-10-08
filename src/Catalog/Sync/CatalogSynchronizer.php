@@ -43,6 +43,7 @@ class CatalogSynchronizer
         private WorkLinker $workLinker,
         private LoggerInterface $logger,
         private ClockInterface $clock,
+        /** @var array<string, array{name: string, country: string, timezone: string, language: string}> the chains of config/packages/chains.yaml */
         #[Autowire('%app.chains%')]
         private array $chains,
     ) {

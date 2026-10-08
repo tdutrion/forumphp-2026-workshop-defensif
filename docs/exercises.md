@@ -421,6 +421,17 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   the other tests share one database), and show that an untested safeguard lets
   a mutant survive.
 
+  In the reference solution: `make infection c=src/Planner/ChainBuilder.php`
+  (config in `infection.json5`, report in `var/infection/`). The whole of
+  `src/Planner` gives 418 mutants, 6 escaped. Three were real gaps and are now
+  killed by tests: the travel time rounded up (`ceil` mutated to `round` or
+  `* 59`) and the distance of a programme added up over its journeys (`+=`
+  mutated to `=`). The three others are harmless (`array_values()` around a
+  spread, a `break` that only saves time): the ones to show as "some mutants
+  are false positives". The baseline went from 553 to 456 by typing the
+  rows that `PatheMapper`, `CatalogSynchronizer` and `WorkLinker` read.
+
+
 ## 18. Cinema chains and time zones (30 min) — PHP 8.1, 8.4
 
 - **Starting point**: the `app.chains` parameter (`config/packages/chains.yaml`)
