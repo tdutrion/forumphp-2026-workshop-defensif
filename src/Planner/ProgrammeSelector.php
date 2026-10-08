@@ -19,21 +19,20 @@ class ProgrammeSelector
     }
 
     /**
-     * @param list<Programme> $programmes programmes produced by ChainBuilder::build()
-     * @param int|null        $seed       null: the $max best ones; otherwise $max drawn among the pool of best
-     *                                    ones, always the same for the same seed (a new seed, other programmes)
+     * @param ProgrammeList $programmes programmes produced by ChainBuilder::build()
+     * @param int|null      $seed       null: the $max best ones; otherwise $max drawn among the pool of best
+     *                                  ones, always the same for the same seed (a new seed, other programmes)
      *
-     * @return list<Programme> at most $max programmes, from least wait to most wait (then from least travel to most travel)
+     * @return ProgrammeList at most $max programmes, from least wait to most wait (then from least travel to most travel)
      */
-    public function select(array $programmes, int $max = 3, ?int $seed = null): array
+    public function select(ProgrammeList $programmes, int $max = 3, ?int $seed = null): ProgrammeList
     {
-        $score = static fn (Programme $a, Programme $b) => [$a->wait, $a->distance] <=> [$b->wait, $b->distance];
-        usort($programmes, $score);
+        $ranked = $programmes->sortedBy(static fn (Programme $a, Programme $b): int => [$a->wait, $a->distance] <=> [$b->wait, $b->distance]);
 
-        $candidates = [];
+        $candidates = new ProgrammeList();
         $workSets = [];
         $wanted = null === $seed ? $max : max($max, $this->pool);
-        foreach ($programmes as $programme) {
+        foreach ($ranked as $programme) {
             // Programmes are different when their works differ (whatever the chain of each film).
             $works = $programme->workIds();
             sort($works);
@@ -42,19 +41,20 @@ class ProgrammeSelector
                 continue;
             }
             $workSets[$key] = true;
-            $candidates[] = $programme;
+            $candidates = $candidates->with($programme);
             if (\count($candidates) === $wanted) {
                 break;
             }
         }
 
         if (null === $seed || \count($candidates) <= $max) {
-            return array_slice($candidates, 0, $max);
+            return $candidates->take($max);
         }
 
-        $drawn = (new Randomizer(new Xoshiro256StarStar($seed)))->pickArrayKeys($candidates, $max);
+        $all = $candidates->toArray();
+        $drawn = (new Randomizer(new Xoshiro256StarStar($seed)))->pickArrayKeys($all, $max);
 
         // pickArrayKeys() keeps the order of the array: the best of the drawn programmes come first.
-        return array_values(array_intersect_key($candidates, array_flip($drawn)));
+        return new ProgrammeList(...array_values(array_intersect_key($all, array_flip($drawn))));
     }
 }

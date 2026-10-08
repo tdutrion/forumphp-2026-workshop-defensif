@@ -32,13 +32,11 @@ class GithubUserInfoProvider implements UserInfoProvider
             $provider->getAuthenticatedRequest('GET', 'https://api.github.com/user/emails', $accessToken),
         );
 
-        $email = null;
-        foreach (\is_array($emails) ? $emails : [] as $entry) {
-            if (true === ($entry['primary'] ?? false) && true === ($entry['verified'] ?? false)) {
-                $email = $entry['email'];
-                break;
-            }
-        }
+        $primary = array_find(
+            \is_array($emails) ? $emails : [],
+            static fn (mixed $entry): bool => \is_array($entry) && true === ($entry['primary'] ?? false) && true === ($entry['verified'] ?? false),
+        );
+        $email = $primary['email'] ?? null;
 
         try {
             $verified = \is_string($email) ? new VerifiedEmail($email) : null;
