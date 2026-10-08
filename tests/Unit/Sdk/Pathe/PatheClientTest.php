@@ -105,7 +105,7 @@ final class PatheClientTest extends TestCase
             self::fail('A network failure must not be silent.');
         } catch (PatheUnavailableException $e) {
             // Assert
-            self::assertSame('cities', $e->path);
+            self::assertSame('/api/cities', $e->path);
             self::assertInstanceOf(ClientExceptionInterface::class, $e->getPrevious(), 'the cause is kept');
         }
     }

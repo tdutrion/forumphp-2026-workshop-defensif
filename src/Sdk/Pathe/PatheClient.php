@@ -10,6 +10,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Uri\Rfc3986\Uri;
 
 /**
  * Only access point to the (unofficial) pathe.fr API.
@@ -20,7 +21,6 @@ use Psr\Log\NullLogger;
  */
 class PatheClient
 {
-    public const string BASE_URL = 'https://www.pathe.fr/api/';
     // Pathé blocks crawler-like user agents (HTTP 403).
     private const string USER_AGENT = 'PatheApiExplorer/1.0';
 
@@ -31,7 +31,7 @@ class PatheClient
         private LoggerInterface $logger = new NullLogger(),
         private int $delayMs = 1000,
         private int $cacheTtl = 3600,
-        private string $baseUrl = self::BASE_URL,
+        private PatheEndpoints $endpoints = new PatheEndpoints(),
     ) {
     }
 
@@ -40,7 +40,7 @@ class PatheClient
      */
     public function getCities(): array
     {
-        return $this->get('cities', true);
+        return $this->get($this->endpoints->cities(), true);
     }
 
     /**
@@ -48,7 +48,7 @@ class PatheClient
      */
     public function getCinemas(): array
     {
-        return $this->get('cinemas', true);
+        return $this->get($this->endpoints->cinemas(), true);
     }
 
     /**
@@ -58,7 +58,7 @@ class PatheClient
      */
     public function getShow(ShowSlug $showSlug): array
     {
-        return $this->get('show/'.rawurlencode($showSlug->value), true);
+        return $this->get($this->endpoints->show($showSlug), true);
     }
 
     /**
@@ -68,7 +68,7 @@ class PatheClient
      */
     public function getShows(): array
     {
-        return $this->get('shows', true)['shows'] ?? [];
+        return $this->get($this->endpoints->shows(), true)['shows'] ?? [];
     }
 
     /**
@@ -78,7 +78,7 @@ class PatheClient
      */
     public function getCinemaProgramme(CinemaSlug $cinemaSlug): array
     {
-        return $this->get('cinema/'.rawurlencode($cinemaSlug->value).'/shows');
+        return $this->get($this->endpoints->cinemaProgramme($cinemaSlug));
     }
 
     /**
@@ -88,13 +88,13 @@ class PatheClient
      */
     public function getShowtimes(ShowSlug $showSlug, CinemaSlug $cinemaSlug): PatheShowtimes
     {
-        $path = 'show/'.rawurlencode($showSlug->value).'/showtimes/'.rawurlencode($cinemaSlug->value);
-        $data = $this->get($path);
+        $uri = $this->endpoints->showtimes($showSlug, $cinemaSlug);
+        $data = $this->get($uri);
 
         try {
             return PatheShowtimes::fromApiResponse($data);
         } catch (\InvalidArgumentException $e) {
-            $this->fail($path, 'Unexpected showtimes from Pathé: '.$e->getMessage(), $e);
+            $this->fail($uri->getPath(), 'Unexpected showtimes from Pathé: '.$e->getMessage(), $e);
         }
     }
 
@@ -103,10 +103,11 @@ class PatheClient
      *
      * @throws BotBlockedException|RateLimitedException|PatheUnavailableException
      */
-    private function get(string $path, bool $cacheable = false): array
+    private function get(Uri $uri, bool $cacheable = false): array
     {
+        $path = $uri->getPath();
         $cache = $cacheable && $this->cacheTtl > 0 ? $this->cache : null;
-        $item = $cache?->getItem('pathe.'.str_replace('/', '.', $path));
+        $item = $cache?->getItem('pathe.'.str_replace('/', '.', trim($path, '/')));
         if (null !== $item && $item->isHit()) {
             return $item->get();
         }
@@ -114,7 +115,7 @@ class PatheClient
         usleep($this->delayMs * 1000);
 
         $request = $this->requestFactory
-            ->createRequest('GET', $this->baseUrl.$path.'?'.http_build_query(['language' => 'fr']))
+            ->createRequest('GET', $uri->toString())
             ->withHeader('User-Agent', self::USER_AGENT)
             ->withHeader('Accept', 'application/json');
 

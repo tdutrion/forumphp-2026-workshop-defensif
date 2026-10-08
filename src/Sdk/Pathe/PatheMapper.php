@@ -6,6 +6,7 @@ namespace App\Sdk\Pathe;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Uri\Rfc3986\Uri;
 
 /**
  * Turns raw Pathé responses into arrays ready to save.
@@ -80,7 +81,10 @@ class PatheMapper
         if (!is_string($nationality) || '' === trim($nationality)) {
             return null;
         }
-        $firstCountry = trim(explode(',', $nationality)[0]);
+        $firstCountry = $nationality
+            |> (static fn (string $countries): array => explode(',', $countries))
+            |> array_first(...)
+            |> trim(...);
 
         return self::LANGUAGE_BY_NATIONALITY[$firstCountry] ?? null;
     }
@@ -96,7 +100,10 @@ class PatheMapper
         if (!is_string($synopsis)) {
             return null;
         }
-        $text = trim(html_entity_decode(strip_tags($synopsis), \ENT_QUOTES | \ENT_HTML5, 'UTF-8'));
+        $text = $synopsis
+            |> strip_tags(...)
+            |> (static fn (string $html): string => html_entity_decode($html, \ENT_QUOTES | \ENT_HTML5, 'UTF-8'))
+            |> trim(...);
 
         return '' === $text ? null : $text;
     }
@@ -118,7 +125,11 @@ class PatheMapper
         return [
             'originalTitle' => is_string($title) && '' !== trim($title) ? trim($title) : null,
             'year' => is_string($date) && 1 === preg_match('/^(\d{4})-/', $date, $matches) ? (int) $matches[1] : null,
-            'directors' => array_values(array_filter(array_map('trim', explode(',', $directors)))),
+            'directors' => $directors
+                |> (static fn (string $names): array => explode(',', $names))
+                |> (static fn (array $names): array => array_map(trim(...), $names))
+                |> array_filter(...)
+                |> array_values(...),
         ];
     }
 
@@ -139,7 +150,7 @@ class PatheMapper
 
         // Only HTTPS images: a poster link is shown as is in the pages.
         $posterUrl = $raw['posterPath']['md'] ?? null;
-        if (!is_string($posterUrl) || !str_starts_with($posterUrl, 'https://')) {
+        if (!is_string($posterUrl) || !$this->isHttpsUrl($posterUrl)) {
             $posterUrl = null;
         }
 
@@ -169,7 +180,8 @@ class PatheMapper
         $mapped = [];
         foreach ($showtimes->items as $item) {
             // The booking link ends up in an href: only Pathé HTTPS links are accepted.
-            if (1 !== preg_match('#^https://s\.pathe\.fr/.*/(V\d+S\d+)/#', $item['refCmd'] ?? '', $matches)) {
+            $showtimeId = $this->showtimeIdOfBookingLink($item['refCmd'] ?? null);
+            if (null === $showtimeId) {
                 continue;
             }
 
@@ -182,12 +194,12 @@ class PatheMapper
                 $start = new \DateTimeImmutable($item['time'], $timezone);
                 $end = new \DateTimeImmutable($item['endTime'], $timezone);
             } catch (\DateMalformedStringException $e) {
-                $this->logger->warning('Malformed Pathé date, showtime skipped', ['showtime' => $matches[1], 'error' => $e->getMessage()]);
+                $this->logger->warning('Malformed Pathé date, showtime skipped', ['showtime' => $showtimeId, 'error' => $e->getMessage()]);
                 continue;
             }
 
             $mapped[] = [
-                'id' => $matches[1],
+                'id' => $showtimeId,
                 'startsAt' => $start->setTimezone($utc)->format('Y-m-d H:i:s'),
                 'endsAt' => $end->setTimezone($utc)->format('Y-m-d H:i:s'),
                 'localDate' => $start->format('Y-m-d'),
@@ -219,5 +231,31 @@ class PatheMapper
         }
 
         return $slugs;
+    }
+
+    /**
+     * The showtime id (e.g. "V3345S85470") of a booking link: a segment of the path of an https link of
+     * s.pathe.fr that is followed by another one.
+     */
+    private function showtimeIdOfBookingLink(mixed $link): ?string
+    {
+        if (!\is_string($link)) {
+            return null;
+        }
+        $uri = Uri::parse($link);
+        if (null === $uri || 'https' !== $uri->getScheme() || 's.pathe.fr' !== $uri->getHost()) {
+            return null;
+        }
+
+        $segments = explode('/', ltrim($uri->getPath(), '/'));
+
+        return array_find(\array_slice($segments, 0, -1), static fn (string $segment): bool => 1 === preg_match('/^V\d+S\d+$/', $segment));
+    }
+
+    private function isHttpsUrl(string $link): bool
+    {
+        $uri = Uri::parse($link);
+
+        return 'https' === $uri?->getScheme() && !\in_array($uri->getHost(), [null, ''], true);
     }
 }

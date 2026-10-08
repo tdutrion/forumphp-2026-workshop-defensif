@@ -10,6 +10,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Uri\Rfc3986\Uri;
 
 /**
  * Only access point to the Wikidata action API (CC0 data). Wikidata asks for a User-Agent naming
@@ -18,6 +19,8 @@ use Psr\Log\NullLogger;
 class WikidataClient
 {
     public const string BASE_URL = 'https://www.wikidata.org/w/api.php';
+
+    private Uri $endpoint;
 
     public function __construct(
         private string $userAgent,
@@ -29,6 +32,7 @@ class WikidataClient
         private int $delayMs = 500,
         private int $cacheTtl = 86400,
     ) {
+        $this->endpoint = new Uri(self::BASE_URL);
     }
 
     /**
@@ -92,7 +96,7 @@ class WikidataClient
     private function get(array $query): array|false
     {
         $query += ['format' => 'json'];
-        $url = self::BASE_URL.'?'.http_build_query($query);
+        $url = $this->endpoint->withQuery(http_build_query($query))->toString();
         $cache = $this->cacheTtl > 0 ? $this->cache : null;
         $item = $cache?->getItem('wikidata.'.sha1($url));
         if (null !== $item && $item->isHit()) {
