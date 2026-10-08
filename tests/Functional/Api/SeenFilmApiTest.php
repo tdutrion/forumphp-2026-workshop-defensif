@@ -95,4 +95,37 @@ final class SeenFilmApiTest extends WebTestCase
         self::assertSame(404, $body['status']);
         self::assertStringNotContainsString('Stack', (string) $this->client->getResponse()->getContent());
     }
+
+    public function testTheSeenFilmsAreSortedByTitleAscendingOrDescending(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+        foreach (['f2', 'f4', 'f1'] as $slug) {
+            $this->api('PUT', '/api/me/seen-films/'.$slug);
+        }
+
+        // Act
+        $default = $this->api('GET', '/api/me/seen-films');
+        $ascending = $this->api('GET', '/api/me/seen-films', ['order' => 'asc']);
+        $descending = $this->api('GET', '/api/me/seen-films', ['order' => 'desc']);
+
+        // Assert
+        self::assertSame(['f1', 'f2', 'f4'], array_column($default, 'slug'));
+        self::assertSame($default, $ascending);
+        self::assertSame(['f4', 'f2', 'f1'], array_column($descending, 'slug'));
+    }
+
+    public function testAnOrderThatIsNotAscNorDescIsABadRequestNamingTheParameter(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $body = $this->api('GET', '/api/me/seen-films', ['order' => 'sideways']);
+
+        // Assert
+        self::assertResponseStatusCodeSame(400);
+        self::assertResponseHeaderSame('content-type', 'application/problem+json');
+        self::assertSame(['order'], array_column($body['errors'], 'field'));
+    }
 }

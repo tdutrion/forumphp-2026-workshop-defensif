@@ -30,7 +30,7 @@ class CinemaRepository extends ServiceEntityRepository
             ->where('c.open = true')
             ->andWhere('c.latitude IS NOT NULL')
             ->andWhere('c.longitude IS NOT NULL')
-            ->orderBy('c.slug', 'ASC')
+            ->orderBy('c.slug', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
     }
@@ -45,7 +45,7 @@ class CinemaRepository extends ServiceEntityRepository
             ->where('IDENTITY(c.city) = :city')
             ->andWhere('c.open = true')
             ->setParameter('city', $citySlug)
-            ->orderBy('c.slug', 'ASC')
+            ->orderBy('c.slug', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
     }
@@ -63,7 +63,7 @@ class CinemaRepository extends ServiceEntityRepository
             ->select('c.slug', 'c.name')
             ->where('c.slug IN (:slugs)')
             ->setParameter('slugs', $slugs)
-            ->orderBy('c.name', 'ASC')
+            ->orderBy('c.name', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
     }
@@ -81,8 +81,8 @@ class CinemaRepository extends ServiceEntityRepository
             ->select('c.slug', 'c.name', 'city.name AS cityName')
             ->join('c.city', 'city')
             ->where('c.open = true')
-            ->orderBy('city.name', 'ASC')
-            ->addOrderBy('c.name', 'ASC');
+            ->orderBy('city.name', \SortDirection::Ascending)
+            ->addOrderBy('c.name', \SortDirection::Ascending);
         if ([] !== $exceptSlugs) {
             $qb->andWhere('c.slug NOT IN (:except)')->setParameter('except', $exceptSlugs);
         }

@@ -401,6 +401,14 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `#[MapQueryString(validationFailedStatusCode: 400)]`; `TranslatableMessage`
   (or `t()`) in the flash bag, translated by the layout (`|trans`);
   `strict_variables: true` and objects passed to templates.
+  In the reference solution: the output DTOs (`App\Api\Response\*Resource`)
+  are normalized by the Serializer through a small `Responder` (a
+  `JsonResponse` of the normalized array, so the JSON text is byte for byte
+  the same: `$this->json()` would not be, `distance: 0.0` for instance), and
+  `symfony/object-mapper` is not installed; `NearbyCinema` replaces the arrays
+  of `PlannerService::nearbyCinemas()`; `findBy(['…'], ['chain' => 'ASC'])`
+  keeps its strings (Doctrine types them as such).
+
 
 ## 17. Tooling (30 min)
 

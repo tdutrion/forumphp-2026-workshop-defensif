@@ -68,13 +68,13 @@ class SeenFilmService
     }
 
     /**
-     * @param string $order 'asc' or 'desc': sort by title
+     * @param SortOrder $order sort by title
      *
      * @return array films already seen (same shape as FilmRepository::findBySlugs)
      */
-    public function listSeenFilms(string $userId, string $order = 'asc'): array
+    public function listSeenFilms(string $userId, SortOrder $order = SortOrder::Asc): array
     {
-        return $this->filmRepository->findBySlugs($this->getSeenFilmSlugs($userId), strtoupper($order));
+        return $this->filmRepository->findBySlugs($this->getSeenFilmSlugs($userId), $order->direction());
     }
 
     /**

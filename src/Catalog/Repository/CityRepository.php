@@ -26,7 +26,7 @@ class CityRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->select('c.slug', 'c.name')
-            ->orderBy('c.name', 'ASC')
+            ->orderBy('c.name', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
     }
@@ -45,7 +45,7 @@ class CityRepository extends ServiceEntityRepository
             ->andWhere('cinema.latitude IS NOT NULL')
             ->andWhere('cinema.longitude IS NOT NULL')
             ->groupBy('cinema.city')
-            ->orderBy('slug', 'ASC')
+            ->orderBy('slug', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
 

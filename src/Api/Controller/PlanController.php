@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Api\Controller;
 
 use App\Account\Entity\User;
+use App\Api\Response\NoShowtimeResource;
+use App\Api\Response\PlanResource;
+use App\Api\Response\Responder;
 use App\Planner\PlanFailure;
 use App\Planner\PlannerService;
 use App\Planner\PlanRequest;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +29,7 @@ class PlanController extends AbstractController
     public function __construct(
         private PlannerService $plannerService,
         private TranslatorInterface $translator,
+        private Responder $responder,
     ) {
     }
 
@@ -39,7 +44,7 @@ class PlanController extends AbstractController
     #[OA\Parameter(name: 'travelMode', in: 'query', required: false, description: 'walking, cycling, transit (default) or car: sets the travel time between two cinemas', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'acceptAds', in: 'query', required: false, description: '1 to accept arriving during the ads (15 minutes)', schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'seed', in: 'query', required: false, description: 'Draw of the programmes among the best ones (0 to 999999999): the same seed gives the same programmes; drawn when missing', schema: new OA\Schema(type: 'integer'))]
-    #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), the reason if there are fewer, and the seed of the draw')]
+    #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), the reason if there are fewer, and the seed of the draw', content: new Model(type: PlanResource::class))]
     #[OA\Response(response: 422, description: 'Invalid parameters')]
     public function plan(
         // Invalid parameters, unknown ones included, are a 422 (the default is a 404), rendered by ApiExceptionListener.
@@ -60,38 +65,9 @@ class PlanController extends AbstractController
             );
         }
         if (PlanFailure::NoShowtime === $result->failure) {
-            return new JsonResponse(['programmes' => [], 'reason' => $result->reason()]);
+            return $this->responder->json(new NoShowtimeResource());
         }
 
-        $programmes = [];
-        foreach ($result->programmes as $programme) {
-            $showtimes = [];
-            foreach ($programme->showtimes as $showtime) {
-                $showtimes[] = [
-                    'id' => $showtime->id,
-                    'film' => ['slug' => $showtime->filmSlug, 'title' => $showtime->filmTitle],
-                    'cinema' => ['slug' => $showtime->cinemaSlug, 'name' => $showtime->cinemaName],
-                    // ISO 8601 in the cinema's time zone: the offset lets a mobile app convert it.
-                    'startsAt' => $showtime->start->localTime($showtime->timezone)->format(\DATE_ATOM),
-                    'endsAt' => $showtime->end->localTime($showtime->timezone)->format(\DATE_ATOM),
-                    'version' => $showtime->version->value,
-                    'lateMinutes' => $showtime->lateMinutes,
-                    // Minutes from the end of the previous film to this showtime, and the travel among them.
-                    'breakMinutes' => $showtime->breakMinutes,
-                    'travelMinutes' => $showtime->travelMinutes,
-                    'bookingUrl' => $showtime->bookingUrl,
-                ];
-            }
-            $programmes[] = [
-                // wait = minutes really lost waiting (breaks minus the 10-minute margins and the travel): the ranking score.
-                'wait' => $programme->wait,
-                'breakMinutes' => $programme->breakMinutes,
-                'travelMinutes' => $programme->travelMinutes,
-                'distance' => $programme->distance,
-                'showtimes' => $showtimes,
-            ];
-        }
-
-        return new JsonResponse(['programmes' => $programmes, 'reason' => $result->reason(), 'films' => $result->films, 'seed' => $result->seed]);
+        return $this->responder->json(PlanResource::fromResult($result));
     }
 }

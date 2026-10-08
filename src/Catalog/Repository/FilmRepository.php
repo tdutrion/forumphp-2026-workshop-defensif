@@ -54,18 +54,15 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param list<string> $slugs     list of slugs
-     * @param string       $direction 'ASC' or 'DESC' (sorted by title)
+     * @param list<string>   $slugs     list of slugs
+     * @param \SortDirection $direction sorted by title
      *
      * @return array list of films, rows ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis', 'workId', 'wikidataId', 'imdbId', 'tmdbId']
      */
-    public function findBySlugs(array $slugs, string $direction = 'ASC'): array
+    public function findBySlugs(array $slugs, \SortDirection $direction = \SortDirection::Ascending): array
     {
         if ([] === $slugs) {
             return [];
-        }
-        if ('ASC' !== $direction && 'DESC' !== $direction) {
-            throw new \InvalidArgumentException('Invalid sort direction: '.$direction);
         }
 
         $rows = $this->createQueryBuilder('f')

@@ -6,12 +6,15 @@ namespace App\Api\Controller;
 
 use App\Account\Entity\User;
 use App\Account\SeenFilmService;
+use App\Api\Request\SeenFilmsQuery;
+use App\Api\Response\FilmSummaryResource;
+use App\Api\Response\Responder;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -19,27 +22,17 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[OA\Tag(name: 'Profile')]
 class SeenFilmController extends AbstractController
 {
-    public function __construct(private SeenFilmService $seenFilmService)
+    public function __construct(private SeenFilmService $seenFilmService, private Responder $responder)
     {
     }
 
     #[Route('/api/me/seen-films', name: 'api_seen_films', methods: ['GET'])]
-    #[OA\Parameter(name: 'order', in: 'query', required: false, description: 'asc (default) or desc: sort by title', schema: new OA\Schema(type: 'string'))]
-    #[OA\Response(response: 200, description: 'Films already seen: slug and title')]
+    #[OA\Parameter(name: 'order', in: 'query', required: false, description: 'asc (default) or desc: sort by title', schema: new OA\Schema(type: 'string', enum: ['asc', 'desc']))]
+    #[OA\Response(response: 200, description: 'Films already seen: slug and title', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: new Model(type: FilmSummaryResource::class))))]
     #[OA\Response(response: 400, description: 'Invalid sort order')]
-    public function list(Request $request, #[CurrentUser] User $user): JsonResponse
+    public function list(#[MapQueryString(validationFailedStatusCode: Response::HTTP_BAD_REQUEST)] SeenFilmsQuery $query, #[CurrentUser] User $user): JsonResponse
     {
-        $order = $request->query->getString('order', 'asc');
-        if ('asc' !== $order && 'desc' !== $order) {
-            throw new BadRequestHttpException('error.order_invalid');
-        }
-
-        $films = [];
-        foreach ($this->seenFilmService->listSeenFilms($user->getUserIdentifier(), $order) as $film) {
-            $films[] = ['slug' => $film['slug'], 'title' => $film['title']];
-        }
-
-        return new JsonResponse($films);
+        return $this->responder->json(array_map(FilmSummaryResource::fromRow(...), $this->seenFilmService->listSeenFilms($user->getUserIdentifier(), $query->order)));
     }
 
     #[Route('/api/me/seen-films/{slug}', name: 'api_seen_film_put', methods: ['PUT'])]

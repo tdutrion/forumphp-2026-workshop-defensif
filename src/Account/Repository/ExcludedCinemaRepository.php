@@ -27,7 +27,7 @@ class ExcludedCinemaRepository extends ServiceEntityRepository
             ->select('IDENTITY(u.cinema) AS slug')
             ->where('u.user = :user')
             ->setParameter('user', $userId, 'uuid')
-            ->orderBy('u.createdAt', 'DESC')
+            ->orderBy('u.createdAt', \SortDirection::Descending)
             ->getQuery()
             ->getSingleColumnResult();
     }

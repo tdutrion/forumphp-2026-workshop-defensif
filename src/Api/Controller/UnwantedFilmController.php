@@ -6,6 +6,9 @@ namespace App\Api\Controller;
 
 use App\Account\Entity\User;
 use App\Account\UnwantedFilmService;
+use App\Api\Response\FilmSummaryResource;
+use App\Api\Response\Responder;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,20 +20,15 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[OA\Tag(name: 'Profile')]
 class UnwantedFilmController extends AbstractController
 {
-    public function __construct(private UnwantedFilmService $unwantedFilmService)
+    public function __construct(private UnwantedFilmService $unwantedFilmService, private Responder $responder)
     {
     }
 
     #[Route('/api/me/unwanted-films', name: 'api_unwanted_films', methods: ['GET'])]
-    #[OA\Response(response: 200, description: 'Films the user does not want to see: slug and title, sorted by title')]
+    #[OA\Response(response: 200, description: 'Films the user does not want to see: slug and title, sorted by title', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: new Model(type: FilmSummaryResource::class))))]
     public function list(#[CurrentUser] User $user): JsonResponse
     {
-        $films = [];
-        foreach ($this->unwantedFilmService->listUnwantedFilms($user->getUserIdentifier()) as $film) {
-            $films[] = ['slug' => $film['slug'], 'title' => $film['title']];
-        }
-
-        return new JsonResponse($films);
+        return $this->responder->json(array_map(FilmSummaryResource::fromRow(...), $this->unwantedFilmService->listUnwantedFilms($user->getUserIdentifier())));
     }
 
     #[Route('/api/me/unwanted-films/{slug}', name: 'api_unwanted_film_put', methods: ['PUT'])]
