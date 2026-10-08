@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sdk\Pathe;
 
 /**
@@ -20,7 +22,7 @@ final readonly class GpsPosition
     }
 
     /**
-     * @param array $raw a Pathé "gpsPosition": the latitude in "x" and the longitude in "y"
+     * @param array<string, mixed> $raw a Pathé "gpsPosition": the latitude in "x" and the longitude in "y"
      *
      * @return self|null null when Pathé gives no position
      */

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Web\EventListener;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -14,7 +16,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 20)]
 final class LocaleFromCookieListener
 {
-    public const COOKIE = 'locale';
+    public const string COOKIE = 'locale';
 
     public function __construct(#[Autowire('%kernel.enabled_locales%')] private array $locales)
     {

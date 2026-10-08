@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog;
 
 use App\Catalog\Entity\Film;
@@ -16,7 +18,7 @@ use Psr\Log\LoggerInterface;
 class WorkLinker
 {
     /** Film and its kinds (feature, animated, documentary, short, silent, 3D, animated feature). */
-    private const FILM_TYPES = ['Q11424', 'Q24869', 'Q202866', 'Q93204', 'Q24862', 'Q226730', 'Q229390', 'Q29168811'];
+    private const array FILM_TYPES = ['Q11424', 'Q24869', 'Q202866', 'Q93204', 'Q24862', 'Q226730', 'Q229390', 'Q29168811'];
 
     public function __construct(
         private EntityManagerInterface $em,

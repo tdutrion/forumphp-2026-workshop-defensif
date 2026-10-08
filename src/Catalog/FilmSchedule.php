@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog;
 
 use App\Catalog\Repository\ShowtimeRepository;
@@ -14,9 +16,9 @@ class FilmSchedule
     }
 
     /**
-     * @return array list of cinemas ['slug', 'name', 'city', 'count' (showtimes),
-     *               'days' => list of ['date' (local 'Y-m-d'), 'showtimes' => list of ['time' (local 'H:i'), 'version', 'bookingUrl']]],
-     *               by city then name; [] when no showtime can be booked any more
+     * @return list<array{slug: string, name: string, city: string, count: int, days: list<array{date: string, showtimes: list<array{time: string, version: string, bookingUrl: string}>}>}>
+     *                                                                                                                                                                                       cinemas by city then name, with their showtimes by local day ('Y-m-d') and time ('H:i');
+     *                                                                                                                                                                                       [] when no showtime can be booked any more
      */
     public function forFilm(string $filmSlug): array
     {

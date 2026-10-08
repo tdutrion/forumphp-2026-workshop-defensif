@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Integration\Catalog;
 
 use App\Account\SeenFilmService;
@@ -20,7 +22,7 @@ final class WorkLinkerTest extends KernelTestCase
 {
     use StoresEntities;
 
-    private const NOW = '2030-01-10 12:00:00';
+    private const string NOW = '2030-01-10 12:00:00';
 
     private function linker(WikidataApiBuilder $api): WorkLinker
     {

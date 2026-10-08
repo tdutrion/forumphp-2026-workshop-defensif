@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sdk\Pathe;
 
 /**
@@ -16,8 +18,8 @@ final readonly class PatheShowtimes
     }
 
     /**
-     * @param array $raw response from /show/{slug}/showtimes/{cinema}: a JSON list [] when there is
-     *                   no showtime, otherwise an object of lists of showtimes indexed by date
+     * @param array<array-key, mixed> $raw response from /show/{slug}/showtimes/{cinema}: a JSON list [] when there is
+     *                                     no showtime, otherwise an object of lists of showtimes indexed by date
      *
      * @throws \InvalidArgumentException if the response has neither shape
      */

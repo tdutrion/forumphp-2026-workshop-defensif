@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Repository;
 
 use App\Catalog\Entity\Cinema;
@@ -19,7 +21,7 @@ class CinemaRepository extends ServiceEntityRepository
     /**
      * Open cinemas whose position is known.
      *
-     * @return array list of ['slug', 'name', 'citySlug', 'timezone', 'latitude', 'longitude']
+     * @return list<array{slug: string, name: string, citySlug: string, timezone: string, latitude: float, longitude: float}>
      */
     public function findOpenWithCoordinates(): array
     {
@@ -34,7 +36,7 @@ class CinemaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array list of ['slug', 'name', 'citySlug', 'timezone', 'latitude', 'longitude']
+     * @return list<array{slug: string, name: string, citySlug: string, timezone: string, latitude: float|null, longitude: float|null}>
      */
     public function findByCity(string $citySlug): array
     {
@@ -49,7 +51,7 @@ class CinemaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array list of ['slug' => ..., 'name' => ...] sorted by name
+     * @return list<array{slug: string, name: string}> sorted by name
      */
     public function findBySlugs(array $slugs): array
     {

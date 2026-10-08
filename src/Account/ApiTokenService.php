@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account;
 
 use App\Account\Entity\ApiToken;
@@ -13,8 +15,8 @@ use Symfony\Component\Uid\Uuid;
  */
 class ApiTokenService
 {
-    private const PREFIX = 'mm_';
-    private const LIFETIME = '+90 days';
+    private const string PREFIX = 'mm_';
+    private const string LIFETIME = '+90 days';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -72,7 +74,7 @@ class ApiTokenService
     }
 
     /**
-     * @return array active tokens (neither revoked nor expired): ['id', 'name', 'createdAt', 'expiresAt'] (dates in 'Y-m-d H:i' format)
+     * @return list<array{id: string, name: string, createdAt: string, expiresAt: string}> active tokens (neither revoked nor expired), dates in 'Y-m-d H:i' format
      */
     public function listForUser(User $user): array
     {

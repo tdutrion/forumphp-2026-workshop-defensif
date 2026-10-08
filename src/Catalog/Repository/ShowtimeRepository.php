@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Repository;
 
 use App\Catalog\BookingStatus;
@@ -23,13 +25,13 @@ class ShowtimeRepository extends ServiceEntityRepository
      * Showtimes of one day in the given cinemas, bookable at instant $now, excluding the excluded films.
      *
      * @param string           $date              local day of the cinemas, format 'Y-m-d'
-     * @param array            $cinemaSlugs       slugs of the cinemas to keep
-     * @param array            $excludedFilmSlugs slugs of the films to exclude (already seen)
+     * @param list<string>     $cinemaSlugs       slugs of the cinemas to keep
+     * @param list<string>     $excludedFilmSlugs slugs of the films to exclude (already seen)
      * @param ?ShowtimeVersion $version           null for any
      * @param string           $now               current instant in UTC, format 'Y-m-d H:i:s'
      *
-     * @return array rows ['id', 'filmSlug', 'workId' (hexadecimal), 'filmTitle', 'duration', 'cinemaSlug', 'cinemaName', 'timezone',
-     *               'latitude', 'longitude', 'startsAt', 'endsAt', 'version', 'bookingUrl'] (instants in UTC)
+     * @return list<array{id: string, filmSlug: string, workId: string, filmTitle: string, duration: int|null, cinemaSlug: string, cinemaName: string, timezone: string, latitude: float|string, longitude: float|string, startsAt: string, endsAt: string, version: string, bookingUrl: string}>
+     *                                                                                                                                                                                                                                                                                            rows, the work as hexadecimal and the instants in UTC
      */
     public function findCandidates(string $date, array $cinemaSlugs, array $excludedFilmSlugs, ?ShowtimeVersion $version, string $now): array
     {
@@ -78,8 +80,8 @@ class ShowtimeRepository extends ServiceEntityRepository
      *
      * @param string $now UTC instant ('Y-m-d H:i:s')
      *
-     * @return array rows ['cinemaSlug', 'cinemaName', 'cityName', 'timezone', 'startsAt' (UTC), 'localDate',
-     *               'version', 'bookingUrl']
+     * @return list<array{cinemaSlug: string, cinemaName: string, cityName: string, timezone: string, startsAt: string, localDate: string, version: string, bookingUrl: string}>
+     *                                                                                                                                                                           rows, 'startsAt' in UTC
      */
     public function findBookableForFilm(string $filmSlug, string $now): array
     {
@@ -141,7 +143,7 @@ class ShowtimeRepository extends ServiceEntityRepository
     /**
      * Last moment each local day can still be booked (UTC), for the showtimes on sale.
      *
-     * @return array ['Y-m-d' (local day) => 'Y-m-d H:i:s' (UTC)], sorted by day
+     * @return array<string, string> ['Y-m-d' (local day) => 'Y-m-d H:i:s' (UTC)], sorted by day
      */
     public function findLastBookableByDay(): array
     {

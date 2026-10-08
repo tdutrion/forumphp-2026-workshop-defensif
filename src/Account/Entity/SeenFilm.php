@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account\Entity;
 
 use App\Account\Repository\SeenFilmRepository;

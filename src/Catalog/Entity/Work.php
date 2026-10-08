@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Entity;
 
 use App\Catalog\Repository\WorkRepository;
@@ -28,7 +30,7 @@ class Work
     #[ORM\Column(nullable: true)]
     private ?int $year = null;
 
-    /** @var array|null names of the directors; null = not read yet, [] = none given */
+    /** @var list<string>|null names of the directors; null = not read yet, [] = none given */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $directors = null;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Entity;
 
 use App\Catalog\Repository\FilmRepository;
@@ -32,7 +34,7 @@ class Film
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $releaseDate = null;
 
-    /** @var array list of genres, e.g. ['Action', 'Comédie'] */
+    /** @var list<string> list of genres, e.g. ['Action', 'Comédie'] */
     #[ORM\Column(type: Types::JSON)]
     private array $genres = [];
 

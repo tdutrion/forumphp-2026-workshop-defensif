@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sdk\Wikidata;
 
 /**
@@ -9,7 +11,9 @@ namespace App\Sdk\Wikidata;
 class WikidataMapper
 {
     /**
-     * @return array item ids of a wbsearchentities answer
+     * @param array<string, mixed> $raw
+     *
+     * @return list<string> item ids of a wbsearchentities answer
      */
     public function searchIds(array $raw): array
     {
@@ -25,7 +29,9 @@ class WikidataMapper
     }
 
     /**
-     * @return array ['types' => Q ids, 'years' => ints, 'directorIds' => Q ids, 'imdbId' => ?string, 'tmdbId' => ?string]
+     * @param array<string, mixed> $entity
+     *
+     * @return array{types: list<string>, years: list<int>, directorIds: list<string>, imdbId: ?string, tmdbId: ?string} Q ids, years, IMDb and TMDB ids
      */
     public function film(array $entity): array
     {
@@ -47,7 +53,9 @@ class WikidataMapper
     }
 
     /**
-     * @return array [id => label] of a wbgetentities answer with labels (English, else French)
+     * @param array<string, mixed> $raw
+     *
+     * @return array<string, string> [id => label] of a wbgetentities answer with labels (English, else French)
      */
     public function labels(array $raw): array
     {

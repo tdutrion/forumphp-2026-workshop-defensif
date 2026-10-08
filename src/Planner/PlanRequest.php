@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 use App\Catalog\ShowtimeVersion;

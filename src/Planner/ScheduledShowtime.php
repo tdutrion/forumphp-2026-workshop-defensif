@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 use App\Catalog\Coordinates;
@@ -37,7 +39,7 @@ final readonly class ScheduledShowtime
     }
 
     /**
-     * @param array $row a row of ShowtimeRepository::findCandidates(): the instants are in UTC
+     * @param array{id: string, filmSlug: string, workId: string, filmTitle: string, cinemaSlug: string, cinemaName: string, timezone: string, latitude: float|string, longitude: float|string, startsAt: string, endsAt: string, version: string, bookingUrl: string} $row a row of ShowtimeRepository::findCandidates(): the instants are in UTC
      *
      * @throws \DateMalformedStringException
      * @throws \DateInvalidTimeZoneException

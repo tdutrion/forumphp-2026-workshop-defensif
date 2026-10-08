@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Sync;
 
 use App\Catalog\CatalogCalendar;
@@ -25,9 +27,9 @@ class CatalogSyncRunner
     }
 
     /**
-     * @param array $citySlugs cities to synchronize; empty = the PATHE_CITIES list (itself empty = every city)
+     * @param list<string> $citySlugs cities to synchronize; empty = the PATHE_CITIES list (itself empty = every city)
      *
-     * @return array the statistics of CatalogSynchronizer::synchronize()
+     * @return array{cities: int, cinemas: int, films: int, showtimes: int, deleted: int, errors: int, linked: int} the statistics of CatalogSynchronizer::synchronize()
      *
      * @throws SyncAlreadyRunning
      * @throws PatheUnavailableException|BotBlockedException|RateLimitedException see CatalogSynchronizer::synchronize()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sdk\Wikidata;
 
 use Psr\Cache\CacheItemPoolInterface;
@@ -16,7 +18,7 @@ use PsrDiscovery\Discover;
  */
 class WikidataClient
 {
-    public const BASE_URL = 'https://www.wikidata.org/w/api.php';
+    public const string BASE_URL = 'https://www.wikidata.org/w/api.php';
 
     private ClientInterface $httpClient;
     private RequestFactoryInterface $requestFactory;
@@ -50,7 +52,7 @@ class WikidataClient
     }
 
     /**
-     * @return array|false item ids found for a title (at most 10), or false when Wikidata fails
+     * @return list<string>|false item ids found for a title (at most 10), or false when Wikidata fails
      */
     public function searchFilms(string $title, string $language): array|false
     {
@@ -60,9 +62,9 @@ class WikidataClient
     }
 
     /**
-     * @param array $ids item ids (Q…)
+     * @param list<string> $ids item ids (Q…)
      *
-     * @return array|false [id => ['types', 'years', 'directors' (labels), 'imdbId', 'tmdbId']], or false when Wikidata fails
+     * @return array<string, array{types: list<string>, years: list<int>, directors: list<string>, imdbId: ?string, tmdbId: ?string}>|false by item id, directors by label, or false when Wikidata fails
      */
     public function getFilms(array $ids): array|false
     {

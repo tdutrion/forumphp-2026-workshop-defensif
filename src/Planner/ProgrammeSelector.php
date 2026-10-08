@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 use Random\Engine\Xoshiro256StarStar;
@@ -12,7 +14,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 class ProgrammeSelector
 {
     /** With a seed, the programmes are drawn among this many best ones (app.planner.draw_pool). */
-    public const POOL = 10;
+    public const int POOL = 10;
 
     public function __construct(#[Autowire('%app.planner.draw_pool%')] private int $pool = self::POOL)
     {

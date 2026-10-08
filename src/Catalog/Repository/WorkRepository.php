@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Repository;
 
 use App\Catalog\Entity\Film;
@@ -41,7 +43,7 @@ class WorkRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array titles of the films of a work (one per chain), to search Wikidata
+     * @return list<string> titles of the films of a work (one per chain), to search Wikidata
      */
     public function findFilmTitles(Work $work): array
     {
@@ -55,7 +57,7 @@ class WorkRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array works of the given films (by slug), each once
+     * @return list<Work> works of the given films (by slug), each once
      */
     public function findWorksOfFilms(array $slugs): array
     {

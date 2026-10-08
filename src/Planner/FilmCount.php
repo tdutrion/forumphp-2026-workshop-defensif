@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Planner;
 
 /**
@@ -7,9 +9,9 @@ namespace App\Planner;
  */
 final readonly class FilmCount
 {
-    public const MIN = 1;
-    public const MAX = 8;
-    public const DEFAULT = 2;
+    public const int MIN = 1;
+    public const int MAX = 8;
+    public const int DEFAULT = 2;
 
     public function __construct(public int $value)
     {

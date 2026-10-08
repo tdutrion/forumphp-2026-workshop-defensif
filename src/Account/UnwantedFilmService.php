@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Account;
 
 use App\Account\Repository\UnwantedFilmRepository;
@@ -55,7 +57,7 @@ class UnwantedFilmService
     }
 
     /**
-     * @return array slugs of the films the user does not want to see
+     * @return list<string> slugs of the films the user does not want to see
      */
     public function getUnwantedFilmSlugs(string $userId): array
     {
