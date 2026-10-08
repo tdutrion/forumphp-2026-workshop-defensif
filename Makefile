@@ -97,10 +97,13 @@ exercise: ## Starts exercise n from the reference solution of the previous one (
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
 	$(CONSOLE) cache:clear
 
+acceptance: ## Brings in the acceptance tests of exercise n (1 to 6), red until it is done, e.g. make acceptance n=2
+	@bin/exercise-acceptance $(n)
+
 phpstan-max: ## PHPStan max level (workshop progress measure)
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G
 
 phpstan-baseline: ## Regenerates the max-level baseline
 	$(PHP) vendor/bin/phpstan analyse -c phpstan-max.neon --memory-limit=1G --generate-baseline phpstan-baseline.neon
 
-.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load exercise phpstan-max phpstan-baseline
+.PHONY: help up css css-watch down logs sh composer console test phpstan cs cs-check lint sync db-dump db-load exercise acceptance phpstan-max phpstan-baseline

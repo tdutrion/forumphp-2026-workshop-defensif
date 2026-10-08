@@ -67,6 +67,7 @@ Then list them in `OAUTH_PROVIDERS` (e.g. `local,github,google`).
 | `make phpstan-max` | PHPStan, max level against the baseline (workshop progress) |
 | `make cs` | PHP-CS-Fixer (`@Symfony`) |
 | `make exercise n=4` | Start exercise 4 from the reference solution of exercise 3, on a local branch `atelier/04` (uncommitted work goes to `git stash`) |
+| `make acceptance n=4` | Bring in the acceptance tests of exercise 4 (1 to 6), red until it is done |
 | `make css` / `make css-watch` | Build the Tailwind CSS once / on every change |
 | `make sync` | Sync the catalog from pathe.fr and link its works to Wikidata (network; `c="--city=dijon"`) |
 | `make console c="work:link <film> <Q-id>"` | Link the work of a film to a Wikidata item by hand (`--none`: stop looking for it) |

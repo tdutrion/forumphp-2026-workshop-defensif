@@ -26,8 +26,9 @@ exercise may build on the names an earlier one introduced. Each exercise has a
 reference solution, one branch per exercise: anyone behind starts the next
 exercise with `make exercise n=N`, which stashes their work and switches to the
 reference solution of the previous one (exercises 1 to 6 add no migration and no
-dependency, so it is instant). Each exercise of the track also gives an
-acceptance test to bring in at the start, red until the exercise is done.
+dependency, so it is instant). Each exercise of the track also has acceptance
+tests to bring in at the start with `make acceptance n=N`, red until the
+exercise is done.
 
 The code already shows the target style in a few places, to point at:
 `FilmCatalogQuery` (readonly DTO bound with `#[MapQueryString]`), the backed
@@ -52,7 +53,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   boundary, `array_is_list`) passed to `mapShowtimes(PatheShowtimes, \DateTimeZone)`,
   named arguments. Everything stays in `App\Sdk\Pathe`, which keeps depending on
   PSR only (failures still return `false`: exercise 11). Update the SDK README.
-- **Acceptance test**, to start red:
+- **Acceptance test**, to start red: `make acceptance n=1`, that is
   `git checkout origin/exercise/01-pathe-boundary -- tests/Integration/Catalog/Sync/CatalogSyncTest.php`
   (a response of an unexpected shape is skipped silently: `errors` stays 0).
 - **Deck**: Part 3 (the `getShowtimes → PatheShowtimes` case), Part 5.
@@ -78,7 +79,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   hydration of the dev catalog while the tests stay green); `ShowtimeVersion`
   `vf`, `vost`, `vo`, `vfst`, with `isOriginal()` for the `vost`/`vo` tests of
   the repositories.
-- **Acceptance test**, to start red:
+- **Acceptance test**, to start red: `make acceptance n=2`, that is
   `git checkout origin/exercise/02-enums -- tests/Unit/Planner/TravelModeTest.php tests/Unit/Catalog/BookingStatusTest.php tests/Unit/Catalog/ShowtimeVersionTest.php`
   (the enums do not exist yet).
 - **Discussion topic**: why the languages (`Cinema::$language`,
@@ -105,7 +106,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `Duration` is new to everyone: `fromMinutes()`, `fromHours()`, `add()`,
   `negate()`, `Duration::compare()`, the public `seconds` and `nanoseconds`
   (no bridge to `DateInterval`: `plus()` adds the seconds by hand).
-- **Acceptance test**, to start red:
+- **Acceptance test**, to start red: `make acceptance n=3`, that is
   `git checkout origin/exercise/03-time -- tests/Unit/Planner/ScreeningTimeTest.php tests/Unit/Sdk/Pathe/PatheMapperTest.php`
   (`ScreeningTime` also needs `compare()` and `isAfter()`, and `PatheMapper` an
   optional PSR-3 logger to log the skipped showtimes).
@@ -143,7 +144,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   `FilmCount` (with the polyfill 8.6 `clamp()` when falling back to fewer films:
   the 1–8 range itself stays a 422) and `TimeRange`, built from the validated
   DTO (the Serializer cannot build value objects whose constructor throws).
-- **Acceptance test**, to start red:
+- **Acceptance test**, to start red: `make acceptance n=4`, that is
   `git checkout origin/exercise/04-planner-input -- tests/Functional/Api/PlanApiTest.php`
   (an unknown `radius` is reported on the root form `plan`, not on `radius`;
   the same file checks that empty parameters mean "not given").
@@ -163,7 +164,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   programmes stay arrays (exercise 8 makes them objects); the API JSON keeps its
   shape (`reason` = the enum value); `#[\NoDiscard]` on `plan()` and on the withers:
   `FilmCount::fewer()`, `ScreeningTime::plus()`.
-- **Acceptance test**, to start red:
+- **Acceptance test**, to start red: `make acceptance n=5`, that is
   `git checkout origin/exercise/05-planner-output -- tests/Unit/Planner/PlanResultTest.php`
   (`PlanResult` with `isSuccess()`, `reason()`, a `ProgrammeList` with
   `isEmpty()`, `PlanFailure::messageKey()`; a success without programme is an
@@ -188,7 +189,7 @@ enums `WorkLinkStatus` and `Theme` (with `enumType`), the `Work` entity
   the built-in `RequestAttributeValueResolver` (100), which passes the raw
   string: a `TypeError`, so a 500 instead of a 404. Give it a priority above
   100 (`#[AutoconfigureTag('controller.argument_value_resolver', ['priority' => 150])]`).
-- **Acceptance test**, to start red:
+- **Acceptance test**, to start red: `make acceptance n=6`, that is
   `git checkout origin/exercise/06-repositories -- tests/Unit/Catalog/FilmSlugTest.php tests/Unit/Catalog/FilmSlugValueResolverTest.php tests/Integration/Catalog/FilmRepositoryTest.php`
   (`FilmSlug` also has a `MAX_LENGTH` of 150).
 - **Deck**: Part 6 (`find()` vs `get()`).
