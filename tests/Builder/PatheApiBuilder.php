@@ -120,8 +120,10 @@ final class PatheApiBuilder
      * @param string      $localTime  session start as Pathé sends it: naive local time, e.g. '2026-10-04 21:40:00'
      * @param string      $sessionRef Pathé session reference, e.g. 'V3345S85501'
      * @param string|null $bookingUrl overrides the booking link built from $sessionRef
+     * @param string      $version    version as Pathé sends it, e.g. 'vost'
+     * @param string      $status     booking status as Pathé sends it, e.g. 'soldout'
      */
-    public function withShowtime(string $filmSlug, string $cinemaSlug, string $localTime, string $sessionRef, ?string $bookingUrl = null): self
+    public function withShowtime(string $filmSlug, string $cinemaSlug, string $localTime, string $sessionRef, ?string $bookingUrl = null, string $version = 'vf', string $status = 'available'): self
     {
         if (!isset($this->shows[$filmSlug], $this->programmes[$cinemaSlug])) {
             throw new \LogicException('Declare the film and the cinema before their showtimes.');
@@ -134,9 +136,9 @@ final class PatheApiBuilder
         $clone->programmes[$cinemaSlug]['shows'][$filmSlug]['days'][$day] = ['tags' => ['DEFAULT'], 'bookable' => true, 'versions' => ['vf']];
         $clone->showtimes[$filmSlug.'|'.$cinemaSlug][$day][] = [
             'time' => $start->format('Y-m-d H:i:s'),
-            'version' => 'vf',
+            'version' => $version,
             'tags' => ['DEFAULT'],
-            'status' => 'available',
+            'status' => $status,
             'reservabilityEnd' => $start->modify('+20 minutes')->format(\DATE_ATOM),
             'isMovie' => true,
             'refCmd' => $bookingUrl ?? 'https://s.pathe.fr/fr/'.$sessionRef.'/booking',

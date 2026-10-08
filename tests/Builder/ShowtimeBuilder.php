@@ -2,9 +2,11 @@
 
 namespace App\Tests\Builder;
 
+use App\Catalog\BookingStatus;
 use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\Film;
 use App\Catalog\Entity\Showtime;
+use App\Catalog\ShowtimeVersion;
 
 final class ShowtimeBuilder
 {
@@ -12,7 +14,7 @@ final class ShowtimeBuilder
     private ?Film $film = null;
     private ?Cinema $cinema = null;
     private string $start = '2030-01-10 14:00:00';
-    private string $version = 'vf';
+    private ShowtimeVersion $version = ShowtimeVersion::Vf;
     private ?string $bookableUntil = null;
 
     public static function aShowtime(): self
@@ -55,7 +57,7 @@ final class ShowtimeBuilder
         return $clone;
     }
 
-    public function inVersion(string $version): self
+    public function inVersion(ShowtimeVersion $version): self
     {
         $clone = clone $this;
         $clone->version = $version;
@@ -92,7 +94,7 @@ final class ShowtimeBuilder
             ->setEndsAt($start->modify('+'.($this->film->getDuration() + 20).' minutes'))
             ->setLocalDate(new \DateTimeImmutable($local->format('Y-m-d')))
             ->setVersion($this->version)
-            ->setStatus('available')
+            ->setStatus(BookingStatus::Available)
             ->setBookingUrl('https://s.pathe.fr/fr/'.$id.'/booking')
             ->setReservableUntil(new \DateTimeImmutable($this->bookableUntil ?? $start->modify('+20 minutes')->format('Y-m-d H:i:s')));
     }

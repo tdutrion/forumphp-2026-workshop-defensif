@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional\Web;
 
+use App\Catalog\ShowtimeVersion;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -36,7 +37,7 @@ final class FilmPageTest extends WebTestCase
         $film = FilmBuilder::aFilm()->withSlug('garance-52451')->titled('Garance')->build();
         $this->store($dijon, $toison, $centre, $film,
             ShowtimeBuilder::aShowtime()->of($film)->at($centre)->startingAt('2030-01-10 14:00:00')->build(),
-            ShowtimeBuilder::aShowtime()->of($film)->at($centre)->startingAt('2030-01-10 20:15:00')->inVersion('vost')->build(),
+            ShowtimeBuilder::aShowtime()->of($film)->at($centre)->startingAt('2030-01-10 20:15:00')->inVersion(ShowtimeVersion::Vost)->build(),
             ShowtimeBuilder::aShowtime()->of($film)->at($centre)->startingAt('2030-01-11 16:30:00')->build(),
             ShowtimeBuilder::aShowtime()->of($film)->at($toison)->startingAt('2030-01-11 18:00:00')->build(),
             ShowtimeBuilder::aShowtime()->of($film)->at($toison)->startingAt('2020-01-11 18:00:00')->build(),

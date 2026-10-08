@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Repository;
 
+use App\Catalog\BookingStatus;
 use App\Catalog\Entity\Film;
 use App\Catalog\FilmCatalogQuery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -115,7 +116,7 @@ class FilmRepository extends ServiceEntityRepository
              WHERE EXISTS (SELECT 1 FROM showtime s INNER JOIN cinema c ON c.slug = s.cinema_slug
                            WHERE s.film_slug = f.slug AND c.open = 1 AND s.status = :status
                              AND (s.reservable_until IS NULL OR s.reservable_until > :now))',
-            ['status' => 'available', 'now' => $now],
+            ['status' => BookingStatus::Available->value, 'now' => $now],
         );
         foreach ($rows as $json) {
             foreach (json_decode((string) $json, true) ?: [] as $genre) {
@@ -141,7 +142,7 @@ class FilmRepository extends ServiceEntityRepository
              FROM showtime s INNER JOIN cinema c ON c.slug = s.cinema_slug
              WHERE c.open = 1 AND s.status = :status AND (s.reservable_until IS NULL OR s.reservable_until > :now)
              ORDER BY week',
-            ['status' => 'available', 'now' => $now],
+            ['status' => BookingStatus::Available->value, 'now' => $now],
         );
     }
 
@@ -151,7 +152,7 @@ class FilmRepository extends ServiceEntityRepository
     private function showingConditions(FilmCatalogQuery $query, array $excludedSlugs, string $now): array
     {
         $where = ['c.open = 1', 's.status = :status', '(s.reservable_until IS NULL OR s.reservable_until > :now)'];
-        $params = ['status' => 'available', 'now' => $now];
+        $params = ['status' => BookingStatus::Available->value, 'now' => $now];
         $types = [];
         if (null !== $query->q && '' !== trim($query->q)) {
             $where[] = 'f.title LIKE :q';
@@ -165,13 +166,13 @@ class FilmRepository extends ServiceEntityRepository
             $where[] = 'c.city_slug = :city';
             $params['city'] = $query->city;
         }
-        if ('vost' === $query->version || 'vo' === $query->version) {
+        if (null !== $query->version && $query->version->isOriginal()) {
             // Same rule as the planner: a film made in the language of the cinema is in original version.
             $where[] = '(s.version = :version OR f.original_language = c.language)';
-            $params['version'] = $query->version;
-        } elseif (null !== $query->version && '' !== $query->version) {
+            $params['version'] = $query->version->value;
+        } elseif (null !== $query->version) {
             $where[] = 's.version = :version';
-            $params['version'] = $query->version;
+            $params['version'] = $query->version->value;
         }
         if (null !== $query->week) {
             $where[] = 's.local_date BETWEEN :weekStart AND DATE_ADD(:weekStart, INTERVAL 6 DAY)';

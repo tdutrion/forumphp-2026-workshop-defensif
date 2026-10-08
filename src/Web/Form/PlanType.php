@@ -2,9 +2,12 @@
 
 namespace App\Web\Form;
 
+use App\Catalog\ShowtimeVersion;
+use App\Planner\TravelMode;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
@@ -22,8 +25,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class PlanType extends AbstractType
 {
-    public const VERSIONS = ['planner.form.version.vf' => 'vf', 'planner.form.version.vost' => 'vost', 'planner.form.version.vo' => 'vo', 'planner.form.version.vfst' => 'vfst'];
-
     public function __construct(private RequestStack $requestStack)
     {
     }
@@ -83,19 +84,21 @@ class PlanType extends AbstractType
                 'required' => false,
                 'constraints' => [new Regex(pattern: '/^\d{1,9}$/', message: 'planner.seed.invalid')],
             ])
-            ->add('travelMode', ChoiceType::class, [
+            ->add('travelMode', EnumType::class, [
                 'label' => 'planner.form.travel_mode',
-                'choices' => ['planner.form.travel_mode.walking' => 'walking', 'planner.form.travel_mode.cycling' => 'cycling', 'planner.form.travel_mode.transit' => 'transit', 'planner.form.travel_mode.car' => 'car'],
-                'data' => 'transit',
+                'class' => TravelMode::class,
+                'choice_label' => static fn (TravelMode $mode): string => 'planner.form.travel_mode.'.$mode->value,
+                'data' => TravelMode::Transit,
             ])
             ->add('films', IntegerType::class, [
                 'label' => 'planner.form.films',
                 'data' => 2,
                 'constraints' => [new Range(min: 1, max: 8, notInRangeMessage: 'planner.films.range')],
             ])
-            ->add('version', ChoiceType::class, [
+            ->add('version', EnumType::class, [
                 'label' => 'planner.form.version',
-                'choices' => self::VERSIONS,
+                'class' => ShowtimeVersion::class,
+                'choice_label' => static fn (ShowtimeVersion $version): string => $version->label(),
                 'required' => false,
                 'placeholder' => 'planner.form.version_any',
                 'help' => 'planner.form.version_help',

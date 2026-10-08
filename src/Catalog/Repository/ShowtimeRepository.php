@@ -2,7 +2,9 @@
 
 namespace App\Catalog\Repository;
 
+use App\Catalog\BookingStatus;
 use App\Catalog\Entity\Showtime;
+use App\Catalog\ShowtimeVersion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,16 +22,16 @@ class ShowtimeRepository extends ServiceEntityRepository
     /**
      * Showtimes of one day in the given cinemas, bookable at instant $now, excluding the excluded films.
      *
-     * @param string      $date              local day of the cinemas, format 'Y-m-d'
-     * @param array       $cinemaSlugs       slugs of the cinemas to keep
-     * @param array       $excludedFilmSlugs slugs of the films to exclude (already seen)
-     * @param string|null $version           'vf', 'vost', 'vo', 'vfst' or null for any
-     * @param string      $now               current instant in UTC, format 'Y-m-d H:i:s'
+     * @param string           $date              local day of the cinemas, format 'Y-m-d'
+     * @param array            $cinemaSlugs       slugs of the cinemas to keep
+     * @param array            $excludedFilmSlugs slugs of the films to exclude (already seen)
+     * @param ?ShowtimeVersion $version           null for any
+     * @param string           $now               current instant in UTC, format 'Y-m-d H:i:s'
      *
      * @return array rows ['id', 'filmSlug', 'workId' (hexadecimal), 'filmTitle', 'duration', 'cinemaSlug', 'cinemaName', 'timezone',
      *               'latitude', 'longitude', 'startsAt', 'endsAt', 'version', 'bookingUrl'] (instants in UTC)
      */
-    public function findCandidates(string $date, array $cinemaSlugs, array $excludedFilmSlugs, ?string $version, string $now): array
+    public function findCandidates(string $date, array $cinemaSlugs, array $excludedFilmSlugs, ?ShowtimeVersion $version, string $now): array
     {
         if ([] === $cinemaSlugs) {
             return [];
@@ -48,7 +50,7 @@ class ShowtimeRepository extends ServiceEntityRepository
         $params = [
             'date' => $date,
             'cinemas' => $cinemaSlugs,
-            'status' => 'available',
+            'status' => BookingStatus::Available->value,
             'now' => $now,
         ];
         $types = ['cinemas' => ArrayParameterType::STRING];
@@ -58,14 +60,14 @@ class ShowtimeRepository extends ServiceEntityRepository
             $params['excluded'] = $excludedFilmSlugs;
             $types['excluded'] = ArrayParameterType::STRING;
         }
-        if ('vost' === $version || 'vo' === $version) {
+        if (null !== $version && $version->isOriginal()) {
             // Original version: also a film made in the language of the cinema (its chain), whatever the
             // version tag of the showtime: a French film in VF at Pathé, an English film at Cineworld UK.
             $sql .= ' AND (s.version = :version OR f.original_language = c.language)';
-            $params['version'] = $version;
+            $params['version'] = $version->value;
         } elseif (null !== $version) {
             $sql .= ' AND s.version = :version';
-            $params['version'] = $version;
+            $params['version'] = $version->value;
         }
 
         return $this->getEntityManager()->getConnection()->fetchAllAssociative($sql.' ORDER BY s.starts_at, s.id', $params, $types);
@@ -94,7 +96,7 @@ class ShowtimeRepository extends ServiceEntityRepository
 
         return $this->getEntityManager()->getConnection()->fetchAllAssociative($sql, [
             'film' => $filmSlug,
-            'status' => 'available',
+            'status' => BookingStatus::Available->value,
             'now' => $now,
         ]);
     }
@@ -146,7 +148,7 @@ class ShowtimeRepository extends ServiceEntityRepository
         return $this->getEntityManager()->getConnection()->fetchAllKeyValue(
             'SELECT local_date, MAX(COALESCE(reservable_until, starts_at)) FROM showtime
              WHERE status = :status GROUP BY local_date ORDER BY local_date',
-            ['status' => 'available'],
+            ['status' => BookingStatus::Available->value],
         );
     }
 }
