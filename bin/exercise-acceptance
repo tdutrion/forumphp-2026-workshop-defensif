@@ -1,0 +1,29 @@
+#!/bin/sh
+# Brings in the acceptance tests of an exercise of the track (1 to 6) from its reference solution:
+# red at the start, green when the exercise is done. Used by make acceptance.
+#
+# Usage: bin/exercise-acceptance N
+set -eu
+
+say() { printf '%s\n' "$*" >&2; }
+
+case ${1:-} in
+    '' | *[!0-9]*) say "Usage: make acceptance n=N (1 to 6)"; exit 1 ;;
+esac
+case $(expr "$1" + 0 || true) in
+    1) branch=01-pathe-boundary; tests='tests/Integration/Catalog/Sync/CatalogSyncTest.php' ;;
+    2) branch=02-enums; tests='tests/Unit/Planner/TravelModeTest.php tests/Unit/Catalog/BookingStatusTest.php tests/Unit/Catalog/ShowtimeVersionTest.php' ;;
+    3) branch=03-time; tests='tests/Unit/Planner/ScreeningTimeTest.php tests/Unit/Sdk/Pathe/PatheMapperTest.php' ;;
+    4) branch=04-planner-input; tests='tests/Functional/Api/PlanApiTest.php' ;;
+    5) branch=05-planner-output; tests='tests/Unit/Planner/PlanResultTest.php' ;;
+    6) branch=06-repositories; tests='tests/Unit/Catalog/FilmSlugTest.php tests/Unit/Catalog/FilmSlugValueResolverTest.php tests/Integration/Catalog/FilmRepositoryTest.php' ;;
+    *) say "Acceptance tests exist for the exercises of the track only (1 to 6)."; exit 1 ;;
+esac
+
+git fetch --quiet origin
+# shellcheck disable=SC2086 # a list of paths without spaces
+git checkout "origin/exercise/$branch" -- $tests
+say "Acceptance tests of exercise $1, red until it is done:"
+for test in $tests; do
+    say "  $test"
+done
