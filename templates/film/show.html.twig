@@ -14,12 +14,12 @@
                 {% if film.contentRating %}<li>{{ 'film.rating'|trans({'%rating%': film.contentRating}) }}</li>{% endif %}
             </ul>
             {% if film.synopsis %}<p id="synopsis" class="max-w-prose">{{ film.synopsis }}</p>{% endif %}
-            {% if film.wikidataId %}
+            {% if film.work.wikidataId %}
                 {# Open data: the work of this film elsewhere (ids checked when stored). #}
                 <p id="external-links" class="flex flex-wrap gap-4 text-sm">
-                    <a href="https://www.wikidata.org/wiki/{{ film.wikidataId }}" target="_blank" rel="noopener noreferrer" class="text-brand-700 hover:underline">Wikidata</a>
-                    {% if film.imdbId %}<a href="https://www.imdb.com/title/{{ film.imdbId }}/" target="_blank" rel="noopener noreferrer" class="text-brand-700 hover:underline">IMDb</a>{% endif %}
-                    {% if film.tmdbId %}<a href="https://www.themoviedb.org/movie/{{ film.tmdbId }}" target="_blank" rel="noopener noreferrer" class="text-brand-700 hover:underline">TMDB</a>{% endif %}
+                    <a href="https://www.wikidata.org/wiki/{{ film.work.wikidataId }}" target="_blank" rel="noopener noreferrer" class="text-brand-700 hover:underline">Wikidata</a>
+                    {% if film.work.imdbId %}<a href="https://www.imdb.com/title/{{ film.work.imdbId }}/" target="_blank" rel="noopener noreferrer" class="text-brand-700 hover:underline">IMDb</a>{% endif %}
+                    {% if film.work.tmdbId %}<a href="https://www.themoviedb.org/movie/{{ film.work.tmdbId }}" target="_blank" rel="noopener noreferrer" class="text-brand-700 hover:underline">TMDB</a>{% endif %}
                 </p>
             {% endif %}
             <twig:ButtonGroup aria-label="{{ 'film.actions'|trans }}">

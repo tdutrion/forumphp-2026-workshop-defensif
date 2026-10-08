@@ -46,4 +46,19 @@ final class WorkApiTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSame('Cars', $found['originalTitle']);
     }
+
+    public function testAnUnknownFilmOrAWrongSlugIsA404(): void
+    {
+        // Arrange
+        $this->arrangeDijonCatalogWithToken();
+
+        // Act
+        $this->api('GET', '/api/films/unknown-film');
+        $unknown = $this->client->getResponse()->getStatusCode();
+        $this->api('GET', '/api/films/Not_A_Slug');
+        $wrong = $this->client->getResponse()->getStatusCode();
+
+        // Assert
+        self::assertSame([404, 404], [$unknown, $wrong]);
+    }
 }

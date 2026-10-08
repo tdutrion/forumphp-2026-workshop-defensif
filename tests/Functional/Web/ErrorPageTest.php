@@ -27,4 +27,19 @@ final class ErrorPageTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Page introuvable');
         self::assertSelectorExists('a[href="/"]');
     }
+
+    public function testAWrongSlugIsAnUnknownFilmToo(): void
+    {
+        // Arrange
+        $client = self::createClient(['debug' => false]);
+        $user = UserBuilder::aUser()->build();
+        $this->store($user);
+        $client->loginUser($user);
+
+        // Act
+        $client->request('GET', '/films/Not_A_Slug');
+
+        // Assert
+        self::assertResponseStatusCodeSame(404);
+    }
 }

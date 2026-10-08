@@ -5,6 +5,8 @@ namespace App\Catalog\Repository;
 use App\Catalog\BookingStatus;
 use App\Catalog\Entity\Film;
 use App\Catalog\FilmCatalogQuery;
+use App\Catalog\FilmNotFound;
+use App\Catalog\FilmSlug;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,20 +22,26 @@ class FilmRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array|null ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis', 'workId', 'wikidataId', 'imdbId', 'tmdbId'] or null
+     * @return Film|null null when the catalog has no such film
      */
-    public function findBySlug(string $slug): ?array
+    public function findFilm(FilmSlug $slug): ?Film
     {
-        $rows = $this->findBySlugs([$slug]);
+        return $this->find($slug->value);
+    }
 
-        return $rows[0] ?? null;
+    /**
+     * @throws FilmNotFound
+     */
+    public function getFilm(FilmSlug $slug): Film
+    {
+        return $this->findFilm($slug) ?? throw new FilmNotFound($slug);
     }
 
     /**
      * @param array  $slugs     list of slugs
      * @param string $direction 'ASC' or 'DESC' (sorted by title)
      *
-     * @return array list of films (same shape as findBySlug)
+     * @return array list of films, rows ['slug', 'title', 'duration', 'releaseDate', 'genres', 'posterUrl', 'contentRating', 'synopsis', 'workId', 'wikidataId', 'imdbId', 'tmdbId']
      */
     public function findBySlugs(array $slugs, string $direction = 'ASC'): array
     {
