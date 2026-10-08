@@ -3,6 +3,10 @@
 namespace App\Catalog\Sync\Message;
 
 use App\Catalog\Sync\CatalogSyncRunner;
+use App\Catalog\Sync\SyncAlreadyRunning;
+use App\Sdk\Pathe\BotBlockedException;
+use App\Sdk\Pathe\PatheUnavailableException;
+use App\Sdk\Pathe\RateLimitedException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -19,14 +23,16 @@ class SyncCatalogHandler
     {
         try {
             $stats = $this->runner->run();
-        } catch (\RuntimeException $e) {
-            $this->logger->error('Scheduled synchronization aborted', ['error' => $e->getMessage()]);
+        } catch (SyncAlreadyRunning $e) {
+            $this->logger->warning('Scheduled synchronization skipped', ['error' => $e->getMessage()]);
 
             return;
-        }
+        } catch (BotBlockedException|RateLimitedException $e) {
+            $this->logger->error('Scheduled synchronization aborted: Pathé refuses us', ['error' => $e->getMessage()]);
 
-        if (false === $stats) {
-            $this->logger->error('Scheduled synchronization failed: Pathé reference data unreachable');
+            return;
+        } catch (PatheUnavailableException $e) {
+            $this->logger->error('Scheduled synchronization failed: Pathé reference data unreachable', ['error' => $e->getMessage()]);
 
             return;
         }
