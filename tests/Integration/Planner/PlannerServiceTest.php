@@ -9,6 +9,7 @@ use App\Catalog\Entity\Cinema;
 use App\Catalog\Entity\Film;
 use App\Catalog\ShowtimeVersion;
 use App\Planner\PlannerService;
+use App\Planner\PlanRequest;
 use App\Tests\Builder\CinemaBuilder;
 use App\Tests\Builder\CityBuilder;
 use App\Tests\Builder\FilmBuilder;
@@ -54,17 +55,12 @@ final class PlannerServiceTest extends KernelTestCase
         return $user->getUserIdentifier();
     }
 
-    private function criteria(array $overrides = []): array
+    /**
+     * A search around Pathé Dijon on self::DAY, for 2 films by default.
+     */
+    private function request(array $overrides = []): PlanRequest
     {
-        return $overrides + [
-            'date' => self::DAY,
-            'latitude' => 47.318031,
-            'longitude' => 5.029935,
-            'radius' => 10,
-            'films' => 2,
-            'version' => null,
-            'acceptAds' => false,
-        ];
+        return new PlanRequest(...$overrides + ['date' => self::DAY, 'position' => '{"lat": 47.318031, "lng": 5.029935}']);
     }
 
     private function filmSets(array $result): array
@@ -84,7 +80,7 @@ final class PlannerServiceTest extends KernelTestCase
         $userId = $this->dijonCatalog();
 
         // Act
-        $result = $this->planner()->plan($this->criteria(), $userId);
+        $result = $this->planner()->plan($this->request(), $userId);
 
         // Assert
         self::assertNull($result['reason']);
@@ -106,7 +102,7 @@ final class PlannerServiceTest extends KernelTestCase
         $this->store($elsewhere->getCity(), $elsewhere, $film, ShowtimeBuilder::aShowtime()->of($film)->at($elsewhere)->startingAt(self::DAY.' 10:00:00')->build());
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1]), $userId);
+        $result = $this->planner()->plan($this->request(['films' => 1]), $userId);
 
         // Assert
         $times = [];
@@ -124,7 +120,7 @@ final class PlannerServiceTest extends KernelTestCase
         self::getContainer()->get(SeenFilmService::class)->markSeen($userId, 'f3');
 
         // Act
-        $result = $this->planner()->plan($this->criteria(), $userId);
+        $result = $this->planner()->plan($this->request(), $userId);
 
         // Assert
         self::assertNotContains('f3', array_merge(...$this->filmSets($result)));
@@ -138,7 +134,7 @@ final class PlannerServiceTest extends KernelTestCase
         self::getContainer()->get(UnwantedFilmService::class)->markUnwanted($userId, 'f4');
 
         // Act
-        $result = $this->planner()->plan($this->criteria(), $userId);
+        $result = $this->planner()->plan($this->request(), $userId);
 
         // Assert
         self::assertNotContains('f4', array_merge(...$this->filmSets($result)));
@@ -155,7 +151,7 @@ final class PlannerServiceTest extends KernelTestCase
         $em->flush();
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => ShowtimeVersion::Vost]), $userId);
+        $result = $this->planner()->plan($this->request(['films' => 1, 'version' => ShowtimeVersion::Vost]), $userId);
 
         // Assert
         $films = array_merge(...$this->filmSets($result));
@@ -178,7 +174,7 @@ final class PlannerServiceTest extends KernelTestCase
         );
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1, 'version' => ShowtimeVersion::Vo]), $userId);
+        $result = $this->planner()->plan($this->request(['films' => 1, 'version' => ShowtimeVersion::Vo]), $userId);
 
         // Assert
         $films = array_merge(...$this->filmSets($result));
@@ -193,8 +189,8 @@ final class PlannerServiceTest extends KernelTestCase
         $userId = $this->dijonCatalog();
 
         // Act
-        $afternoon = $this->planner()->plan($this->criteria(['from' => '16:00']), $userId);
-        $beforeDinner = $this->planner()->plan($this->criteria(['until' => '18:45']), $userId);
+        $afternoon = $this->planner()->plan($this->request(['from' => '16:00']), $userId);
+        $beforeDinner = $this->planner()->plan($this->request(['until' => '18:45']), $userId);
 
         // Assert
         self::assertNotContains('f1', array_merge(...$this->filmSets($afternoon)), 'starts before 16:00');
@@ -212,7 +208,7 @@ final class PlannerServiceTest extends KernelTestCase
         $this->store($film, ShowtimeBuilder::aShowtime()->withId('V1S8')->of($film)->at($this->dijon)->startingAt('2030-10-27 20:00:00')->build());
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['date' => '2030-10-27', 'films' => 1, 'from' => '20:00', 'until' => '22:00']), $userId);
+        $result = $this->planner()->plan($this->request(['date' => '2030-10-27', 'films' => 1, 'from' => '20:00', 'until' => '22:00']), $userId);
 
         // Assert
         self::assertNotFalse($result);
@@ -230,7 +226,7 @@ final class PlannerServiceTest extends KernelTestCase
         self::getContainer()->get(ExcludedCinemaService::class)->exclude($userId, 'cinema-pathe-dijon');
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1]), $userId);
+        $result = $this->planner()->plan($this->request(['films' => 1]), $userId);
 
         // Assert
         self::assertSame([['f8']], $this->filmSets($result), 'only the other cinema is used');
@@ -243,11 +239,11 @@ final class PlannerServiceTest extends KernelTestCase
         $userId = $this->dijonCatalog();
 
         // Act
-        $within50Km = $this->planner()->plan($this->criteria(['films' => 1, 'radius' => 50]), $userId);
-        $dubbedOnly = $this->planner()->plan($this->criteria(['version' => ShowtimeVersion::Vf]), $userId);
+        $around = $this->planner()->plan($this->request(['films' => 1]), $userId);
+        $dubbedOnly = $this->planner()->plan($this->request(['version' => ShowtimeVersion::Vf]), $userId);
 
         // Assert
-        self::assertNotContains(['f5'], $this->filmSets($within50Km), 'Lyon is more than 150 km from Dijon');
+        self::assertNotContains(['f5'], $this->filmSets($around), 'Lyon is more than 150 km from Dijon');
         self::assertNotContains('f2', array_merge(...$this->filmSets($dubbedOnly)), 'f2 only plays in original version');
     }
 
@@ -261,7 +257,7 @@ final class PlannerServiceTest extends KernelTestCase
             ->startingAt(self::DAY.' 21:30:00')->bookableUntil('2020-01-01 00:00:00')->build());
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 1]), $userId);
+        $result = $this->planner()->plan($this->request(['films' => 1]), $userId);
 
         // Assert
         self::assertNotContains(['f6'], $this->filmSets($result));
@@ -274,9 +270,9 @@ final class PlannerServiceTest extends KernelTestCase
         $userId = $this->dijonCatalog();
 
         // Act
-        $threeFilms = $this->planner()->plan($this->criteria(['films' => 3]), $userId);
-        $fourFilms = $this->planner()->plan($this->criteria(['films' => 4]), $userId);
-        $anotherDay = $this->planner()->plan($this->criteria(['date' => '2030-01-11']), $userId);
+        $threeFilms = $this->planner()->plan($this->request(['films' => 3]), $userId);
+        $fourFilms = $this->planner()->plan($this->request(['films' => 4]), $userId);
+        $anotherDay = $this->planner()->plan($this->request(['date' => '2030-01-11']), $userId);
 
         // Assert
         self::assertSame('not_enough_programmes', $threeFilms['reason']);
@@ -297,7 +293,7 @@ final class PlannerServiceTest extends KernelTestCase
         }
 
         // Act
-        $result = $this->planner()->plan($this->criteria(['films' => 3]), $userId);
+        $result = $this->planner()->plan($this->request(['films' => 3]), $userId);
 
         // Assert
         self::assertSame('fewer_films', $result['reason']);
@@ -310,12 +306,9 @@ final class PlannerServiceTest extends KernelTestCase
         // Arrange
         self::bootKernel();
         $userId = $this->dijonCatalog();
-        $criteria = $this->criteria();
-        unset($criteria['films']);
-
         // Act
-        $byDefault = $this->planner()->plan($criteria, $userId);
-        $single = $this->planner()->plan($this->criteria(['films' => 1]), $userId);
+        $byDefault = $this->planner()->plan($this->request(), $userId);
+        $single = $this->planner()->plan($this->request(['films' => 1]), $userId);
 
         // Assert
         self::assertSame(2, $byDefault['films']);

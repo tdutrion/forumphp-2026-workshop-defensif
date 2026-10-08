@@ -3,16 +3,17 @@
 namespace App\Api\Controller;
 
 use App\Account\Entity\User;
-use App\Catalog\CatalogCalendar;
-use App\Catalog\Repository\CityRepository;
 use App\Planner\PlannerService;
-use App\Web\Form\PlanType;
+use App\Planner\PlanRequest;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[OA\Tag(name: 'Planning')]
@@ -20,8 +21,6 @@ class PlanController extends AbstractController
 {
     public function __construct(
         private PlannerService $plannerService,
-        private CityRepository $cityRepository,
-        private CatalogCalendar $calendar,
         private TranslatorInterface $translator,
     ) {
     }
@@ -39,34 +38,20 @@ class PlanController extends AbstractController
     #[OA\Parameter(name: 'seed', in: 'query', required: false, description: 'Draw of the programmes among the best ones (0 to 999999999): the same seed gives the same programmes; drawn when missing', schema: new OA\Schema(type: 'integer'))]
     #[OA\Response(response: 200, description: 'Proposed programmes (at most 3), the number of films per programme (fewer than asked when reason is fewer_films), the reason if there are fewer, and the seed of the draw')]
     #[OA\Response(response: 422, description: 'Invalid parameters')]
-    public function plan(Request $request, #[CurrentUser] User $user): JsonResponse
-    {
-        $form = $this->createForm(PlanType::class, null, [
-            'dates' => $this->calendar->availableDates(new \DateTimeImmutable('now', new \DateTimeZone('UTC'))),
-            'cities' => $this->cityRepository->findAllForSelect(),
-        ]);
-        // false: missing parameters keep their default value (2 films, public transport).
-        $form->submit($request->query->all(), false);
-
-        if (!$form->isValid()) {
-            $errors = [];
-            foreach ($form->getErrors(true) as $error) {
-                $errors[] = ['field' => $error->getOrigin()?->getName() ?? '', 'message' => $error->getMessage()];
-            }
-
-            return new JsonResponse(
-                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => $errors],
-                422,
-                ['Content-Type' => 'application/problem+json'],
-            );
-        }
-
-        $data = $form->getData();
-        $result = $this->plannerService->planFromForm($data, $user->getUserIdentifier());
+    public function plan(
+        // Invalid parameters, unknown ones included, are a 422 (the default is a 404), rendered by ApiExceptionListener.
+        #[MapQueryString(
+            serializationContext: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false, DenormalizerInterface::COLLECT_EXTRA_ATTRIBUTES_ERRORS => true],
+            validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY,
+        )]
+        PlanRequest $request,
+        #[CurrentUser] User $user,
+    ): JsonResponse {
+        $result = $this->plannerService->plan($request, $user->getUserIdentifier());
         if (false !== $result && 'unknown_location' === $result['reason']) {
             // The position could not be read, or the city has no open cinema left: invalid input, like the other parameters.
             return new JsonResponse(
-                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => [['field' => empty($data['city']) ? 'position' : 'city', 'message' => $this->translator->trans('planner.result.unknown_place')]]],
+                ['type' => 'about:blank', 'title' => $this->translator->trans('api.invalid_parameters'), 'status' => 422, 'errors' => [['field' => null === $request->city ? 'position' : 'city', 'message' => $this->translator->trans('planner.result.unknown_place')]]],
                 422,
                 ['Content-Type' => 'application/problem+json'],
             );
